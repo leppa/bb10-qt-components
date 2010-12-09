@@ -15,8 +15,9 @@ OTHER_FILES += \
     switches.qml \
     slider.qml \
     list.qml \
-    positionindicator.qml \
+    scrolldecorator.qml \
     query.qml \
-    spinner.qml
+    busyindicator.qml \
+    images
 
 include (../meego.pri)

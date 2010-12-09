@@ -37,7 +37,7 @@ Item {
         anchors.leftMargin: 20
         anchors.verticalCenter: toggleUnknown.verticalCenter
         width: 350
-        unknownDuration: toggleUnknown.checked
+        indeterminate: toggleUnknown.checked
         value: progress.checkedButton ? progress.checkedButton.text : 0
     }
 

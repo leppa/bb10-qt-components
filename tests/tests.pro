@@ -1,7 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS += \
-#   qdatetimemodel \
-    qrangemodel
+SUBDIRS = auto
 
 test.CONFIG = recursive
 test.recurse = $$SUBDIRS

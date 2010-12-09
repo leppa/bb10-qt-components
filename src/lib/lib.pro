@@ -1,27 +1,42 @@
 TEMPLATE = lib
 TARGET = $$qtLibraryTarget(QtComponents)
 
-DESTDIR = $$OUT_PWD/../../lib
+DESTDIR = $$Q_COMPONENTS_BUILD_TREE/lib
+win32:DLLDESTDIR = $$Q_COMPONENTS_BUILD_TREE/bin
 
 QT += declarative opengl
 CONFIG += build_lib
-DEFINES += QDECLARATIVEWINDOW_BUILD_LIB
+DEFINES += Q_COMPONENTS_BUILD_LIB
 
 include(../../qt-components.pri)
 
-PUBLIC_HEADERS += \
+HEADERS += \
     qdeclarativewindow.h
 SOURCES += \
     qdeclarativewindow.cpp
 
-HEADERS += $$PUBLIC_HEADERS
-
 INCLUDEPATH = $$PWD
 
-install_headers.files = $$PUBLIC_HEADERS
-install_headers.path = $$[QT_INSTALL_HEADERS]/QtComponents
+macx:CONFIG(qt_framework, qt_framework|qt_no_framework) {
+    CONFIG += lib_bundle debug_and_release
+    CONFIG(debug, debug|release) {
+        !build_pass:CONFIG += build_all
+    } else { #release
+        !debug_and_release|build_pass {
+            FRAMEWORK_HEADERS.version = Versions
+            FRAMEWORK_HEADERS.files = $$HEADERS
+            FRAMEWORK_HEADERS.path = Headers
+        }
+        QMAKE_BUNDLE_DATA += FRAMEWORK_HEADERS
+    }
+} else {
+    install_headers.files = $$HEADERS
+    install_headers.path = $$[QT_INSTALL_HEADERS]/QtComponents
+    INSTALLS += install_headers
+}
 
 target.path = $$[QT_INSTALL_LIBS]
+win32:dlltarget.path = $$[QT_INSTALL_BINS]
 
-INSTALLS += target install_headers
-
+INSTALLS += target
+win32:INSTALLS += dlltarget

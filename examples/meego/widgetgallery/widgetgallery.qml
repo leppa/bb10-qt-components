@@ -36,6 +36,7 @@ Window {
         Page {
             title: "Widgets Gallery"
             ListView {
+                id: list
                 anchors.fill: parent
                 model: WidgetGallerySections { }
                 delegate: BasicListItem {
@@ -44,8 +45,9 @@ Window {
                         window.nextPage(Qt.createComponent(source));
                     }
                 }
-
-                PositionIndicator { }
+            }
+            ScrollDecorator {
+                flickable: list
             }
         }
     }

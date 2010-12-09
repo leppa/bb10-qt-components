@@ -27,7 +27,7 @@
 #include "qdeclarativewindow.h"
 
 #include <QApplication>
-#include <qgl.h>
+#include <QGLWidget>
 #include <QtDeclarative>
 
 #ifdef Q_COMPONENTS_MEEGO
@@ -37,248 +37,83 @@
 
 class QDeclarativeWindowPrivate
 {
+    Q_DECLARE_PUBLIC(QDeclarativeWindow)
+
 public:
     QDeclarativeWindowPrivate(QDeclarativeWindow *qq);
     ~QDeclarativeWindowPrivate();
-    void execute();
 
-    QDeclarativeWindow *q;
+    void init();
 
-    QGraphicsView *view;
-    QGraphicsScene scene;
-    QUrl source;
-
-    QDeclarativeEngine engine;
-    QDeclarativeComponent *component;
-    QPointer<QDeclarativeItem> root;
-
+    QDeclarativeWindow *q_ptr;
 };
 
 QDeclarativeWindowPrivate::QDeclarativeWindowPrivate(QDeclarativeWindow *qq)
-    : q(qq), view(0), component(0)
+    : q_ptr(qq)
 {
-#ifdef Q_COMPONENTS_MEEGO
-    qApp->setProperty("NoMStyle", true);
-    if(!MComponentData::instance()) {
-        // This is a workaround because we can't use a default
-        // constructor for MComponentData
-        int argc = 1;
-        char *argv0 = "meegotouch";
-        (void) new MComponentData(argc, &argv0);
-    }
-#endif
-
-    view = new QGraphicsView(&scene, 0);
-
-#ifdef Q_COMPONENTS_MEEGO
-    view->setWindowFlags(Qt::Window
-                   | Qt::CustomizeWindowHint
-                   | Qt::FramelessWindowHint);
-
-    view->resize(MDeviceProfile::instance()->resolution());
-    view->setSceneRect(QRect(QPoint(), view->size()));
-#endif
-
-    view->setOptimizationFlags(QGraphicsView::DontSavePainterState);
-    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setFrameStyle(0);
-
-    // These seem to give the best performance
-    view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    scene.setItemIndexMethod(QGraphicsScene::NoIndex);
-    view->viewport()->setFocusPolicy(Qt::NoFocus);
-    view->setFocusPolicy(Qt::StrongFocus);
-
-    view->setViewport(new QGLWidget);
-
-    scene.setStickyFocus(true);  //### needed for correct focus handling
-
-    QObject::connect(&engine, SIGNAL(quit()), QCoreApplication::instance(), SLOT(quit()));
 }
-
 
 QDeclarativeWindowPrivate::~QDeclarativeWindowPrivate()
 {
-    delete root;
-    delete component;
-    delete view;
 }
 
-void QDeclarativeWindowPrivate::execute()
+void QDeclarativeWindowPrivate::init()
 {
-    if (root) {
-        delete root;
-        root = 0;
+    Q_Q(QDeclarativeWindow);
+
+#ifdef Q_COMPONENTS_MEEGO
+    qApp->setProperty("NoMStyle", true);
+    if (!MComponentData::instance()) {
+        // This is a workaround because we can't use a default
+        // constructor for MComponentData
+        // ### this is only needed here for accessing MDeviceProfile::instance()->resolution()
+        QByteArray argv0;
+        if (!QCoreApplication::arguments().isEmpty())
+            argv0 = QCoreApplication::arguments().first().toLocal8Bit();
+
+        int argc = 1;
+        char *argv[] = { argv0.data() };
+        (void) new MComponentData(argc, argv);
     }
-    if (component) {
-        delete component;
-        component = 0;
-    }
-    if (!source.isEmpty()) {
-        component = new QDeclarativeComponent(&engine, source, q);
-        if (!component->isLoading()) {
-            q->continueExecute();
-        } else {
-            QObject::connect(component, SIGNAL(statusChanged(QDeclarativeComponent::Status)), q, SLOT(continueExecute()));
-        }
-    }
+
+    q->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    q->setWindowFlags(Qt::Window
+                      | Qt::CustomizeWindowHint
+                      | Qt::FramelessWindowHint);
+
+    q->resize(MDeviceProfile::instance()->resolution());
+    q->setSceneRect(QRect(QPoint(), q->size()));
+    q->setViewport(new QGLWidget);
+#endif
+
+    QObject::connect(q->engine(), SIGNAL(quit()), qApp, SLOT(quit()));
 }
 
 /*!
-  \internal
+    Constructs a QDeclarativeWindow with the given \a parent.
  */
-void QDeclarativeWindow::continueExecute()
+QDeclarativeWindow::QDeclarativeWindow(QWidget *parent) :
+    QDeclarativeView(parent), d_ptr(new QDeclarativeWindowPrivate(this))
 {
-    disconnect(d->component, SIGNAL(statusChanged(QDeclarativeComponent::Status)), this, SLOT(continueExecute()));
-
-    if (d->component->isError()) {
-        QList<QDeclarativeError> errorList = d->component->errors();
-        foreach (const QDeclarativeError &error, errorList) {
-            qWarning() << error;
-        }
-        emit statusChanged(status());
-        return;
-    }
-
-    QObject *obj = d->component->create();
-
-    if(d->component->isError()) {
-        QList<QDeclarativeError> errorList = d->component->errors();
-        foreach (const QDeclarativeError &error, errorList) {
-            qWarning() << error;
-        }
-        emit statusChanged(status());
-        return;
-    }
-
-    setRootObject(obj);
-
-    emit statusChanged(status());
+    Q_D(QDeclarativeWindow);
+    d->init();
 }
 
-
-
-
-
-
-QDeclarativeWindow::QDeclarativeWindow()
+/*!
+    Constructs a QDeclarativeWindow with the given QML \a source and \a parent.
+ */
+QDeclarativeWindow::QDeclarativeWindow(const QUrl &source, QWidget *parent) :
+    QDeclarativeView(source, parent), d_ptr(new QDeclarativeWindowPrivate(this))
 {
-    d = new QDeclarativeWindowPrivate(this);
+    Q_D(QDeclarativeWindow);
+    d->init();
 }
 
-QDeclarativeWindow::QDeclarativeWindow(const QUrl &source)
-{
-    d = new QDeclarativeWindowPrivate(this);
-    setSource(source);
-}
-
+/*!
+    Destroys the window.
+ */
 QDeclarativeWindow::~QDeclarativeWindow()
 {
-    delete d;
-    d = 0;
 }
 
-
-/*! \property QDeclarativeWindow::source
-  \brief The URL of the source of the QML component.
-
-  Changing this property causes the QML component to be reloaded.
-
-    Ensure that the URL provided is full and correct, in particular, use
-    \l QUrl::fromLocalFile() when loading a file from the local filesystem.
- */
-
-/*!
-    Sets the source to the \a url, loads the QML component and instantiates it.
-
-    Ensure that the URL provided is full and correct, in particular, use
-    \l QUrl::fromLocalFile() when loading a file from the local filesystem.
-
-    Calling this methods multiple times with the same url will result
-    in the QML being reloaded.
- */
-void QDeclarativeWindow::setSource(const QUrl& url)
-{
-    d->source = url;
-    d->execute();
-}
-
-/*!
-  Returns the source URL, if set.
-
-  \sa setSource()
- */
-QUrl QDeclarativeWindow::source() const
-{
-    return d->source;
-}
-
-/*!
-  Returns a pointer to the QDeclarativeEngine used for instantiating
-  QML Components.
- */
-QDeclarativeEngine* QDeclarativeWindow::engine()
-{
-    return &d->engine;
-}
-
-/*!
-  This function returns the root of the context hierarchy.  Each QML
-  component is instantiated in a QDeclarativeContext.  QDeclarativeContext's are
-  essential for passing data to QML components.  In QML, contexts are
-  arranged hierarchically and this hierarchy is managed by the
-  QDeclarativeEngine.
- */
-QDeclarativeContext* QDeclarativeWindow::rootContext()
-{
-    return d->engine.rootContext();
-}
-
-
-/*!
-  Returns the view's root \l {QGraphicsObject} {item}.
- */
-QGraphicsObject *QDeclarativeWindow::rootObject() const
-{
-    return d->root;
-}
-
-/*! \fn void QDeclarativeWindow::statusChanged(QDeclarativeView::Status status)
-    This signal is emitted when the component's current \a status changes.
-*/
-
-/*!
-    \property QDeclarativeWindow::status
-    The component's current \l{QDeclarativeWindow::Status} {status}.
-*/
-QDeclarativeWindow::Status QDeclarativeWindow::status() const
-{
-    if (!d->component)
-        return QDeclarativeWindow::Null;
-
-    return QDeclarativeWindow::Status(d->component->status());
-}
-
-
-/*!
-  \internal
-*/
-void QDeclarativeWindow::setRootObject(QObject *obj)
-{
-    if (d->root == obj)
-        return;
-    d->root = qobject_cast<QDeclarativeItem *>(obj);
-    if (!d->root) {
-        qWarning() << "QDeclarativeView only supports loading of root objects that derive from QDeclarativeItem";
-        return;
-    }
-
-    d->scene.addItem(d->root);
-}
-
-QWidget *QDeclarativeWindow::window()
-{
-    return d->view;
-}
-
+#include "moc_qdeclarativewindow.cpp"

@@ -53,12 +53,12 @@ Window {
                                 "Checkbox",
                                 "LineEdit",
                                 "Query",
-                                "Spinner",
+                                "Busy Indicator",
                                 "Progress Bar",
                                 "Slider",
                                 "Switches",
                                 "List",
-                                "Position Indicator"]
+                                "Scroll Decorator"]
                         Button {
                             text: modelData
                             width: 210
@@ -66,9 +66,12 @@ Window {
                         }
                     }
                 }
-
-                children: PositionIndicator { }
             }
+
+            ScrollDecorator {
+                flickable: group
+            }
+
             Loader {
                 id: loader;
                 anchors.left: group.right

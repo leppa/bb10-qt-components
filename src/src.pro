@@ -1,10 +1,16 @@
 TEMPLATE = subdirs
-SUBDIRS = lib module native
+SUBDIRS = lib components native
+
+components.depends += lib
+native.depends += lib
 
 mx {
-    SUBDIRS += Mx
+    SUBDIRS += mx
+    mx.depends += lib
 }
 
 meego {
-    SUBDIRS += MeeGo MeeGo/themebridge
+    SUBDIRS += meego meego/themebridge
+    meego.depends += lib
+    meego-themebridge.depends += lib
 }
