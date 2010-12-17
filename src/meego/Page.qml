@@ -24,20 +24,25 @@
 **
 ****************************************************************************/
 
+// The Page item is intended for use as a root item in QML items that make
+// up pages to use with the PageStack.
+
 import Qt 4.7
-import Qt.labs.components 1.0
-import com.meego.themebridge 1.0
 
 Item {
-    // When using Page you should not change the geometry nor the position of the Page,
-    // this will be taken care internally by the PageContainer.
+    id: root
 
-    property string title
-    property list<Action> actions
-    signal aboutToExit()
-    signal entered()
+    width: parent ? parent.width : 0
+    height: parent ? parent.height : 0
 
-    clip: true
+    visible: false
 
-    anchors.fill: parent
+    // Signal that fires when the page is activated.
+    signal activated
+
+    // Signal that fires when the page is deactivated.
+    signal deactivated
+
+    // Defines the tools for the page; null for none.
+    property Item tools: null
 }

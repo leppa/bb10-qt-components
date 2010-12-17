@@ -24,52 +24,31 @@
 **
 ****************************************************************************/
 
+// ToolItem is a component that is used to add actions to toolbars.
+
 import Qt 4.7
-import com.meego 1.0
+import com.meego.themebridge 1.0
 
 Item {
-    id: page
-    width: 500
-    height: 300
+    property url iconSource
+    property string iconId
+    width: 80; height: 64
+    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
+    signal clicked
 
-    Flickable {
-        id: flickable
-        anchors.fill: parent
-        contentWidth: colorfulSquare.width
-        contentHeight: colorfulSquare.height
-        clip: true
-
-        Rectangle {
-            id: colorfulSquare
-            width: page.width * 2
-            height: width
-            opacity: 0.5
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "blue" }
-                GradientStop { position: 1.0; color: "yellow" }
-            }
-        }
-        Rectangle {
-            width: colorfulSquare.height
-            height: colorfulSquare.width
-            opacity: 0.5
-            rotation: -90
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "red" }
-                GradientStop { position: 1.0; color: "green" }
-            }
-        }
-    }
-
-    ScrollDecorator {
-        flickable: flickable
-    }
-
-    Text {
+    Image {
+        source: mouseArea.pressed ? "image://theme/meegotouch-button-navigationbar-button-background-pressed" : ""
         anchors.centerIn: parent
-        text: "Flick around!"
-        color: "white"
-        font.pixelSize: 50
-        opacity: 0.85
+
+        Image {
+            source: iconSource != "" ? iconSource : ("image://theme/" + iconId)
+            anchors.centerIn: parent
+        }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        onClicked: parent.clicked()
     }
 }

@@ -24,15 +24,39 @@
 **
 ****************************************************************************/
 
+// ToolButton is a push-button style button intended for use with toolbars.
+
 import Qt 4.7
-import com.meego 1.0
+import com.meego.themebridge 1.0
 
-Window {
-    id: window
-    property Component mainpage
+Item {
+    property string text
+    width: 150; height: 64
+    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
+    signal clicked
 
-    Component.onCompleted: {
-        mainpage = Qt.createComponent("mainpage.qml")
-        window.nextPage(mainpage)
+    BorderImage {
+        id: name
+        width: 150; height: 40
+        border.left: 15; border.top: 15
+        border.right: 15; border.bottom: 15
+
+        source: mouseArea.pressed ?
+                    "image://theme/meegotouch-button-navigationbar-button-background-pressed" :
+                    "image://theme/meegotouch-button-navigationbar-button-background";
+        anchors.centerIn: parent
+
+        Text {
+            text: parent.parent.text
+            anchors.centerIn: parent
+            font.bold: true
+            font.capitalization: Font.AllUppercase
+        }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        onClicked: parent.clicked()
     }
 }
