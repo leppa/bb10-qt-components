@@ -32,17 +32,15 @@ ImplicitSizeItem {
     id: root
 
     property string text
-    property bool  multiLine: false
     property int   documentMargin: 4
     property alias promptText: prompt.text
     property alias styleType: meegostyle.styleType
 
     // Inherited from text items
     property variant echoMode: TextInput.Normal
-    property variant wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
-    property variant inputElement: loader.item
+    property variant inputElement: textInput
     property variant activeFocusOnPress: true
-    property variant horizontalAlignment: TextEdit.AlignLeft
+    property variant horizontalAlignment: TextInput.AlignLeft
     property variant color: meegostyle.current.get("textColor")
     property variant selectedTextColor: meegostyle.current.get("selectionTextColor")
     property variant selectionColor: meegostyle.current.get("selectionBackgroundColor")
@@ -81,73 +79,47 @@ ImplicitSizeItem {
     //     Something like, preferredWidth = textInput.implicitWidth + margins
 
 
-    Loader {
-        id: loader
+    anchors.leftMargin: documentMargin + meegostyle.current.get("paddingLeft")
+    anchors.rightMargin: documentMargin + meegostyle.current.get("paddingRight")
+    anchors.topMargin: documentMargin + meegostyle.current.get("paddingTop")
+    anchors.bottomMargin: documentMargin + meegostyle.current.get("paddingBottom")
 
-        anchors.fill:parent
-        anchors.leftMargin: documentMargin + meegostyle.current.get("paddingLeft")
-        anchors.rightMargin: documentMargin + meegostyle.current.get("paddingRight")
-        anchors.topMargin: documentMargin + meegostyle.current.get("paddingTop")
-        anchors.bottomMargin: documentMargin + meegostyle.current.get("paddingBottom")
+    clip:true
 
-        sourceComponent: multiLine ? multilineComponent : singleLineComponent
-
-        clip:true
-
-        Text {
-            id: prompt
-            anchors.fill: parent
-            visible: !inputElement.activeFocus && !inputElement.text && prompt.text
-            color: meegostyle.current.get("promptColor")
-            font: root.font
-        }
+    Text {
+        id: prompt
+        anchors.fill: parent
+        visible: !inputElement.activeFocus && !inputElement.text && prompt.text
+        color: meegostyle.current.get("promptColor")
+        font: root.font
     }
 
-    Component {
-        id:multilineComponent
-        TextEdit {
-            id: textEdit
-            anchors.fill: parent
-            text:root.text
-            onTextChanged: root.text = text
-            visible: multiLine ? true : false
-            font: root.font
-            color: root.color
-            wrapMode: root.wrapMode
-            selectByMouse: true
-            horizontalAlignment: root.horizontalAlignment
-            selectedTextColor: root.selectedTextColor
-            selectionColor: root.selectionColor
-            property variant textModel : Text {
-                font: root.font;
-                text: root.text;
-                visible: false
-                wrapMode: root.wrapMode;
-                width: textEdit.width
-            }
+    TextInput {
+        id: textInput
+        x: root.anchors.leftMargin
+        y: root.anchors.topMargin
+        width: root.width - x - root.anchors.rightMargin
+        height: root.height - y - root.anchors.bottomMargin
+        text:root.text
+        onTextChanged: root.text = text
+        passwordCharacter: root.passwordCharacter
+        echoMode: root.echoMode
+        font: root.font
+        color: root.color
+        selectByMouse: true
+        horizontalAlignment: root.horizontalAlignment
+        selectedTextColor: root.selectedTextColor
+        selectionColor: root.selectionColor
+        property variant textModel: Text {
+            font: root.font;
+            text: root.text;
+            visible: false
         }
-    }
-
-    Component {
-        id: singleLineComponent
-        TextInput {
-            id: textInput
+        MouseArea {
             anchors.fill: parent
-            text:root.text
-            onTextChanged: root.text = text
-            visible: multiLine ? false : true
-            passwordCharacter: root.passwordCharacter
-            echoMode: root.echoMode
-            font: root.font
-            color: root.color
-            selectByMouse: true
-            horizontalAlignment: root.horizontalAlignment
-            selectedTextColor: root.selectedTextColor
-            selectionColor: root.selectionColor
-            property variant textModel: Text {
-                font: root.font;
-                text: root.text;
-                visible: false
+            onReleased: {
+                parent.focus=true;
+                screen.sendClicked(mouseX,mouseY,parent.positionAt(mouseX));
             }
         }
     }

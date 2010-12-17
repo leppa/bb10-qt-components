@@ -4,7 +4,8 @@ TARGET = $$qtLibraryTarget(meegoplugin)
 DESTDIR = $$Q_COMPONENTS_BUILD_TREE/lib
 win32:DLLDESTDIR = $$Q_COMPONENTS_BUILD_TREE/bin
 CONFIG += qt plugin meego
-QT += declarative dbus
+QT += declarative
+!macx: QT += dbus
 
 include (../../qt-components.pri)
 
@@ -38,6 +39,7 @@ QML_FILES = \
         ActionButton.qml \
         ActionManager.js \
         BasicListItem.qml \
+        BusyIndicator.qml \
         Button.qml \
         ButtonColumn.qml \
         ButtonRow.qml \
@@ -48,6 +50,7 @@ QML_FILES = \
         IconButton.qml \
         Label.qml \
         LineEdit.qml \
+        MultiLineEdit.qml \
         ListItem.qml \
         Page.qml \
         pagemanager.js \
@@ -59,7 +62,7 @@ QML_FILES = \
         ScrollDecorator.qml \
         ScrollDecoratorSizer.qml \
         Slider.qml \
-        BusyIndicator.qml \
+        SliderTemplate.qml \
         Switch.qml \
         TitleMenuButton.qml \
         Window.qml \

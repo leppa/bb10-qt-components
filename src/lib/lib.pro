@@ -17,6 +17,18 @@ SOURCES += \
 
 INCLUDEPATH = $$PWD
 
+symbian {
+    TARGET.EPOCALLOWDLLDATA = 1
+    TARGET.CAPABILITY = CAP_GENERAL_DLL
+    TARGET.UID3 = 0x200346E2
+    MMP_RULES += EXPORTUNFROZEN
+    MMP_RULES += SMPSAFE
+
+    library.sources = QtComponents.dll
+    library.path = /sys/bin
+    DEPLOYMENT += library
+}
+
 macx:CONFIG(qt_framework, qt_framework|qt_no_framework) {
     CONFIG += lib_bundle debug_and_release
     CONFIG(debug, debug|release) {
@@ -29,6 +41,7 @@ macx:CONFIG(qt_framework, qt_framework|qt_no_framework) {
         }
         QMAKE_BUNDLE_DATA += FRAMEWORK_HEADERS
     }
+    QMAKE_LFLAGS_SONAME  = -Wl,-install_name,$$[QT_INSTALL_LIBS]/
 } else {
     install_headers.files = $$HEADERS
     install_headers.path = $$[QT_INSTALL_HEADERS]/QtComponents
