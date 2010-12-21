@@ -33,20 +33,17 @@
 ****************************************************************************/
 #include <QtTest/QtTest>
 #include <QtTest/QSignalSpy>
-#include <QtDeclarative/qdeclarativeengine.h>
 #include <QtDeclarative/qdeclarativecontext.h>
-#include <QtDeclarative/qdeclarativecomponent.h>
 #include <QDeclarativeView>
-#include <qdeclarativewindow.h>
+
+#include "tst_quickcomponentstest.h"
 
 class tst_quickcomponentsslider : public QObject
 
 {
     Q_OBJECT
-public:
-    tst_quickcomponentsslider();
-
 private slots:
+    void initTestCase();
     void stepSize();
     void value();
     void minimumValue();
@@ -59,22 +56,15 @@ private:
     QStringList standard;
     QString qmlSource;
 
-    QDeclarativeComponent *component;
     QObject *componentObject;
-    QDeclarativeEngine *engine;
 };
 
 
-tst_quickcomponentsslider::tst_quickcomponentsslider()
+void tst_quickcomponentsslider::initTestCase()
 {
-    QDeclarativeWindow *window = new QDeclarativeWindow();
-    QDeclarativeComponent *component = new QDeclarativeComponent(window->engine());
-
-    QFile file("tst_quickcomponentsslider.qml");
-    if( file.open(QFile::ReadOnly) )
-        component->setData( file.readAll(), QUrl() );
-    
-    componentObject = component->create();
+    QString errors;
+    componentObject = tst_quickcomponentstest::createComponentFromFile("tst_quickcomponentsslider.qml", &errors);
+    QVERIFY2(componentObject, qPrintable(errors));
 }
 
 void tst_quickcomponentsslider::stepSize()

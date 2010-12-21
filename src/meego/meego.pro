@@ -1,13 +1,14 @@
+include (../../qt-components.pri)
 
+TARGETPATH = com/meego
 TEMPLATE = lib
 TARGET = $$qtLibraryTarget(meegoplugin)
-DESTDIR = $$Q_COMPONENTS_BUILD_TREE/lib
-win32:DLLDESTDIR = $$Q_COMPONENTS_BUILD_TREE/bin
+DESTDIR = $$Q_COMPONENTS_BUILD_TREE/imports/$$TARGETPATH
+INCLUDEPATH += $$PWD
+
 CONFIG += qt plugin meego
 QT += declarative
 !macx: QT += dbus
-
-include (../../qt-components.pri)
 
 contextsubscriber {
     DEFINES += HAVE_CONTEXTSUBSCRIBER
@@ -31,8 +32,6 @@ HEADERS += \
     mdeclarativescreen.h \
     msnapshot.h
 
-INCLUDEPATH += $$PWD
-
 QML_FILES = \
         qmldir \
         Action.qml \
@@ -48,8 +47,6 @@ QML_FILES = \
         HomeButton.qml \
         IconButton.qml \
         Label.qml \
-        LineEdit.qml \
-        MultiLineEdit.qml \
         ListItem.qml \
         Page.qml \
         PageStack.qml \
@@ -60,6 +57,8 @@ QML_FILES = \
         ProgressBar.qml \
         ScrollDecorator.qml \
         ScrollDecoratorSizer.qml \
+        TextArea.qml \
+        TextField.qml \
         ToolBar.qml \
         ToolBarLayout.qml \
         ToolButton.qml \
@@ -68,8 +67,8 @@ QML_FILES = \
         SliderTemplate.qml \
         Switch.qml \
         TitleMenuButton.qml \
+        UIConstants.js \
         Window.qml \
         WindowDecoration.qml
 
-TARGETPATH = com/meego
 include(../../qml.pri)

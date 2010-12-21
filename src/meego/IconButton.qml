@@ -30,26 +30,22 @@ import com.meego.themebridge 1.0
 ImplicitSizeItem {
     id: root
 
-    property alias iconId: icon.iconId
-    property alias styleObjectName: meegostyle.styleObjectName
-    // the icon button needs to export its mode in case it has a background
-    property alias mode: meegostyle.mode
+    property alias pressed: area.buttonPressed
+    property alias text: label.text
+    property alias iconSource: icon.source
+    property alias iconWidth: icon.sourceSize.width
+    property alias iconHeight: icon.sourceSize.height
+
     signal clicked
 
-
-    implicitWidth: meegostyle.preferredWidth
-    implicitHeight: meegostyle.preferredHeight
-
-    Style {
-        id: meegostyle
-        styleClass: "MButtonIconStyle"
-        mode: area.containsMouse && area.pressed ? "pressed" : "default"
-    }
+    implicitWidth: Math.max(88, icon.width)
+    implicitHeight: Math.max(60, icon.height)
 
     MouseArea {
         id: area
         anchors.fill: parent
         onClicked: root.clicked()
+        property bool buttonPressed: containsMouse && pressed
     }
 
     IconGlow {
@@ -57,23 +53,31 @@ ImplicitSizeItem {
         anchors.fill: icon
         opacity: 0
 
-        iconId: icon.iconId
-        glowColor: meegostyle.current.get("glowColor")
-        glowRadius: meegostyle.current.get("glowRadius")
+        source: icon.source
+        sourceSize: icon.sourceSize
+        glowColor: "white"
+        glowRadius: 8
     }
 
-    Icon {
+    Image {
         id: icon
         anchors.centerIn: parent
-        width: meegostyle.current.get("iconSize").width
-        height: meegostyle.current.get("iconSize").height
+        smooth: true
+
+        transform: Scale {
+            id: scaleTransform
+            origin.x: icon.width / 2
+            origin.y: icon.height / 2
+            xScale: label.scale
+            yScale: label.scale
+        }
 
         states: State {
             name: "pressed"
             when: area.containsMouse && area.pressed
             PropertyChanges {
-                target: icon
-                scale: 1 - meegostyle.current.get("shrinkFactor")
+                target: label
+                scale: 0.8
             }
             PropertyChanges {
                 target: glow
@@ -85,20 +89,18 @@ ImplicitSizeItem {
             Transition {
                 to: "pressed"
                 PropertyAnimation {
-                    target: icon
                     property: "scale"
                     easing.type: Easing.InCubic
-                    duration: meegostyle.current.get("shrinkDuration")
+                    duration: 100
                 }
             },
             Transition {
                 to: ""
                 SequentialAnimation {
                     PropertyAnimation {
-                        target: icon
                         property: "scale"
                         easing.type: Easing.OutCubic
-                        duration: meegostyle.current.get("shrinkDuration")
+                        duration: 100
                     }
                     PropertyAnimation {
                         target: glow
@@ -106,18 +108,55 @@ ImplicitSizeItem {
                         from: 0
                         to: 1
                         easing.type: Easing.OutSine
-                        duration: meegostyle.current.get("glowDuration") / 2
+                        duration: 400
                     }
                     PropertyAnimation {
                         target: glow
                         property: "opacity"
                         from: 1
                         to: 0
-                        duration: meegostyle.current.get("glowDuration") / 2
                         easing.type: Easing.OutSine
+                        duration: 400
                     }
                 }
             }
         ]
+    }
+
+    Label {
+        id: label
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: icon.bottom
+        anchors.topMargin: -2
+
+        states: State {
+            name: "buttonHasLabel"
+            when: label.text
+
+            PropertyChanges {
+                target: root
+                implicitWidth: {
+                    var contentsWidth = Math.max(icon.width, label.width);
+                    return Math.max(88, contentsWidth);
+                }
+                implicitHeight: {
+                    var contentsHeight = icon.height + label.height + label.anchors.topMargin;
+                    return Math.max(60, contentsHeight);
+                }
+            }
+
+            PropertyChanges {
+                target: icon
+                anchors.verticalCenterOffset: -(label.height + label.anchors.topMargin) / 2
+            }
+
+            PropertyChanges {
+                target: scaleTransform
+                origin.y: {
+                    var contentsHeight = icon.height + label.height + label.anchors.topMargin;
+                    return contentsHeight / 2;
+                }
+            }
+        }
     }
 }

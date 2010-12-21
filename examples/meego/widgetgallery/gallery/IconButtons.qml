@@ -25,12 +25,24 @@
 ****************************************************************************/
 
 import Qt 4.7
-import "UIConstants.js" as UI
+import com.meego 1.0
 
-Text {
-    font.family: UI.FONT_FAMILY
-    font.pixelSize: UI.FONT_DEFAULT_SIZE
-    color: UI.COLOR_FOREGROUND
+Template {
+    tools: commonTools
 
-    wrapMode: Text.Wrap
+    //title: "Icon Button"
+    infoText: "Icon Buttons have an icon and can have a text label. Icon button differs from push button by its visual presentation: it does not have button-style edges like a Push Button does.\n\nIcon Buttons are used in e.g. Toolbars."
+
+    IconButton {
+        y: 52
+        anchors.horizontalCenter: parent.horizontalCenter
+        iconSource: "image://theme/icon-m-toolbar-new-chat"
+    }
+
+    IconButton {
+        y: 145
+        anchors.horizontalCenter: parent.horizontalCenter
+        iconSource: "image://theme/icon-m-toolbar-send-email"
+        text: "Lorem ipsum"
+    }
 }

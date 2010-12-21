@@ -33,20 +33,17 @@
 ****************************************************************************/
 #include <QtTest/QtTest>
 #include <QtTest/QSignalSpy>
-#include <QtDeclarative/qdeclarativeengine.h>
 #include <QtDeclarative/qdeclarativecontext.h>
-#include <QtDeclarative/qdeclarativecomponent.h>
 #include <QDeclarativeView>
-#include <qdeclarativewindow.h>
+
+#include "tst_quickcomponentstest.h"
 
 class tst_quickcomponentsprogressbar : public QObject
 
 {
     Q_OBJECT
-public:
-    tst_quickcomponentsprogressbar();
-
 private slots:
+    void initTestCase();
     void value();
     void minimumValue();
     void maximumValue();
@@ -56,22 +53,15 @@ private:
     QStringList standard;
     QString qmlSource;
 
-    QDeclarativeComponent *component;
     QObject *componentObject;
-    QDeclarativeEngine *engine;
 };
 
 
-tst_quickcomponentsprogressbar::tst_quickcomponentsprogressbar()
+void tst_quickcomponentsprogressbar::initTestCase()
 {
-    QDeclarativeWindow *window = new QDeclarativeWindow();
-    QDeclarativeComponent *component = new QDeclarativeComponent(window->engine());
-
-    QFile file("tst_quickcomponentsprogressbar.qml");
-    if( file.open(QFile::ReadOnly) )
-        component->setData( file.readAll(), QUrl() );
-    
-    componentObject = component->create();
+    QString errors;
+    componentObject = tst_quickcomponentstest::createComponentFromFile("tst_quickcomponentsprogressbar.qml", &errors);
+    QVERIFY2(componentObject, qPrintable(errors));
 }
 
 void tst_quickcomponentsprogressbar::value()

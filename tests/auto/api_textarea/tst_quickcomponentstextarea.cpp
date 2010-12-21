@@ -33,27 +33,23 @@
 ****************************************************************************/
 #include <QtTest/QtTest>
 #include <QtTest/QSignalSpy>
-#include <QtDeclarative/qdeclarativeengine.h>
 #include <QtDeclarative/qdeclarativecontext.h>
-#include <QtDeclarative/qdeclarativecomponent.h>
 #include <QDeclarativeView>
-#include <qdeclarativewindow.h>
 #include <QLineEdit>
 
-class tst_quickcomponentsmultilineedit : public QObject
+#include "tst_quickcomponentstest.h"
+
+class tst_quickcomponentstextarea : public QObject
 
 {
     Q_OBJECT
-public:
-    tst_quickcomponentsmultilineedit();
 
 private slots:
+    void initTestCase();
     void font();
     void cursorPosition();
     void horizontalAlignment();
     void verticalAlignment();
-    void contentHeight();
-    void contentWidth();
     void readOnly();
     void selectedText();
     void selectionEnd();
@@ -62,70 +58,51 @@ private slots:
     void textFormat();
     void wrapMode();
 
+    // ### missing functions tests
 private:
-    QDeclarativeComponent *component;
     QObject *componentObject;
-    QDeclarativeEngine *engine;
 };
 
-tst_quickcomponentsmultilineedit::tst_quickcomponentsmultilineedit()
+void tst_quickcomponentstextarea::initTestCase()
 {
-    QDeclarativeWindow *window = new QDeclarativeWindow();
-    engine = window->engine();
-    QDeclarativeComponent *component = new QDeclarativeComponent(window->engine());
-
-    QFile file("tst_quickcomponentsmultilineedit.qml");
-    if( file.open(QFile::ReadOnly) )
-        component->setData( file.readAll(), QUrl() );
-    
-    componentObject = component->create();
+    QString errors;
+    componentObject = tst_quickcomponentstest::createComponentFromFile("tst_quickcomponentstextarea.qml", &errors);
+    QVERIFY2(componentObject, qPrintable(errors));
 }
 
 
-void tst_quickcomponentsmultilineedit::font()
+void tst_quickcomponentstextarea::font()
 {
     QVERIFY( componentObject->setProperty("font.family", "Helvetica") );
     QCOMPARE( componentObject->property("font.family").toString(), QString("Helvetica") );
 }
 
-void tst_quickcomponentsmultilineedit::cursorPosition()
+void tst_quickcomponentstextarea::cursorPosition()
 {
     QVERIFY( componentObject->setProperty("cursorPosition", 0) );
     QCOMPARE( componentObject->property("cursorPosition").toInt(), 0 );
 }
 
-void tst_quickcomponentsmultilineedit::horizontalAlignment()
+void tst_quickcomponentstextarea::horizontalAlignment()
 {
     QVERIFY( componentObject->setProperty("horizontalAlignment", 0) );
     QCOMPARE( componentObject->property("horizontalAlignment").toInt(), 0 );
 }
 
-void tst_quickcomponentsmultilineedit::verticalAlignment()
+void tst_quickcomponentstextarea::verticalAlignment()
 {
     QVERIFY( componentObject->setProperty("verticalAlignment", 0) );
     QCOMPARE( componentObject->property("verticalAlignment").toInt(), 0 );
 }
 
-void tst_quickcomponentsmultilineedit::contentHeight()
-{
-    QVERIFY( componentObject->setProperty("contentHeight", 0) );
-    QCOMPARE( componentObject->property("contentHeight").toInt(), 0 );
-}
-
-void tst_quickcomponentsmultilineedit::contentWidth()
-{
-    QVERIFY( componentObject->setProperty("contentWidth", 0) );
-    QCOMPARE( componentObject->property("contentWidth").toInt(), 0 );
-}
-
-void tst_quickcomponentsmultilineedit::readOnly()
+void tst_quickcomponentstextarea::readOnly()
 {
     QVERIFY( componentObject->setProperty("readOnly", true) );
     QVERIFY( componentObject->setProperty("text", "I just changed the text") );
     QVERIFY( componentObject->property("text").toString() != QString("I just changed the text"));
 }
 
-void tst_quickcomponentsmultilineedit::selectedText()
+void tst_quickcomponentstextarea::selectedText()
 {
     QVERIFY( componentObject->setProperty("text", "Good morning") );
     QVERIFY( componentObject->setProperty("selectionStart", 0) );
@@ -134,35 +111,35 @@ void tst_quickcomponentsmultilineedit::selectedText()
     QCOMPARE( componentObject->property("selectedText").toString(), QString("Good") );
 }
 
-void tst_quickcomponentsmultilineedit::selectionEnd()
+void tst_quickcomponentstextarea::selectionEnd()
 {
     QVERIFY( componentObject->setProperty("selectionEnd", 2) );
 
 }
 
-void tst_quickcomponentsmultilineedit::selectionStart()
+void tst_quickcomponentstextarea::selectionStart()
 {
     QVERIFY( componentObject->setProperty("selectionStart", 1) );
 }
 
-void tst_quickcomponentsmultilineedit::text()
+void tst_quickcomponentstextarea::text()
 {
     QVERIFY( componentObject->setProperty("text", "Hello World") );
     QCOMPARE( componentObject->property("text").toString(), QString("Hello World") );
 }
 
-void tst_quickcomponentsmultilineedit::textFormat()
+void tst_quickcomponentstextarea::textFormat()
 {
     QVERIFY( componentObject->setProperty("textFormat", 0) );
     QCOMPARE( componentObject->property("textFormat").toInt(), 0 );
 }
 
-void tst_quickcomponentsmultilineedit::wrapMode()
+void tst_quickcomponentstextarea::wrapMode()
 {
     QVERIFY( componentObject->setProperty("wrapMode", 0) );
     QCOMPARE( componentObject->property("wrapMode").toInt(), 0 );
 }
 
-QTEST_MAIN(tst_quickcomponentsmultilineedit)
+QTEST_MAIN(tst_quickcomponentstextarea)
 
-#include "tst_quickcomponentsmultilineedit.moc"
+#include "tst_quickcomponentstextarea.moc"

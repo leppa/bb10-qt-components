@@ -33,20 +33,19 @@
 ****************************************************************************/
 #include <QtTest/QtTest>
 #include <QtTest/QSignalSpy>
-#include <QtDeclarative/qdeclarativeengine.h>
 #include <QtDeclarative/qdeclarativecontext.h>
 #include <QtDeclarative/qdeclarativecomponent.h>
 #include <QDeclarativeView>
 #include <qdeclarativewindow.h>
 
+#include "tst_quickcomponentstest.h"
+
 class tst_quickcomponentsbutton : public QObject
 
 {
     Q_OBJECT
-public:
-    tst_quickcomponentsbutton();
-
 private slots:
+    void initTestCase();
     void checked();
     void checkable();
     void clicked();
@@ -54,21 +53,14 @@ private slots:
     void iconSource();
 
 private:
-    QDeclarativeComponent *component;
     QObject *componentObject;
-    QDeclarativeEngine *engine;
 };
 
-tst_quickcomponentsbutton::tst_quickcomponentsbutton()
+void tst_quickcomponentsbutton::initTestCase()
 {
-    QDeclarativeWindow *window = new QDeclarativeWindow;
-    QDeclarativeComponent *component = new QDeclarativeComponent(window->engine());
-
-    QFile file("tst_quickcomponentsbutton.qml");
-    if (file.open(QFile::ReadOnly) )
-        component->setData( file.readAll(), QUrl() );
-    
-    componentObject = component->create();
+    QString errors;
+    componentObject = tst_quickcomponentstest::createComponentFromFile("tst_quickcomponentsbutton.qml", &errors);
+    QVERIFY2(componentObject, qPrintable(errors));
 }
 
 void tst_quickcomponentsbutton::checkable()
@@ -112,7 +104,7 @@ void tst_quickcomponentsbutton::text()
 
 void tst_quickcomponentsbutton::iconSource()
 {
-    QCOMPARE(componentObject->property("iconSource").toString(),QString("http://qt.nokia.com/logo.png"));
+    QCOMPARE(componentObject->property("iconSource").toString(),QString("logo.png"));
 }
 
 void tst_quickcomponentsbutton::clicked()
