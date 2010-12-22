@@ -27,6 +27,7 @@
 import Qt 4.7
 import Qt.labs.components 1.0
 import com.meego.themebridge 1.0
+import "UIConstants.js" as UI
 
 ImplicitSizeItem {
     id: button
@@ -40,79 +41,59 @@ ImplicitSizeItem {
 
     signal clicked
 
-
-    // Icon properties. Precedence is the following:
-    // Source has precedence over Id
-    // When checked, try to use checked Source or Id, if empty, fallback to default Source or Id
-    property url checkedIconSource
-    property string iconId
-    property string checkedIconId
-
     // Defines the button viewtype. Usually this is automatically set by
     // specialized containers like the ButtonRow or the QueryDialog
-    property alias buttonType: meegostyle.styleType
-    property alias groupPosition: background.tilePosition
-    property alias styleObjectName: meegostyle.styleObjectName
-
-    property bool iconVisible: true
-    property alias textVisible: label.visible
+    property string buttonType
+    property string groupPosition
 
     implicitWidth: calculateWidth()
-    implicitHeight: meegostyle.preferredHeight
+    implicitHeight: 50
+
+    property alias font: label.font
 
     // Internal property, to be used by ButtonRow and other button containers.
     property alias __exclusiveGroup: checkable.exclusiveGroup
 
     function calculateWidth() {
         // XXX Check how does MeeGo Touch does that. Maybe use style paddings, etc
-        var prefWidth = 20;
-        var hasIcon = (iconFromId.visible || iconFromSource.visible);
+        var prefWidth = 32;
 
-        if (textVisible && hasIcon) {
+        if (label.visible && iconFromSource.visible) {
             prefWidth += 1 + labelSizeHelper.width + iconFromSource.width + 10;
-        } else if (textVisible) {
+        } else if (label.visible) {
             prefWidth += 1 + labelSizeHelper.width;
-        } else if (hasIcon) {
+        } else if (iconFromSource.visible) {
             prefWidth += iconFromSource.width;
         }
 
         return prefWidth;
     }
 
-    Style {
-        id: meegostyle
-        styleClass: "MButtonStyle"
-        mode: {
-            if (mouseArea.containsMouse && mouseArea.pressed)
-                return "pressed"
-            else if (checkable.checked)
-                return "selected"
-            else
-                return "default"
-        }
-    }
-
-    Background {
+    BorderImage {
         id: background
         anchors.fill: parent
-        style: meegostyle
-    }
+        border { left: UI.CORNER_MARGINS; top: UI.CORNER_MARGINS; right: UI.CORNER_MARGINS; bottom: UI.CORNER_MARGINS }
+        source: getImageName()
 
-    Icon {
-        id: iconFromId
-        anchors.fill: iconFromSource
+        function getImageName() {
+            var name = "image://theme/meegotouch-button";
 
-        // When checked, try to use checked Id. If empty, the standard Id is the fallback
-        iconId: {
-            if (checkable.checked && button.checkedIconId)
-                return button.checkedIconId;
-            return button.iconId;
+            if (button.buttonType == "affirmative")
+                name += "-positive";
+            else if (button.buttonType == "negative")
+                name += "-negative";
+
+            name += "-background";
+
+            if (mouseArea.containsMouse && mouseArea.pressed)
+                name += "-pressed";
+            else if (checkable.checked)
+                name += "-selected"
+
+            if (button.buttonType == "group" && button.groupPosition != "")
+                name += "-" + button.groupPosition;
+            return name;
         }
-
-        // Visiblity check for default state (icon is not explicitly hidden)
-        // Icon is shown if there's a valid iconId, respecting the higher
-        // priority of iconFromSource
-        visible: iconId && !iconFromSource.visible
     }
 
     Image {
@@ -120,45 +101,21 @@ ImplicitSizeItem {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: calculateContentMargin()
-        sourceSize.width: meegostyle.current.get("iconSize").width
-        sourceSize.height: meegostyle.current.get("iconSize").height
+        sourceSize.width: UI.SIZE_ICON_DEFAULT
+        sourceSize.height: UI.SIZE_ICON_DEFAULT
+
+        source: button.iconSource
 
         // If button is wider than content, grow the margins to keep content centered
         function calculateContentMargin() {
-            var margin = 10;
+            var margin = UI.MARGIN_XLARGE;
             if (button.width > button.implicitWidth)
                 margin += (button.width - button.implicitWidth) / 2;
             return margin;
         }
 
-        // When checked, try to use checked source. If empty, the standard source is the fallback
-        source: {
-            if (checkable.checked && button.checkedIconSource)
-                return button.checkedIconSource;
-            return button.iconSource;
-        }
-
         // Visibility check for default state (icon is not explicitly hidden)
-        visible: {
-            if (iconFromSource.source == "")
-                return false;
-
-            if (!checkable.checked)
-                return true;
-
-            // Show sourceIcon when
-            //  1) checkedIconSource is present (highest priority), or
-            //  2) no checked icon exists (fallback)
-            return button.checkedIconSource || !button.checkedIconId;
-        }
-
-        states: State {
-            name: "iconHidden"
-            when: !button.iconVisible
-            // Hide both icons
-            PropertyChanges { target: iconFromSource; visible: false; source: "" }
-            PropertyChanges { target: iconFromId; visible: false; iconId: "" }
-        }
+        visible: source != ""
     }
 
     Label {
@@ -173,7 +130,7 @@ ImplicitSizeItem {
         // Label left margin should be large enough to leave space for the icon
         // when we have one
         function marginRespectingIconWidth() {
-            if (iconFromId.visible || iconFromSource.visible)
+            if (iconFromSource.visible)
                 return iconFromSource.width + 10;
             return 0;
         }
@@ -182,12 +139,23 @@ ImplicitSizeItem {
 
         // XXX This does not make sense yet, since the label width is not being set
         // horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: meegostyle.current.get("verticalTextAlign")
+        verticalAlignment: Text.AlignVCenter
 
-        font: meegostyle.current.get("font")
-        color: meegostyle.current.get("textColor")
+        font.family: UI.FONT_FAMILY
+        font.weight: Font.Normal
+        font.pixelSize: UI.FONT_DEFAULT_SIZE
+        color: getFontColor()
 
+        function getFontColor() {
+            if (buttonType == "affirmative" || buttonType == "negative")
+                return mouseArea.containsMouse && mouseArea.pressed ? UI.COLOR_INVERTED_SECONDARY_FOREGROUND : UI.COLOR_INVERTED_FOREGROUND
+            else
+                return (mouseArea.containsMouse && mouseArea.pressed) || (button.checkable && button.checked) ?
+                    UI.COLOR_INVERTED_FOREGROUND : UI.COLOR_FOREGROUND
+        }
         text: "Effect"
+
+        visible: text != ""
     }
 
     // This invisible label is used to provide the required width to fit the current label text
@@ -206,11 +174,13 @@ ImplicitSizeItem {
         anchors.fill: parent
 
         onPressed: {
-            meegostyle.feedback("pressFeedback");
+            //XXX Must have a new way to use the feedback from QML, due to the themebridge dependency removal
+            //meegostyle.feedback("pressFeedback");
         }
 
         onClicked: {
-            meegostyle.feedback("releaseFeedback");
+            //XXX Must have a new way to use the feedback from QML, due to the themebridge dependency removal
+            //meegostyle.feedback("releaseFeedback");
             checkable.toggle();
             button.clicked();
         }
