@@ -25,145 +25,47 @@
 ****************************************************************************/
 
 import Qt 4.7
+import Qt.labs.components 1.0
 import com.meego.themebridge 1.0
-import "QueryDialog.js" as Private
 
-Item {
-    id: root
+Dialog {
+    id: queryDialog
+    property string message: ""
+    property string acceptButtonText: qsTr("Yes")
+    property string rejectButtonText: qsTr("No")
 
-    property alias dialogTitle: queryPanel.dialogTitle
-    property alias dialogText: queryPanel.dialogText
-    signal queryAnswered(string button)
+    closeButtonVisible: false
 
-    function appear(title, message, callback) {
-        root.visible = true
-        Private.appear(queryPanel, title, message, callback);
+    buttons: Row {
+      anchors.horizontalCenter: parent.horizontalCenter
+      Button {
+          id: acceptButton
+          text: queryDialog.acceptButtonText
+          onClicked: accepted()
+      }
+      Button {
+          id: rejectButton
+          text: queryDialog.rejectButtonText
+          onClicked: rejected()
+      }
     }
 
-    function dismiss() {
-        queryPanel.dismiss();
-    }
+    content: Item {
+        id: queryContent
+            width: queryDialog.width
+            height: 250
+            Text {
+                id: queryText
+                anchors.centerIn: parent
+                objectName: "queryDialogText"
 
-    // Black rectangle to "fade-out" the screen. This is sensible to clicks so
-    // it can dismiss the panel when clicked
-    Rectangle {
-        id: fadeRect
-        anchors.fill: parent
-        color: "black"
-        opacity: 0
+                font.pixelSize: 22
+                color: "white"
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                if (!panelContainsPoint(mouse.x, mouse.y))
-                    queryPanel.dismiss();
+                text: queryDialog.message
+
             }
-
-            function panelContainsPoint(x, y) {
-                var left = queryPanel.x;
-                var right = left + queryPanel.width;
-                var top = queryPanel.y;
-                var bottom = top + queryPanel.height;
-
-                return ((x >= left) && (x <= right) && (y >= top) && (y <= bottom)) ? true : false;
-            }
-        }
-    }
-
-    // Actual query dialog
-    QueryPanel {
-        id: queryPanel
-        anchors.top: root.bottom
-        anchors.left: root.left
-        anchors.right: root.right
-
-        anchors.leftMargin: leftMargin
-        anchors.rightMargin: rightMargin
-
-        // Used in the "shown" modes. As a simplification I keep those set
-        anchors.bottomMargin: bottomMargin
-        anchors.verticalCenterOffset: (topMargin - bottomMargin) / 2
-
-        maximumHeight: root.height - topMargin - bottomMargin
-
-        property bool shown: false
-        property string lastButtonClicked
-
-        onButtonClicked: {
-            lastButtonClicked = button;
-            shown = false;
-        }
-
-        states: [
-            State {
-                name: "shownCentered"
-                when: queryPanel.shown && queryPanel.centered
-                AnchorChanges {
-                    target: queryPanel
-                    anchors.top: undefined
-                    anchors.verticalCenter: root.verticalCenter
-                }
-                PropertyChanges {
-                    target: fadeRect
-                    opacity: 0.87
-                }
-            },
-            State {
-                name: "shownBottom"
-                when: queryPanel.shown && !queryPanel.centered
-                AnchorChanges {
-                    target: queryPanel
-                    anchors.top: undefined
-                    anchors.bottom: root.bottom
-                }
-                PropertyChanges {
-                    target: fadeRect
-                    opacity: 0.87
-                }
-            }
-        ]
-
-        // XXX TODO: Get these timings from MWidgetFadeAnimationStyle and
-        //           MWidgetSlideAnimationStyle. The problem is that it requires tuning
-        //           of Style based on ascendent list, which is not in place yet.
-        transitions: [
-            // In transition
-            Transition {
-                from: ""
-                SequentialAnimation {
-                    PropertyAnimation {
-                        duration: 400
-                        property: "opacity"
-                        easing.type: Easing.InOutCubic
-                    }
-                    AnchorAnimation {
-                        duration: 300
-                        easing.type: Easing.OutExpo
-                    }
-                }
-            },
-            // Out transition
-            Transition {
-                to: ""
-                SequentialAnimation {
-                    AnchorAnimation {
-                        duration: 300
-                        easing.type: Easing.InCubic
-                    }
-                    PropertyAnimation {
-                        duration: 400
-                        property: "opacity"
-                        easing.type: Easing.OutCubic
-                    }
-                    ScriptAction {
-                        script: {
-                            Private.queryAnswered(queryPanel.lastButtonClicked);
-                            root.queryAnswered(queryPanel.lastButtonClicked);
-                            root.visible = false
-                        }
-                    }
-                }
-            }
-        ]
     }
 }
+
+
