@@ -1,7 +1,7 @@
-include(../../../qt-components.pri)
 TEMPLATE = app
 QT += declarative
-CONFIG += meego contextsubscriber
+
+CONFIG -= app_bundle
 
 # Input
 SOURCES += widgetgallery.cpp
@@ -9,7 +9,6 @@ SOURCES += widgetgallery.cpp
 OTHER_FILES += \
     widgetgallery.qml \
     WidgetGallerySections.qml \
-    gallery \
-    images
+    gallery/*.qml \
+    images/*
 
-include(../meego.pri)
