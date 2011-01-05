@@ -24,20 +24,76 @@
 **
 ****************************************************************************/
 
-#include <QtDeclarative>
+import Qt 4.7
+import com.meego 1.0
 
-int main(int argc, char **argv)
-{
-    QApplication::setGraphicsSystem("raster");
-    QApplication::setStyle("windows");
+Item {
+    id: container
+    property int dynPageCount: 0
 
-    QApplication app(argc, argv);
+    property variant pages: [pageStatic, pageStatic2, pageStatic3]
 
-    QDir::setCurrent(app.applicationDirPath());
+    property alias depth: pageStack.depth
 
-    QDeclarativeView window;
-    window.setSource(QUrl::fromLocalFile("calculator.qml"));
-    window.show();
-    
-    return app.exec();
+    property string currentPageName: pageStack.currentPage==undefined? "0" : pageStack.currentPage.objectName
+
+    PageStack {
+        id: pageStack
+    }
+
+    Component {
+        id: pageComponent
+        Page {
+            id: page
+            objectName: "dynamicpage"
+        }
+    }
+
+    Page {
+        id: pageStatic
+        objectName: "page1"
+    }
+
+    Page {
+        id: pageStatic2
+        objectName: "page2"
+    }
+
+    Page {
+        id: pageStatic3
+        objectName: "page3"
+    }
+
+
+    function pushPage()
+    {
+        pageStack.push(pageComponent);
+    }
+
+    function replacePage()
+    {
+        pageStack.replace(pageStatic3);
+    }
+
+    function pushPageStatic()
+    {
+        pageStack.push(pageStatic);
+    }
+
+    function popPage()
+    {
+        return pageStack.pop();
+    }
+
+    function clearStack()
+    {
+        return pageStack.clear();
+    }
+
+    function pushPageArray()
+    {
+        return pageStack.push(pages);
+    }
+
+
 }
