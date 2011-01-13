@@ -24,34 +24,47 @@
 **
 ****************************************************************************/
 
-#ifndef QDECLARATIVEWINDOW_H
-#define QDECLARATIVEWINDOW_H
+import Qt 4.7
+import com.meego 1.0
 
-#if defined(Q_COMPONENTS_BUILD_LIB)
-#  define Q_COMPONENTS_EXPORT Q_DECL_EXPORT
-#else
-#  define Q_COMPONENTS_EXPORT Q_DECL_IMPORT
-#endif
+Template {
 
-#include <QtDeclarative/qdeclarativeview.h>
+    infoText: "A Progress Bar can indicate an ongoing process with either known or unknown durations."
 
-class QDeclarativeWindowPrivate;
+    Label {
+        text: "Downloading nicepic.jpg"
+        y: 44
+    }
 
-class Q_COMPONENTS_EXPORT QDeclarativeWindow : public QDeclarativeView
-{
-    Q_OBJECT
+    ProgressBar {
+        y: 120
+        width: parent.width
 
-public:
-    explicit QDeclarativeWindow(QWidget *parent = 0);
-    QDeclarativeWindow(const QUrl &source, QWidget *parent = 0);
-    ~QDeclarativeWindow();
+        PropertyAnimation on value {
+            id: anim
+            from: 0
+            to: 100
+            duration: 10000
+            running: false
+            easing.type: Easing.OutInQuad
+        }
+    }
 
-protected:
-    QScopedPointer<QDeclarativeWindowPrivate> d_ptr;
+    Button {
+        y: 149
+        width: parent.width
+        iconSource: "image://theme/icon-m-common-play"
+        onClicked: anim.start()
+    }
 
-private:
-    Q_DISABLE_COPY(QDeclarativeWindow)
-    Q_DECLARE_PRIVATE(QDeclarativeWindow)
-};
+    Label {
+        y: 259
+        text: "Installing CoolApp"
+    }
 
-#endif // QDECLARATIVEWINDOW_H
+    ProgressBar {
+        anchors.bottom: parent.bottom
+        width: parent.width
+        indeterminate: true
+    }
+}
