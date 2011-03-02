@@ -24,38 +24,40 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.0
+import QtQuick 1.1
 
 QtObject {
-
     property int minimumWidth: 200
     property int minimumHeight: 40
-
-    property int leftMargin : 2
-    property int topMargin: 0
-    property int rightMargin: 2
-    property int bottomMargin: 0
 
     property Component groove: Item {
         opacity: enabled ? 1.0 : 0.7
 
         Rectangle {
-            color: backgroundColor
+            color: styledItem.backgroundColor
             anchors.fill: sliderBackground
             anchors.margins: 1
             radius: 2
         }
 
         Rectangle {
-            property real zeroPos :  positionForValue(0)
-            property real handlePos: handlePosition
-            color: progressColor
             height: 10
             radius: 4
-            anchors.verticalCenter: parent.verticalCenter
-            x: zeroPos
-            width: handlePos - x
+            color: styledItem.progressColor
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left; right: parent.right
+                leftMargin: {
+                    if(minimumValue >= 0) return (!inverted ? 0 : handlePosition);  // slider has no negative values, else...
+                    return (!(value<0) != !(inverted) ? handlePosition : positionForValue(0));    // !(x) != !(y) is logical exclusive or
+                }
+                rightMargin: {
+                    if(minimumValue >= 0) return (!inverted ? parent.width-handlePosition : 0); // slider has no negative values, else...
+                    return parent.width - (!(value<0) != !(inverted) ? positionForValue(0) : handlePosition); // !(x) != !(y) is logical exclusive or
+                }
+            }
         }
+
 
         BorderImage {
             id: sliderBackground
@@ -82,7 +84,7 @@ QtObject {
                 width: parent.width - 7
                 height: parent.height - 7
                 smooth: true
-                color: backgroundColor
+                color: styledItem.backgroundColor
                 radius: Math.floor(parent.width / 2)
                 z: -1   // behind the image
             }

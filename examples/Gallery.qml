@@ -252,12 +252,12 @@ Rectangle {
                         Slider {
                             value: 50
                             height: 20
-                            leftMargin:10
-                            rightMargin:10
-                            handle: BorderImage{source:"customtheme/exampletheme/images/button_normal.png";
-                                width:20; height:20
-                                border.left:7; border.right: 7; border.top:7; border.bottom:7
+                            handle: BorderImage{
+                                source: "customtheme/exampletheme/images/button_normal.png";
+                                width: 20; height: 20
+                                border { left:7; right: 7; top:7; bottom:7 }
                             }
+                            pinWidth: 20
                             groove: Item {
                                 anchors.fill:parent
                                 BorderImage {

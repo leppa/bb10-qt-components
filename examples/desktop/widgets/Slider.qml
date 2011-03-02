@@ -26,6 +26,9 @@ Components.Slider{
         }
     }
 
+    //mm How to get width of handle to use here?
+    pinWidth: 25 // needed to make the handle center when the use clicks
+
     handle: null
     valueIndicator: null
 }

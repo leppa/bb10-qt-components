@@ -24,109 +24,71 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.0
-import Qt.labs.components 1.0
+import QtQuick 1.1
+import Qt.labs.components 1.0   // RangeModel
 import "./styles/default" as DefaultStyles
 
 Item {
     id: slider
 
-    // COMMON API
+    property alias value: rangeModel.value
+    property alias minimumValue: rangeModel.minimumValue
+    property alias maximumValue: rangeModel.maximumValue
+    property alias stepSize: rangeModel.stepSize
+
     property int orientation: Qt.Horizontal
-    property alias minimumValue: range.minimumValue
-    property alias maximumValue: range.maximumValue
-    property alias inverted: range.inverted
+    property alias inverted: rangeModel.inverted
     property bool updateValueWhileDragging: true
     property alias pressed: mouseArea.pressed
-    property alias stepSize: range.stepSize
 
-    // NOTE: this property is in/out, the user can set it, create bindings to it, and
-    // at the same time the slider wants to update. There's no way in QML to do this kind
-    // of updates AND allow the user bind it (without a Binding object). That's the
-    // reason this is an alias to a C++ property in range model.
-    property alias value: range.value
-
-    // CONVENIENCE TO BE USED BY STYLES
-    SystemPalette {
-        id: palette
-    }
-    property color progressColor: palette.highlight
-    property color backgroundColor: palette.window
-
-    property int leftMargin: defaultStyle.leftMargin
-    property int rightMargin: defaultStyle.rightMargin
-
-    // EXTENSIONS
-    // Indicate that we want animations in the Slider, people customizing should
-    // look at it to decide whether or not active animations.
-    property bool animated: true
-
-    // Value indicator displays the current value near the slider
-    property bool valueIndicatorVisible: true
+    property bool animateHandle: true
+    property string showValueIndicator: "above" // one of "above", "below", "left", "right", or "none"
     property int valueIndicatorMargin: 10
-    property string valueIndicatorPosition: _isVertical ? "Left" : "Top"
+    function formatValue(v) { return Math.round(v); }
 
-    // Reimplement this function to control how the value is shown in the
-    // indicator.
-    function formatValue(v) {
-        return Math.round(v);
-    }
+    property color progressColor: palette.highlight
+    property color backgroundColor: palette.alternateBase
+
+    property Component groove: defaultStyle.groove
+    property Component handle: defaultStyle.handle
+    property Component valueIndicator: defaultStyle.valueIndicator
+    property real pinWidth: handleLoader.width/2
 
     property int minimumWidth: defaultStyle.minimumWidth
     property int minimumHeight: defaultStyle.minimumHeight
 
-    // Hooks for customizing the pieces of the slider
-    property Component groove: defaultStyle.groove
-    property Component handle: defaultStyle.handle
-    property Component valueIndicator: defaultStyle.valueIndicator
+    // implementation
 
-    // PRIVATE/CONVENIENCE
-    property bool _isVertical: orientation == Qt.Vertical
-
-    width: _isVertical ? minimumHeight : minimumWidth
-    height: _isVertical ? minimumWidth : minimumHeight
+    implicitWidth: contents.isVertical ? Math.max(minimumHeight, handleLoader.item.implicitHeight) : minimumWidth
+    implicitHeight: contents.isVertical ? minimumWidth : Math.max(minimumHeight, handleLoader.item.implicitHeight)    
 
     DefaultStyles.SliderStyle { id: defaultStyle }
-
-    // This is a template slider, so every piece can be modified by passing a
-    // different Component. The main elements in the implementation are
-    //
-    // - the 'range' does the calculations to map position to/from value,
-    //   it also serves as a data storage for both properties;
-    //
-    // - the 'fakeHandle' is what the mouse area drags on the screen, it feeds
-    //   the 'range' position and also reads it when convenient;
-    //
-    // - the real 'handle' it is the visual representation of the handle, that
-    //   just follows the 'fakeHandle' position.
-    //
-    // When the 'updateValueWhileDragging' is false and we are dragging, we stop
-    // feeding the range with position information, delaying until the next
-    // mouse release.
-    //
-    // Everything is encapsulated in a contents Item, so for the
-    // vertical slider, we just swap the height/width, make it
-    // horizontal, and then use rotation to make it vertical again.
 
     Item {
         id: contents
 
-        width: _isVertical ? slider.height : slider.width
-        height: _isVertical ? slider.width : slider.height
-        rotation: _isVertical ? -90 : 0
+        width: isVertical ? slider.height : slider.width
+        height: isVertical ? slider.width : slider.height
+        rotation: isVertical ? -90 : 0
 
         anchors.centerIn: slider
+        property bool isVertical: orientation == Qt.Vertical
+        property real halfHandleWidth: handleLoader.width/2
+
+        // The width of the "pin" that the handle is attached to, defines
+        // how much outside the groove the head of the handle extends
+        property real halfPinWidth: slider.pinWidth/2
 
         RangeModel {
-            id: range
+            id: rangeModel
             minimumValue: 0
             maximumValue: 100
             value: 0
             stepSize: 1.0
             inverted: false
 
-            positionAtMinimum: leftMargin
-            positionAtMaximum: contents.width - rightMargin
+            positionAtMinimum: contents.halfPinWidth // relative to *center* of handle
+            positionAtMaximum: contents.width - contents.halfPinWidth
         }
 
         Loader {
@@ -134,24 +96,25 @@ Item {
             anchors.fill: parent
             sourceComponent: groove
 
-            property real handlePosition : handleLoader.x
+            property alias styledItem: slider
+            property real handlePosition: handleLoader.x
             function positionForValue(value) {
-                return range.positionForValue(value) - leftMargin;
+                return rangeModel.positionForValue(value);
             }
         }
 
         Loader {
             id: handleLoader
-            transform: Translate { x: - handleLoader.width / 2 }
-
+            transform: Translate { x: -contents.halfHandleWidth }
             anchors.verticalCenter: grooveLoader.verticalCenter
 
+            property alias styledItem: slider
             sourceComponent: handle
 
-            x: fakeHandle.x
+            x: shadowHandle.x
             Behavior on x {
                 id: behavior
-                enabled: !mouseArea.drag.active && slider.animated
+                enabled: !mouseArea.drag.active && slider.animateHandle
 
                 PropertyAnimation {
                     duration: behavior.enabled ? 150 : 0
@@ -161,131 +124,106 @@ Item {
         }
 
         Item {
-            id: fakeHandle
+            id: shadowHandle
             width: handleLoader.width
             height: handleLoader.height
-            transform: Translate { x: - handleLoader.width / 2 }
+            transform: Translate { x: -contents.halfHandleWidth }
         }
 
         MouseArea {
             id: mouseArea
+            anchors.fill: parent
+            anchors.leftMargin: -contents.halfHandleWidth
+            anchors.rightMargin: -contents.halfHandleWidth
 
-            anchors.centerIn: parent
-            anchors.horizontalCenterOffset: (slider.leftMargin - slider.rightMargin) / 2
-
-            width: parent.width + handleLoader.width - slider.rightMargin - slider.leftMargin
-            height: parent.height
-
-            drag.target: fakeHandle
+            drag.target: shadowHandle
             drag.axis: Drag.XAxis
-            drag.minimumX: range.positionAtMinimum
-            drag.maximumX: range.positionAtMaximum
+            drag.minimumX: rangeModel.positionAtMinimum
+            drag.maximumX: rangeModel.positionAtMaximum
 
             onPressed: {
-                // Clamp the value
-                var newX = Math.max(mouse.x, drag.minimumX);
-                newX = Math.min(newX, drag.maximumX);
+                // Compensate for mouse area being wider than the slider itself
+                var newX = mouse.x - contents.halfHandleWidth;
 
-                // Debounce the press: a press event inside the handler will not
+                // Debounce the press: a press event inside the handler should not
                 // change its position, the user needs to drag it.
-                if (Math.abs(newX - fakeHandle.x) > handleLoader.width / 2)
-                    range.position = newX;
+                if (Math.abs(newX - shadowHandle.x) > contents.halfHandleWidth)
+                    rangeModel.position = newX;
             }
 
             onReleased: {
                 // If we don't update while dragging, this is the only
-                // moment that the range is updated.
+                // moment that the rangeModel is updated.
                 if (!slider.updateValueWhileDragging)
-                    range.position = fakeHandle.x;
+                    rangeModel.position = shadowHandle.x;
             }
         }
 
         Loader {
             id: valueIndicatorLoader
 
-            transform: Translate { x: - handleLoader.width / 2 }
-            rotation: _isVertical ? 90 : 0
-            visible: valueIndicatorVisible
-
-            // Properties available for the delegate component. Note that the indicatorText
-            // shows the value for the position the handle is, which is not necessarily the
-            // available as the current slider.value, since updateValueWhileDragging can
-            // be set to 'false'.
-            property string indicatorText: slider.formatValue(range.valueForPosition(handleLoader.x))
-            property bool dragging: mouseArea.drag.active
-
-            sourceComponent: valueIndicator
-
-            state: {
-                if (!_isVertical)
-                    return slider.valueIndicatorPosition;
-
-                if (valueIndicatorPosition == "Right")
-                    return "Bottom";
-                if (valueIndicatorPosition == "Top")
-                    return "Right";
-                if (valueIndicatorPosition == "Bottom")
-                    return "Left";
-
-                return "Top";
-            }
-
             anchors.margins: valueIndicatorMargin
+            transform: Translate { x: -contents.halfHandleWidth }
+            rotation: contents.isVertical ? 90 : 0
+            visible: (actualPosition != undefined)
 
-            states: [
-                State {
-                    name: "Top"
-                    AnchorChanges {
-                        target: valueIndicatorLoader
-                        anchors.bottom: handleLoader.top
-                        anchors.horizontalCenter: handleLoader.horizontalCenter
-                    }
-                },
-                State {
-                    name: "Bottom"
-                    AnchorChanges {
-                        target: valueIndicatorLoader
-                        anchors.top: handleLoader.bottom
-                        anchors.horizontalCenter: handleLoader.horizontalCenter
-                    }
-                },
-                State {
-                    name: "Right"
-                    AnchorChanges {
-                        target: valueIndicatorLoader
-                        anchors.left: handleLoader.right
-                        anchors.verticalCenter: handleLoader.verticalCenter
-                    }
-                },
-                State {
-                    name: "Left"
-                    AnchorChanges {
-                        target: valueIndicatorLoader
-                        anchors.right: handleLoader.left
-                        anchors.verticalCenter: handleLoader.verticalCenter
-                    }
+            property string indicatorText: slider.formatValue(rangeModel.valueForPosition(handleLoader.x))
+            property alias styledItem: slider
+            sourceComponent: valueIndicator //mm Only load while handle is pressed?
+
+            property variant actualPosition
+            actualPosition: {
+                switch(showValueIndicator.toLowerCase()) {
+                case "above": return (orientation == Qt.Horizontal ? Qt.AlignTop : Qt.AlignRight);
+                case "below": return (orientation == Qt.Horizontal ? Qt.AlignBottom : Qt.AlignLeft);
+                case "left": return (orientation == Qt.Horizontal ? Qt.AlignLeft : Qt.AlignTop);
+                case "right": return (orientation == Qt.Horizontal ? Qt.AlignRight : Qt.AlignBottom);
+                default: return undefined;
                 }
-            ]
+            }
+            Component.onCompleted: positionValueIndicator()
+            onActualPositionChanged: positionValueIndicator()
+
+            function positionValueIndicator() {
+                anchors.horizontalCenter =
+                        (actualPosition == Qt.AlignTop || actualPosition == Qt.AlignBottom) ?
+                            handleLoader.horizontalCenter : undefined;
+
+                anchors.verticalCenter =
+                        (actualPosition == Qt.AlignLeft || actualPosition == Qt.AlignRight) ?
+                            handleLoader.verticalCenter : undefined;
+
+                anchors.top = undefined; anchors.bottom = undefined;
+                anchors.left = undefined; anchors.right = undefined;
+                switch(actualPosition) {
+                case Qt.AlignTop: anchors.bottom = handleLoader.top; break;
+                case Qt.AlignBottom: anchors.top = handleLoader.bottom; break;
+                case Qt.AlignLeft: anchors.right = handleLoader.left; break;
+                case Qt.AlignRight: anchors.left = handleLoader.right; break;
+                }
+            }
         }
     }
 
-    // Range position normally follow fakeHandle, except when
+    // rangeModel position normally follow shadowHandle, except when
     // 'updateValueWhileDragging' is false. In this case it will only follow
     // if the user is not pressing the handle.
     Binding {
         when: updateValueWhileDragging || !mouseArea.pressed
-        target: range
+        target: rangeModel
         property: "position"
-        value: fakeHandle.x
+        value: shadowHandle.x
     }
 
-    // During the drag, we simply ignore position set from the range, this
+    // During the drag, we simply ignore position set from the rangeModel, this
     // means that setting a value while dragging will not "interrupt" the
     // dragging activity.
     Binding {
         when: !mouseArea.drag.active
-        target: fakeHandle
+        target: shadowHandle
         property: "x"
-        value: range.position
+        value: rangeModel.position
     }
+
+    SystemPalette { id: palette }
 }

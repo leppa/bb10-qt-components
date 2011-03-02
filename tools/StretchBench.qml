@@ -278,7 +278,7 @@ Item {
             StretchBenchBoolOption { text: "Dimmed:"; id: sliderOptionDimmed }
             StretchBenchBoolOption { text: "Vertical"; id: sliderOptionVertical }
             StretchBenchBoolOption { text: "Inverted"; id: sliderOptionInverted }
-            StretchBenchBoolOption { text: "Steps"; id: sliderOptionSteps; checked: true }
+            StretchBenchBoolOption { text: "Steps"; id: sliderOptionSteps }
             StretchBenchBoolOption { text: "Value at 30:"; id: sliderOptionValueAt30 }
             StretchBenchBoolOption { text: "Zero in middle:"; id: sliderOptionZeroInMiddle }
             StretchBenchBoolOption { text: "Time formatted:"; id: sliderOptionTimeFormatted }
@@ -407,19 +407,18 @@ Item {
             maximumValue: sliderOptionZeroInMiddle.checked ? 50 : 100
 
             orientation: sliderOptionVertical.checked ? Qt.Vertical : Qt.Horizontal
-            stepSize: sliderOptionSteps.checked ? 1.0 : 0.0
+            stepSize: sliderOptionSteps.checked ? 5.0 : 1.0
             inverted: sliderOptionInverted.checked
 
             function formatValue(v) {
                 v = Math.round(v);
+                var absV = Math.abs(v);
                 if (sliderOptionTimeFormatted.checked) {
-                    var seconds = Math.floor(v % 60);
-                    var minutes = Math.floor(v / 60);
+                    var seconds = Math.floor(absV % 60);
+                    var minutes = Math.floor(absV / 60);
 
-                    // :-P
-                    if (seconds < 10)
-                        seconds = "0" + seconds;
-                    return minutes + ":" + seconds
+                    if (seconds < 10) seconds = "0" + seconds;
+                    return (v < 0 ? "-" : "") + minutes + ":" + seconds
                 }
                 return v;
             }

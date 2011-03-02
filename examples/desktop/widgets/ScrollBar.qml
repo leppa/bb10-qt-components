@@ -98,10 +98,9 @@ MouseArea {
         id:slider
         anchors.fill:parent
         orientation:scrollbar.orientation
-        leftMargin: (orientation === Qt.Horizontal) ? handleRect.width/2 : handleRect.height/2
-        rightMargin:leftMargin
         handle: Item { width:orientation == Qt.Vertical ? handleRect.height : handleRect.width;
                        height:orientation == Qt.Vertical ? handleRect.width : handleRect.height}
+        pinWidth: orientation == Qt.Vertical ? handleRect.height : handleRect.width
         groove:null
         valueIndicator:null
         inverted:orientation != Qt.Horizontal
