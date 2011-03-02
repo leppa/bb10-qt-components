@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 1.1
 
 // KNOWN ISSUES
 // 1) Can't tell if the Paste button should be shown or not, see QTBUG-16190
@@ -20,21 +20,29 @@ Item {
     property Item textEditor: Qt.isQtObject(textInput) ? textInput : textEdit
 
     Connections {
-        target: textInput
+        target: textEditor
         onTextChanged: reset()
         onCursorPositionChanged: reset()
         onSelectedTextChanged: reset()
         onActiveFocusChanged: reset()
     }
 
+    Connections {
+        target: flickable
+        onMovementEnded: reset() // will make the popup appear if needed
+    }
+
+    // Calling reset() will hide the copy/paste popup, then restart
+    // its visiblilty timer if there is selected text
     function reset() {
-        copyPastePopup.showing = false; // hide and restart the visibility timer
+        copyPastePopup.showing = false;
         copyPastePopup.showing = selectedText.length > 0 && !desktopBehavior;
         copyPastePopup.wasCancelledByClick = false;
         copyPastePopup.wasClosedByCopy = false;
     }
 
     Component.onCompleted: {
+        // Make sure these properties are set the way we want
         textEditor.focus = true;
         textEditor.selectByMouse = false;
         textEditor.activeFocusOnPress = false;
@@ -44,7 +52,6 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        drag.target: Item {} // work-around for Flickable stealing the mouse, which is expected (?), see QTBUG-15231
 
         property int pressedPos
         property int selectionStartAtPress
@@ -62,7 +69,6 @@ Item {
             }
         }
 
-        //mm see QTBUG-15814
         onPressed: {
             hadFocusBeforePress = textEditor.activeFocus;
             selectionStartAtPress = textEditor.selectionStart;
@@ -75,18 +81,30 @@ Item {
             } else {
                 draggingStartHandle = false;    // reset both to false, i.e. no dragging of selection endpoints
                 draggingEndHandle = false;
-                if(textEditor.selectionStart != textEditor.selectionEnd) {
-                    draggingEndHandle = (pos > selectionStartAtPress + (selectionEndAtPress-selectionStartAtPress)/2);
-                    draggingStartHandle = !draggingEndHandle;
+                if(textEditor.selectedText.length > 0) {
+                    // start dragging the selection start/end if the user clicked within 3 characters from the
+                    // current selection start/end, otherwise allow flickable to handle further mosue events
+                    if(Math.abs(textEditor.selectionStart-pos) < 3 || Math.abs(textEditor.selectionEnd-pos) < 3) {
+                        // if the press pos is beyond the center point between selection start and end points
+                        // then we're dragging the end point, otherwise the start point. works with small selections too.
+                        draggingEndHandle = (pos > selectionStartAtPress + (selectionEndAtPress-selectionStartAtPress)/2);
+                        draggingStartHandle = !draggingEndHandle;
+                        preventStealing = true; // prevent flicking
+                    }
                 }
             }
 
+            // remember the character position that was pressed for later
             pressedPos = textEditor.cursorPosition;
         }
 
         onPressAndHold: {
             if(!desktopBehavior) {
-                if(!textEditor.selectedText.length) {   //mm Somehow just having the onPressAndHold impementation interrupts the text selection
+                preventStealing = true; // prevent flicking
+                if(textEditor.readOnly && !draggingStartHandle && !draggingStartHandle) {
+                    textEditor.cursorPosition = characterPositionAt(mouse);
+                    textEditor.selectWord(); // at cursor position
+                } else if(!textEditor.selectedText.length) {
                     textEditor.cursorPosition = characterPositionAt(mouse);
                 }
             }
@@ -94,13 +112,14 @@ Item {
 
         onReleased: {
             if(!desktopBehavior) {
+                preventStealing = false; // re-enable flicking
                 if(mouse.wasHeld) copyPastePopup.showing = true;
             }
         }
 
         onClicked: {
             if(!desktopBehavior) {
-                if(!hadFocusBeforePress)
+                if(!hadFocusBeforePress || draggingStartHandle || draggingEndHandle)
                     return;
 
                 var pos = characterPositionAt(mouse);
@@ -108,17 +127,20 @@ Item {
                     if(copyPastePopup.wasClosedByCopy && pos >= textEditor.selectionStart && pos < textEditor.selectionEnd)
                         copyPastePopup.showing = true;
                     else
-                        textEditor.select(textEditor.selectionEnd, textEditor.selectionEnd);   //mm use deselect() from QtQuick 1.1 (see QTBUG-16059)
+                        textEditor.deselect(); // clear selection
                 } else {    // clicked while there's no selection
                     if(pos == textEditor.cursorPosition) {  // Clicked where the cursor already where
                         copyPastePopup.showing = !copyPastePopup.wasCancelledByClick;
                         copyPastePopup.wasCancelledByClick = false;
-                    } else { // Clicked in a new place (where the cursor wasn't)
-                        var endOfWordRegEx = /[^\b]\b/g;
-                        endOfWordRegEx.lastIndex = pos;
+                    } else { // clicked in a new place (where the cursor wasn't)
                         var endOfWordPosition = pos;
-                        if(endOfWordRegEx.test(textEditor.text))   // updates lastIndex
-                            endOfWordPosition = endOfWordRegEx.lastIndex;
+                        if(textEditor.text[pos] != '\n') { // not clicked beyond a newline char?
+                            // find the end of the workd (won't work with RtL scripts!)
+                            var endOfWordRegEx = /[^\b]\b/g;
+                            endOfWordRegEx.lastIndex = pos;
+                            if(endOfWordRegEx.test(textEditor.text))   // updates lastIndex
+                                endOfWordPosition = endOfWordRegEx.lastIndex;
+                        }
 
                         if(textEditor.cursorPosition != endOfWordPosition) {
                             textEditor.cursorPosition = endOfWordPosition;
@@ -147,6 +169,10 @@ Item {
                     textEditor.select(selectionStartAtPress, pos);
                 } else if(mouse.wasHeld && textEditor.cursorPosition != pos) {  // there's no selection
                     textEditor.cursorPosition = pos;
+                    if(textEditor.readOnly) {
+                        textEditor.selectWord(); // at cursor position
+                    }
+
                     copyPastePopup.showing = true; // show once not pressed any more
                 }
             }
@@ -179,11 +205,23 @@ Item {
         var multilineSelection = (selectionStartRect.y != selectioEndRect.y);
         if(!multilineSelection) {
             point.x = mappedStartPoint.x + (mappedEndPoint.x-mappedStartPoint.x)/2
+            point.y = mappedStartPoint.y;
         } else {
             point.x = textEditor.x + textEdit.width/2;
+
+            if(Qt.isQtObject(flickable)) {
+                var mappedSelectionStartRectTopLeft = flickable.mapFromItem(textEditor, selectionStartRect.x, selectionStartRect.y);
+                if(mappedSelectionStartRectTopLeft.y < 0) {
+                    var mappedEditorPos = flickable.mapFromItem(textEditor, textEditor.x, textEditor.y);
+                    point.y = -mappedEditorPos.y + flickable.height/2;
+                } else {
+                    point.y = mappedStartPoint.y;
+                }
+            } else {
+                point.y = mappedStartPoint.y;
+            }
         }
 
-        point.y = mappedStartPoint.y
         return point;
     }
 
@@ -195,10 +233,10 @@ Item {
         property bool wasClosedByCopy: false
 
         property bool showCopyAction: textEditor.selectedText.length > 0
-        property bool showCutAction: textEditor.selectedText.length > 0
-        property bool showPasteAction: true //textEditor.canPaste  //mm see QTBUG-16190
-        property bool showSelectAction: textEditor.text.length > 0 && textEditor.selectedText.length < textEditor.text.length // need canSelectWord, see QTBUG-16190
-        property bool showSelectAllAction: textEditor.text.length > 0 && textEditor.selectedText.length < textEditor.text.length
+        property bool showCutAction: textEditor.selectedText.length > 0 && !textEditor.readOnly
+        property bool showPasteAction: textEditor.canPaste
+        property bool showSelectAction: textEditor.text.length > 0 && textEditor.selectedText.length == 0
+        property bool showSelectAllAction: textEditor.text.length > 0 && textEditor.selectedText.length == 0
 
         ListModel {
             id: popupButtonModel
@@ -238,7 +276,7 @@ Item {
         ModalPopupBehavior {
             id: modalPopup
             consumeCancelClick: false
-            whenAlso: !mouseArea.pressed
+            whenAlso: !mouseArea.pressed && textEditor.activeFocus
             delay: 300
             onPrepareToShow: copyPastePopup.positionPopout(popup, window)
             onCancelledByClick: copyPastePopup.wasCancelledByClick = true

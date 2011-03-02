@@ -13,7 +13,7 @@ FocusScope {
     property alias font: textEdit.font
 
     property alias activeFocus: textEdit.activeFocus
-    property bool readOnly: textEdit.readOnly // read only
+    property alias readOnly: textEdit.readOnly
     property alias placeholderText: placeholderTextComponent.text
     property alias cursorPosition: textEdit.cursorPosition
     property alias selectedText: textEdit.selectedText
@@ -62,6 +62,8 @@ FocusScope {
     property int minimumWidth: defaultStyle.minimumWidth
     property int minimumHeight: defaultStyle.minimumHeight
 
+    property Flickable flickHandler: flickable
+
     // Implementation
 
     implicitWidth: Math.max(minimumWidth,
@@ -92,16 +94,22 @@ FocusScope {
         anchors.topMargin: topMargin
         anchors.rightMargin: rightMargin
         anchors.bottomMargin: bottomMargin
+        contentHeight: textEdit.implicitHeight
 
-        function ensureVisible(r) {
-            if (contentX >= r.x)
-                contentX = r.x;
-            else if (contentX+width <= r.x+r.width)
-                contentX = r.x+r.width-width;
-            if (contentY >= r.y)
-                contentY = r.y;
-            else if (contentY+height <= r.y+r.height)
-                contentY = r.y+r.height-height;
+        function ensureVisible(textEditor, cursorRect) {
+            var cursorPosMappedToFlickHandler = textEditor.mapToItem(flickHandler, cursorRect.x, cursorRect.y);
+
+            if(cursorPosMappedToFlickHandler.x < 0) {
+                flickHandler.contentX -= -cursorPosMappedToFlickHandler.x;
+            } else if(cursorPosMappedToFlickHandler.x+cursorRect.width >= flickHandler.width) {
+                flickHandler.contentX  += cursorPosMappedToFlickHandler.x+cursorRect.width-flickHandler.width;
+            }
+
+            if(cursorPosMappedToFlickHandler.y < 0) {
+                flickHandler.contentY -= -cursorPosMappedToFlickHandler.y;
+            } else if(cursorPosMappedToFlickHandler.y+cursorRect.height >= flickHandler.height) {
+                flickHandler.contentY += cursorPosMappedToFlickHandler.y+cursorRect.height-flickHandler.height;
+            }
         }
 
         TextEdit { // see QTBUG-14936
@@ -115,9 +123,29 @@ FocusScope {
 
             color: enabled ? textColor: Qt.tint(textColor, "#80ffffff")
             wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.WordWrap
-            onCursorRectangleChanged: flickable.ensureVisible(cursorRectangle)
+            onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
 
             onActiveFocusChanged: activeFocus ? openSoftwareInputPanel() : closeSoftwareInputPanel()
+        }
+
+        TextEditMouseBehavior { // Has to be inside the Flickable to work correctly with it
+            id: mouseEditBehavior
+            anchors.fill: parent
+            textEdit: textEdit
+            desktopBehavior: false
+            flickable: flickHandler
+            copyPasteButtons: ButtonBlock {
+                opacity: 0  // initially hidden
+                Behavior on opacity { NumberAnimation { duration: 100 } }
+            }
+        }
+    }
+
+    MouseArea { // Make sure TextArea is focused even when clicking on its margins
+        anchors.fill: parent
+        onPressed: {
+            textArea.forceActiveFocus();
+            mouse.accepted = false;
         }
     }
 
@@ -130,18 +158,6 @@ FocusScope {
         clip: true
         text: "Enter text"  //mm Needs localization
         Behavior on opacity { NumberAnimation { duration: 90 } }
-    }
-
-
-    TextEditMouseBehavior {
-        id: mouseEditBehavior
-        anchors.fill: parent
-        textEdit: textEdit
-        desktopBehavior: false
-        copyPasteButtons: ButtonBlock {
-            opacity: 0  // initially hidden
-            Behavior on opacity { NumberAnimation { duration: 100 } }
-        }
     }
 
     DefaultStyles.TextFieldStyle { id: defaultStyle }

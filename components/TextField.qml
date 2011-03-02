@@ -12,7 +12,7 @@ FocusScope {
     property alias font: textInput.font
 
     property alias activeFocus: textInput.activeFocus
-    property bool readOnly: textInput.readOnly // read only
+    property alias readOnly: textInput.readOnly
     property alias placeholderText: placeholderTextComponent.text
     property bool  passwordMode: false
     property alias cursorPosition: textInput.cursorPosition
@@ -22,7 +22,7 @@ FocusScope {
     property alias canPaste: textInput.canPaste
     property alias inputMask: textInput.inputMask
     property alias validator: textInput.validator
-    property bool acceptableInput: textInput.acceptableInput // true if text passed the validator. read-only
+    property alias acceptableInput: textInput.acceptableInput // true if text passed the validator. read-only
     property alias horizontalAlignment: textInput.horizontalAlignment
     property alias inputMethodHints: textInput.inputMethodHints
     property alias containsMouse: mouseEditBehavior.containsMouse

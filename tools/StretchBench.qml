@@ -129,8 +129,8 @@ Item {
                         container.resetSize();
 
                         // on any future implicit size changes, reset the size
-                        item.implicitWidthChanged.connect(container.resetSize);
-                        item.implicitHeightChanged.connect(container.resetSize);
+//                        item.implicitWidthChanged.connect(container.resetSize);
+//                        item.implicitHeightChanged.connect(container.resetSize);
                     }
                 }
 
@@ -148,7 +148,7 @@ Item {
                     case "ProgressBar": return progressBarComponent;
                     case "BusyIndicator": return busyIndicatorComponent;
                     case "ChoiceList": return choiceListComponent;
-                    case "TextField": return lineEditComponent;
+                    case "TextField": return textFieldComponent;
                     case "TextArea": return textAreaComponent;
                     case "SpinBox": return spinBoxComponent;
                     }
@@ -275,12 +275,6 @@ Item {
 
         Column {
             anchors.fill: parent; anchors.margins: 10; spacing: 5
-            opacity: currentComponentName == "TextArea" ? 1 : 0
-            StretchBenchBoolOption { text: "Dimmed:"; id: textAreaOptionDimmed }
-        }
-
-        Column {
-            anchors.fill: parent; anchors.margins: 10; spacing: 5
             opacity: currentComponentName == "Slider" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: sliderOptionDimmed }
             StretchBenchBoolOption { text: "Vertical"; id: sliderOptionVertical }
@@ -307,22 +301,39 @@ Item {
         Column {
             anchors.fill: parent; anchors.margins: 10; spacing: 5
             opacity: currentComponentName == "TextField" ? 1 : 0
-            StretchBenchBoolOption { text: "Dimmed:"; id: lineEditOptionDimmed }
-            StretchBenchBoolOption { text: "Red text color:"; id: lineEditOptionRedText; }
-            StretchBenchBoolOption { text: "Italic font:"; id: lineEditOptionItalicText; }
-            StretchBenchBoolOption { text: "Password mode:"; id: lineEditOptionPasswordMode; }
-            StretchBenchBoolOption { text: "Focused:"; id: lineEditOptionFocused;
+            StretchBenchBoolOption { text: "Dimmed:"; id: textFieldOptionDimmed }
+            StretchBenchBoolOption { text: "Red text color:"; id: textFieldOptionRedText; }
+            StretchBenchBoolOption { text: "Italic font:"; id: textFieldOptionItalicText; }
+            StretchBenchBoolOption { text: "Password mode:"; id: textFieldOptionPasswordMode; }
+            StretchBenchBoolOption { text: "Focused:"; id: textFieldOptionFocused;
                 onCheckedChanged: if(checked) loader.item.forceActiveFocus(); else secondTextField.focus = true; }
+            StretchBenchBoolOption { text: "Read-only:"; id: textFieldOptionReadOnly; }
 
             TextField { id: secondTextField; placeholderText: "Click to verify focus handling"; width: 230}
             TextField { }
             TextField { }
 
             //mm doesn't quite seem to work
-//            StretchBenchBoolOption { text: "Focused:"; checked: lineEdit.activeFocus;
-//                onCheckedChanged: { if(checked) lineEdit.focus = false; else lineEdit.forceActiveFocus(); }
+//            StretchBenchBoolOption { text: "Focused:"; checked: textField.activeFocus;
+//                onCheckedChanged: { if(checked) textField.focus = false; else textField.forceActiveFocus(); }
 //            }
-//            TextField { id: lineEdit }
+//            TextField { id: textField }
+        }
+
+        Column {
+            anchors.fill: parent; anchors.margins: 10; spacing: 5
+            opacity: currentComponentName == "TextArea" ? 1 : 0
+            StretchBenchBoolOption { text: "Dimmed:"; id: textAreaOptionDimmed }
+            StretchBenchBoolOption { text: "Red text color:"; id: textAreaOptionRedText; }
+            StretchBenchBoolOption { text: "Italic font:"; id: textAreaOptionItalicText; }
+            StretchBenchBoolOption { text: "Focused:"; id: textAreaOptionFocused;
+                onCheckedChanged: if(checked) loader.item.forceActiveFocus(); else secondTextField2.focus = true; }
+            StretchBenchBoolOption { text: "Read-only:"; id: textAreaOptionReadOnly; }
+
+            TextField { id: secondTextField2; placeholderText: "Click to verify focus handling"; width: 230}
+            TextField { }
+            TextField { }
+
         }
 
         Column {
@@ -472,13 +483,14 @@ Item {
     }
 
     Component {
-        id: lineEditComponent
+        id: textFieldComponent
         TextField {
-            enabled: !lineEditOptionDimmed.checked
-            textColor: lineEditOptionRedText.checked ? "red" : "black"
-            font.italic: lineEditOptionItalicText.checked
-            passwordMode: lineEditOptionPasswordMode.checked
-            focus: lineEditOptionFocused.checked
+            enabled: !textFieldOptionDimmed.checked
+            textColor: textFieldOptionRedText.checked ? "red" : "black"
+            font.italic: textFieldOptionItalicText.checked
+            passwordMode: textFieldOptionPasswordMode.checked
+            focus: textFieldOptionFocused.checked
+            readOnly: textFieldOptionReadOnly.checked
         }
     }
 
@@ -486,6 +498,10 @@ Item {
         id: textAreaComponent
         TextArea {
             enabled: !textAreaOptionDimmed.checked
+            textColor: textAreaOptionRedText.checked ? "red" : "black"
+            font.italic: textAreaOptionItalicText.checked
+            focus: textAreaOptionFocused.checked
+            readOnly: textAreaOptionReadOnly.checked
         }
     }
 
