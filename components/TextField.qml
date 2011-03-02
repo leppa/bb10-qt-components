@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "./styles/default" as DefaultStyles
 import "./behaviors"    // TextEditMouseBehavior
 
@@ -11,88 +11,74 @@ FocusScope {
     property alias text: textInput.text
     property alias font: textInput.font
 
-    property int inputHint // values tbd
-    property bool acceptableInput: textInput.acceptableInput // read only
+    property alias activeFocus: textInput.activeFocus
     property bool readOnly: textInput.readOnly // read only
     property alias placeholderText: placeholderTextComponent.text
     property bool  passwordMode: false
+    property alias cursorPosition: textInput.cursorPosition
     property alias selectedText: textInput.selectedText
     property alias selectionEnd: textInput.selectionEnd
     property alias selectionStart: textInput.selectionStart
-    property alias validator: textInput.validator
+    property alias canPaste: textInput.canPaste
     property alias inputMask: textInput.inputMask
-    property alias horizontalalignment: textInput.horizontalAlignment
-    property alias echoMode: textInput.echoMode
-    property alias cursorPosition: textInput.cursorPosition
+    property alias validator: textInput.validator
+    property bool acceptableInput: textInput.acceptableInput // true if text passed the validator. read-only
+    property alias horizontalAlignment: textInput.horizontalAlignment
     property alias inputMethodHints: textInput.inputMethodHints
+    property alias containsMouse: mouseEditBehavior.containsMouse
+
+    function forceActiveFocus() { textEdit.forceActiveFocus() }
+    function cut() { textInput.cut() }
+    function copy() { textInput.copy() }
+    function paste() { textInput.paste() }
+    function select(start, end) { textInput.select(start, end) }
+    function selectAll() { textInput.selectAll() }
+    function selectWord() { textInput.selectWord() }
+    function deselect() { textEdit.deselect() }
+    function positionAt(x) {
+        var p = mapToItem(textInput, x, 0);
+        return textInput.positionAt(p.x);
+    }
+
+    function positionToRectangle(charPos) {
+        var rect = textInput.positionToRectangle(charPos);
+        var mappedPos = mapFromItem(textInput, rect.x, rext.y);
+        rect.x = mappedPos.x; rect.y = mappedPos.y;
+        return rect;
+    }
 
     property color textColor: syspal.text
     property color backgroundColor: syspal.base
-    property alias containsMouse: mouseEditBehavior.containsMouse
 
     property Component background: defaultStyle.background
     property Component hints: defaultStyle.hints
-
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
 
     property int leftMargin: defaultStyle.leftMargin
     property int topMargin: defaultStyle.topMargin
     property int rightMargin: defaultStyle.rightMargin
     property int bottomMargin: defaultStyle.bottomMargin
 
-    function copy() {
-        textInput.copy()
-    }
-
-    function paste() {
-        textInput.paste()
-    }
-
-    function cut() {
-        textInput.cut()
-    }
-
-    function select(start, end) {
-        textInput.select(start, end)
-    }
-
-    function selectAll() {
-        textInput.selectAll()
-    }
-
-    function selectWord() {
-        textInput.selectWord()
-    }
-
-    function positionAt(x) {
-        var p = mapToItem(textInput, x, 0);
-        return textInput.positionAt(p.x);
-    }
-
-    function positionToRectangle(pos) {
-        var p = mapToItem(textInput, pos.x, pos.y);
-        return textInput.positionToRectangle(p);
-    }
-
-    width: Math.max(minimumWidth,
-                    textInput.width + leftMargin + rightMargin)
-
-    height: Math.max(minimumHeight,
-                     textInput.height + topMargin + bottomMargin)
-
-    // Forward focus property
-    property alias activeFocus: textInput.activeFocus
+    property int minimumWidth: defaultStyle.minimumWidth
+    property int minimumHeight: defaultStyle.minimumHeight
 
     // Implementation
+
+    implicitWidth: Math.max(minimumWidth,
+                    textInput.implicitWidth + leftMargin + rightMargin)
+
+    implicitHeight: Math.max(minimumHeight,
+                     textInput.implicitHeight + topMargin + bottomMargin)
 
     property alias desktopBehavior: mouseEditBehavior.desktopBehavior
     property alias _hints: hintsLoader.item
     clip: true
 
-    SystemPalette { id: syspal }
     Loader { id: hintsLoader; sourceComponent: hints }
-    Loader { sourceComponent: background; anchors.fill:parent}
+    Loader {
+        anchors.fill: parent
+        property alias styledItem: textField
+        sourceComponent: background
+    }
 
     TextInput { // see QTBUG-14936
         id: textInput
@@ -114,12 +100,12 @@ FocusScope {
 
         onActiveFocusChanged: {
             if (!desktopBehavior)
-                state = (activeFocus ? "focused" : "")
+                state = (activeFocus ? "focused" : "");
 
             if (activeFocus)
-                openSoftwareInputPanel()
+                openSoftwareInputPanel();
             else
-                closeSoftwareInputPanel()
+                closeSoftwareInputPanel();
         }
 
         states: [
@@ -150,14 +136,14 @@ FocusScope {
         font: textInput.font
         opacity: !textInput.text.length && !textInput.activeFocus ? 1 : 0
         color: "gray"
-        text: "Enter text"
+        text: "Enter text"  //mm Needs localization
         Behavior on opacity { NumberAnimation { duration: 90 } }
     }
 
     Text {
         id: unfocusedText
-        clip: true
         anchors.fill: textInput
+        clip: true
         font: textInput.font
         opacity: !desktopBehavior && !passwordMode && textInput.text.length && !textInput.activeFocus ? 1 : 0
         color: textInput.color
@@ -178,6 +164,7 @@ FocusScope {
     }
 
     DefaultStyles.TextFieldStyle { id: defaultStyle }
+    SystemPalette { id: syspal }
 }
 
 

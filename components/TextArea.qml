@@ -1,94 +1,87 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "./styles/default" as DefaultStyles
 import "./behaviors"    // TextEditMouseBehavior
+
+// KNOWN ISSUES
+// 1) TextArea does not loose focus when !enabled if it is a FocusScope (see QTBUG-16161)
+// 2) Make sure the cursor is hidded and revealed as the text loses and gains focus
 
 FocusScope {
     id: textArea
 
     property alias text: textEdit.text
-    property alias placeholderText: placeholderTextComponent.text
     property alias font: textEdit.font
-    property bool passwordMode: false
+
+    property alias activeFocus: textEdit.activeFocus
     property bool readOnly: textEdit.readOnly // read only
-    property int inputHint; // values tbd   (alias to TextEdit.inputMethodHints?
+    property alias placeholderText: placeholderTextComponent.text
+    property alias cursorPosition: textEdit.cursorPosition
     property alias selectedText: textEdit.selectedText
     property alias selectionEnd: textEdit.selectionEnd
     property alias selectionStart: textEdit.selectionStart
+    property alias canPaste: textEdit.canPaste
     property alias horizontalAlignment: textEdit.horizontalAlignment
     property alias verticalAlignment: textEdit.verticalAlignment
     property alias wrapMode: textEdit.wrapMode  //mm Missing from spec
     property alias textFormat: textEdit.textFormat
-    property alias cursorPosition: textEdit.cursorPosition
-
-    property color textColor: syspal.text
-    property color backgroundColor: syspal.base
+    property alias inputMethodHints: textEdit.inputMethodHints
     property alias containsMouse: mouseEditBehavior.containsMouse
 
-    property Component background: defaultStyle.background
-    property Component hints: defaultStyle.hints
-
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
-
-    property int leftMargin: defaultStyle.leftMargin
-    property int topMargin: defaultStyle.topMargin
-    property int rightMargin: defaultStyle.rightMargin
-    property int bottomMargin: defaultStyle.bottomMargin
-
-    function copy() {
-        textEdit.copy()
-    }
-
-    function paste() {
-        textEdit.paste()
-    }
-
-    function cut() {
-        textEdit.cut()
-    }
-
-    function forceActiveFocus() {
-        textEdit.forceActiveFocus()
-    }
-
-    function select(start, end) {
-        textEdit.select(start, end)
-    }
-
-    function selectAll() {
-        textEdit.selectAll()
-    }
-
-    function selectWord() {
-        textEdit.selectWord()
-    }
+    function forceActiveFocus() { textEdit.forceActiveFocus() }
+    function cut() { textEdit.cut() }
+    function copy() { textEdit.copy() }
+    function paste() { textEdit.paste() }
+    function select(start, end) { textEdit.select(start, end) }
+    function selectAll() { textEdit.selectAll() }
+    function selectWord() { textEdit.selectWord() }
+    function deselect() { textEdit.deselect() }
 
     function positionAt(x, y) {
         var p = mapToItem(textEdit, x, y);
         return textEdit.positionAt(p.x, p.y);
     }
 
-    function positionToRectangle(pos) {
-        var p = mapToItem(textEdit, pos.x, pos.y);
-        return textEdit.positionToRectangle(p);
+    function positionToRectangle(charPos) {
+        var rect = textInput.positionToRectangle(charPos);
+        var mappedPos = mapFromItem(textInput, rect.x, rext.y);
+        rect.x = mappedPos.x; rect.y = mappedPos.y;
+        return rect;
     }
 
-    width: Math.max(minimumWidth,
-                    Math.max(textEdit.width, placeholderTextComponent.width) + leftMargin + rightMargin)
-    height: Math.max(minimumHeight,
-                     Math.max(textEdit.height, placeholderTextComponent.height) + topMargin + bottomMargin)
+    property color textColor: syspal.text
+    property color backgroundColor: syspal.base
 
+    property Component background: defaultStyle.background
+    property Component hints: defaultStyle.hints
+
+    property int leftMargin: defaultStyle.leftMargin
+    property int topMargin: defaultStyle.topMargin
+    property int rightMargin: defaultStyle.rightMargin
+    property int bottomMargin: defaultStyle.bottomMargin
+
+    property int minimumWidth: defaultStyle.minimumWidth
+    property int minimumHeight: defaultStyle.minimumHeight
 
     // Implementation
 
-    property alias activeFocus: textEdit.activeFocus // Forward active focus
+    implicitWidth: Math.max(minimumWidth,
+                    Math.max(textEdit.implicitWidth,
+                             placeholderTextComponent.implicitWidth) + leftMargin + rightMargin)
+    implicitHeight: Math.max(minimumHeight,
+                     Math.max(textEdit.implicitHeight,
+                              placeholderTextComponent.implicitHeight) + topMargin + bottomMargin)
+
     property alias desktopBehavior: mouseEditBehavior.desktopBehavior
     property alias _hints: hintsLoader.item
     clip: true
 
-    SystemPalette { id: syspal }
     Loader { id: hintsLoader; sourceComponent: hints }
-    Loader { sourceComponent: background; anchors.fill: parent }
+    Loader {
+        anchors.fill: parent
+        property alias styledItem: textArea
+        sourceComponent: background
+    }
+
 
     Flickable { //mm is FocusScope, so TextArea's root doesn't need to be, no?
         id: flickable
@@ -135,7 +128,7 @@ FocusScope {
         opacity: !textEdit.text.length && !textEdit.activeFocus ? 1 : 0
         color: "gray"
         clip: true
-        text: "Enter text"
+        text: "Enter text"  //mm Needs localization
         Behavior on opacity { NumberAnimation { duration: 90 } }
     }
 
@@ -152,5 +145,6 @@ FocusScope {
     }
 
     DefaultStyles.TextFieldStyle { id: defaultStyle }
+    SystemPalette { id: syspal }
 }
 

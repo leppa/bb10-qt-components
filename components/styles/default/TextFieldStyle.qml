@@ -1,11 +1,10 @@
 import QtQuick 1.0
 
 QtObject {
-
     property int minimumWidth: 200
     property int minimumHeight: 25
 
-    property int leftMargin : 8
+    property int leftMargin: 8
     property int topMargin: 8
     property int rightMargin: 8
     property int bottomMargin: 8
@@ -16,7 +15,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: 5
-                color: backgroundColor
+                color: styledItem.backgroundColor
             }
             BorderImage { // Background border
                 opacity: enabled ? 1 : 0.7
@@ -31,8 +30,6 @@ QtObject {
 
     property Component hints: Component {
         Item {
-            property color textColor: "#444"
-            property color backgroundColor: "white"
             property int fontPixelSize: 14
             property bool fontBold: false
             property int passwordEchoMode: TextInput.PasswordEchoOnEdit
