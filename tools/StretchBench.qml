@@ -219,21 +219,28 @@ Item {
             opacity: currentComponentName == "ButtonBlock" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: buttonBlockOptionDimmed }
             StretchBenchBoolOption { text: "Vertical layout"; id: buttonBlockOptionVerticalLayout }
-            StretchBenchBoolOption { text: "Hide last button"; id: buttonBlockHideLastButton }
+            StretchBenchBoolOption { text: "First button opacity = 0"; id: buttonBlockOptionFirstButtonTransparent }
+            StretchBenchBoolOption { text: "Last button !visible"; id: buttonBlockOptionLastButtonNotVisible; enabled: false }
         }
 
         Column {
             anchors.fill: parent; anchors.margins: 10; spacing: 5
             opacity: currentComponentName == "ButtonRow" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: buttonRowOptionDimmed }
-            StretchBenchBoolOption { text: "Hide last button"; id: buttonRowHideLastButton }
+            StretchBenchBoolOption { text: "Checkable:"; id: buttonRowOptionCheckable }
+            StretchBenchBoolOption { text: "Exclusive selection:"; id: buttonRowOptionExclusiveSelection }
+            StretchBenchBoolOption { text: "First button opacity = 0"; id: buttonRowOptionFirstButtonTransparent }
+            StretchBenchBoolOption { text: "Last button !visible"; id: buttonRowOptionLastButtonNotVisible }
         }
 
         Column {
             anchors.fill: parent; anchors.margins: 10; spacing: 5
             opacity: currentComponentName == "ButtonColumn" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: buttonColumnOptionDimmed }
-            StretchBenchBoolOption { text: "Hide last button"; id: buttonColumnHideLastButton }
+            StretchBenchBoolOption { text: "Checkable:"; id: buttonColumnOptionCheckable }
+            StretchBenchBoolOption { text: "Exclusive selection:"; id: buttonColumnOptionExclusiveSelection }
+            StretchBenchBoolOption { text: "First button opacity = 0"; id: buttonColumnOptionFirstButtonTransparent }
+            StretchBenchBoolOption { text: "Last button !visible"; id: buttonColumnOptionLastButtonNotVisible }
         }
 
         Column {
@@ -355,30 +362,43 @@ Item {
             onClicked: model.setProperty(1, "text", "Foo")
             enabled: !buttonBlockOptionDimmed.checked
             orientation: buttonBlockOptionVerticalLayout.checked ? Qt.Vertical : Qt.Horizontal
-            Connections { target: buttonBlockHideLastButton; onCheckedChanged: handleHideLastButtonChanged() }
-            function handleHideLastButtonChanged() {
-                model.setProperty(3, "opacity", buttonBlockHideLastButton.checked ? 0 : 1);
+            Connections { target: buttonBlockOptionFirstButtonTransparent; onCheckedChanged: handleFirstButtonTransparentChanged() }
+            function handleFirstButtonTransparentChanged() {
+                model.setProperty(0, "opacity", buttonBlockOptionFirstButtonTransparent.checked ? 0 : 1);
             }
+            Component.onCompleted: handleFirstButtonTransparentChanged() // set initial state
         }
     }
     Component {
         id: buttonRowComponent
         ButtonRow {
-            Button { text: "Button A" }
-            Button { text: "Button B1" }
-            Button { text: "Button C12" } //;iconSource: "images/testIcon.png" }
-            Button { text: "Button D123"; visible: !buttonRowHideLastButton.checked }
+            Button { text: "Button A"; checkable: buttonRowOptionCheckable.checked
+                opacity: buttonRowOptionFirstButtonTransparent.checked ? 0 : 1;
+                Behavior on opacity { NumberAnimation { duration: 500 } }
+            }
+            Button { text: "Button B1"; checkable: buttonRowOptionCheckable.checked }
+            Button { text: "Button C12"; checkable: buttonRowOptionCheckable.checked} //;iconSource: "images/testIcon.png" }
+            Button { text: "Button D123"; checkable: buttonRowOptionCheckable.checked;
+                visible: !buttonRowOptionLastButtonNotVisible.checked
+            }
             enabled: !buttonRowOptionDimmed.checked
+            exclusive: buttonRowOptionExclusiveSelection.checked
         }
     }
     Component {
         id: buttonColumnComponent
         ButtonColumn {
-            Button { text: "Button A" }
-            Button { text: "Button B1" }
-            Button { text: "Button C12" }
-            Button { text: "Button D123"; visible: !buttonColumnHideLastButton.checked }
+            Button { text: "Button A"; checkable: buttonColumnOptionCheckable.checked
+                opacity: buttonColumnOptionFirstButtonTransparent.checked ? 0 : 1;
+                Behavior on opacity { NumberAnimation { duration: 500 } }
+            }
+            Button { text: "Button B1"; checkable: buttonColumnOptionCheckable.checked }
+            Button { text: "Button C12"; checkable: buttonColumnOptionCheckable.checked }
+            Button { text: "Button D123"; checkable: buttonColumnOptionCheckable.checked
+                visible: !buttonColumnOptionLastButtonNotVisible.checked
+            }
             enabled: !buttonColumnOptionDimmed.checked
+            exclusive: buttonColumnOptionExclusiveSelection.checked
         }
     }
 

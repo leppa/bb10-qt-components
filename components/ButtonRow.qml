@@ -1,5 +1,5 @@
-import Qt 4.7
-import "ButtonGroup.js" as Behavior
+import QtQuick 1.1
+import "private/ButtonGroup.js" as Behavior
 
 /*
    Class: ButtonRow
@@ -16,7 +16,7 @@ import "ButtonGroup.js" as Behavior
    </code>
 */
 Row {
-    id: root
+    id: buttonRow
 
     /*
      * Property: exclusive
@@ -31,13 +31,10 @@ Row {
      * Property: checkedButton
      * [string] Contains the last checked Button.
      */
-    property Item checkedButton;
+    property Item checkedButton     // read-only
 
-    Component.onCompleted: {
-        Behavior.create(root, {direction: Qt.Horizontal});
-    }
+    // implementation
 
-    Component.onDestruction: {
-        Behavior.destroy();
-    }
+    Component.onCompleted: Behavior.create(buttonRow, {direction: Qt.Horizontal})
+    Component.onDestruction: Behavior.destroy()
 }

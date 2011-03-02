@@ -15,13 +15,13 @@ function create(that, options) {
 }
 
 function isButton(item) {
-    if (item && item["__position"] !== undefined)
+    if (item && "__position" in item)
         return true;
     return false;
 }
 
 function hasChecked(item) {
-    if (item && item["checked"] !== undefined)
+    if (item && "checked" in item)
         return true;
     return false;
 }
@@ -48,7 +48,7 @@ function build() {
         visibleButtons.push(item);
 
         if (exclusive && hasChecked(item)) {
-            if (item["checkable"]!==undefined) {
+            if ("checkable" in item ) {
                 item.checkable = true;
             }
             clickHandlers[i] = checkExclusive(item);
@@ -77,7 +77,7 @@ function finishButton(button, position) {
     if (isButton(button)) {
         button.__position = position;
         if (direction == Qt.Vertical) {
-            button.anchors.left = self.left
+            button.anchors.left = self.left     //mm How to make this not cause binding loops? see QTBUG-17162
             button.anchors.right = self.right
         }
     }

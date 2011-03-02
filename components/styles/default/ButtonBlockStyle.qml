@@ -1,17 +1,15 @@
-import QtQuick 1.0
+import QtQuick 1.1
 
 QtObject {
     property int minimumWidth: 90
     property int minimumHeight: 32
 
-    property int leftMargin : 8
+    property int leftMargin: 8
     property int topMargin: 8
     property int rightMargin: 8
     property int bottomMargin: 8
 
-    property Component background:
-    Component {
-        id: defaultBackground
+    property Component background: Component {
         Item {
             opacity: enabled ? 1 : 0.7
             Rectangle { // Background center fill
@@ -22,7 +20,7 @@ QtObject {
                 anchors.bottomMargin: anchors.topMargin
 
                 radius: adjoining ? 0 : 5
-                color: !styledItem.checked ? backgroundColor : Qt.darker(backgroundColor)
+                color: !styledItem.checked ? styledItem.backgroundColor : Qt.darker(styledItem.backgroundColor)
             }
             BorderImage {
                 anchors.fill: parent
@@ -41,13 +39,11 @@ QtObject {
         }
     }
 
-    property Component label:
-    Component {
-        id: defaultLabel
+    property Component label: Component {
         Item {
-            width: row.width
-            height: row.height
-            anchors.centerIn: parent    //mm see QTBUG-15619
+            implicitWidth: row.implicitWidth
+            implicitHeight: row.implicitHeight
+
             opacity: styledItem.enabled ? 1 : 0.5
             transform: Translate {
                 x: styledItem.pressed || styledItem.checked ? 1 : 0

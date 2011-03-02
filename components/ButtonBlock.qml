@@ -1,14 +1,11 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "./behaviors"    // ButtonBehavior
 import "./visuals"      // AdjoiningVisual
 import "./styles/default" as DefaultStyles
 
 // KNOWN ISSUES
-// 1) When switching between horizontal and vertical orientation after block has been created, the Grid's move
-//    transition is called *before* the grid item's have actually moved, resulting in incorrect "adjoins" states
-// 2) Can't make items in vertical groups all the same width without access to their implicitWidth, see QTBUG-14957
-// 3) Should be generalized into JoinedGroup and ButtonBlock made a specialization.
-// 4) ExclusiveSelection support missing
+// 1) Should be generalized into JoinedGroup and ButtonBlock made a specialization.
+// 2) ExclusiveSelection support missing
 
 // NOTES
 // 1) The ButtonBlock implementation has no ultimate dependency on AdjoiningVisual, and can therefor be made to work
@@ -26,99 +23,86 @@ Item {
     property alias model: repeater.model
     property variant bindings: {"text":"text", "iconSource":"iconSource", "enabled":"enabled", "opacity":"opacity"}
 
+    property int orientation: Qt.Horizontal
+    signal clicked(int index)
+
     property Component buttonBackground: defaultStyle.background
     property Component buttonLabel: defaultStyle.label
 
     property color backgroundColor: syspal.button
     property color textColor: syspal.text;
 
-    property int orientation: Qt.Horizontal
-    signal clicked(int index)
-
     property int leftMargin: defaultStyle.leftMargin
     property int topMargin: defaultStyle.topMargin
     property int rightMargin: defaultStyle.rightMargin
     property int bottomMargin: defaultStyle.bottomMargin
 
-    width: grid.width
-    height: grid.height
+    // implementation
+
+    implicitWidth: orientation == Qt.Horizontal ? grid.implicitWidth : grid.widestItemWidth
+    implicitHeight: orientation == Qt.Horizontal ? grid.talestItemHeight : grid.implicitHeight
+
+    onOrientationChanged: grid.updateImplicitSize()
+    onModelChanged: grid.updateImplicitSize()
 
     Grid {
         id: grid
-        columns: orientation == Qt.Vertical ? 1 : model.count
+        columns: orientation == Qt.Vertical || !model ? 1 : model.count
         anchors.centerIn: parent
         property int widestItemWidth: 0
         property int talestItemHeight: 0
 
-        move: Transition {  //mm seems "move" transition is not always called after items has been moved
+        function updateImplicitSize() {
+            var biggest = 0;
+            for(var i = 0; i < repeater.count; i++) {
+                var button = repeater.itemAt(i);
+                if(Qt.isQtObject(button)) {
+                    biggest = Math.max(biggest, buttonBlock.orientation == Qt.Horizontal ? button.implicitHeight : button.implicitWidth);
+                }
+            }
+            if(buttonBlock.orientation == Qt.Horizontal)
+                talestItemHeight = biggest;
+            else
+                widestItemWidth = biggest;
+        }
+
+        property int leftmostVisibleIndex
+        property int rightmostVisibleIndex
+        property int topmostVisibleIndex
+        property int bottommostVisibleIndex
+
+        move: Transition {
+            PropertyAction { properties: "x,y" }
             ScriptAction { script: {
                     if(orientation == Qt.Horizontal) {
-                        grid.leftmostVisibleIndex = grid.__leftmostVisibleIndex();
-                        grid.rightmostVisibleIndex = grid.__rightmostVisibleIndex();
+                        grid.leftmostVisibleIndex = grid.findFirstOrLastVisibleItemIndex(grid.compareForLeftmost, 1000000);
+                        grid.rightmostVisibleIndex = grid.findFirstOrLastVisibleItemIndex(grid.compareForRightmost, -1000000);
                     } else {
-                        grid.topmostVisibleIndex = grid.__topmostVisibleIndex();
-                        grid.bottommostVisibleIndex = grid.__bottommostVisibleIndex();
+                        grid.topmostVisibleIndex = grid.findFirstOrLastVisibleItemIndex(grid.compareForTopmost, 1000000);
+                        grid.bottommostVisibleIndex = grid.findFirstOrLastVisibleItemIndex(grid.compareForBottommost, -1000000);
                     }
                 }
             }
         }
 
-        property int leftmostVisibleIndex
-        function __leftmostVisibleIndex() {
-            var leftmostVisibleIndex = 0;
-            var leftmostItemX = 10000000;
-            for(var i = 0; i < children.length; i++) {
-                var child = children[i];
-                if(child.x < leftmostItemX && child.opacity > 0) {
-                    leftmostItemX = child.x;
-                    leftmostVisibleIndex = i;
-                }
-            }
-            return leftmostVisibleIndex;
-        }
+        function compareForLeftmost(child, coordinate) { return Math.min(child.x, coordinate); }
+        function compareForRightmost(child, coordinate) { return Math.max(child.x, coordinate); }
+        function compareForTopmost(child, coordinate) { return Math.min(child.y, coordinate); }
+        function compareForBottommost(child, coordinate) { return Math.max(child.y, coordinate); }
 
-        property int rightmostVisibleIndex
-        function __rightmostVisibleIndex() {
-            var rightmostVisibleIndex = 0;
-            var rightmostItemX = 0;
-            for(var i = 0; i < children.length; i++) {
-                var child = children[i];
-//mm                print("rightmost child? at: " + child.x + "," + child.y)
-                if(child.x > rightmostItemX && child.opacity > 0) {
-                    rightmostItemX = child.x;
-                    rightmostVisibleIndex = i;
+        function findFirstOrLastVisibleItemIndex(compareFunc, initialCoordinate) {
+            var index = 0;
+            var coordinate = initialCoordinate
+            for(var i = 0; i < repeater.count; i++) {
+                var button = repeater.itemAt(i);
+                if(!Qt.isQtObject(button)) continue;
+                var c = compareFunc(button, coordinate);
+                if(c != coordinate && button.opacity > 0) {
+                    coordinate = c;
+                    index = i;
                 }
             }
-            return rightmostVisibleIndex;
-        }
-
-        property int topmostVisibleIndex
-        function __topmostVisibleIndex() {
-            var topmostVisibleIndex = 0;
-            var topmostItemY = 10000000;
-            for(var i = 0; i < children.length; i++) {
-                var child = children[i];
-                if(child.y < topmostItemY && child.opacity > 0) {
-                    topmostItemY = child.y;
-                    topmostVisibleIndex = i;
-                }
-            }
-            return topmostVisibleIndex;
-        }
-
-        property int bottommostVisibleIndex
-        function __bottommostVisibleIndex() {
-            var bottommostVisibleIndex = 0;
-            var bottommostItemY = 0;
-            for(var i = 0; i < children.length; i++) {
-                var child = children[i];
-//mm                print("bottommost child? at: " + child.x + "," + child.y)
-                if(child.y > bottommostItemY && child.opacity > 0) {
-                    bottommostItemY = child.y;
-                    bottommostVisibleIndex = i;
-                }
-            }
-            return bottommostVisibleIndex;
+            return index;
         }
 
         Repeater {
@@ -138,6 +122,9 @@ Item {
                 property color textColor: buttonBlock.textColor
                 property color backgroundColor: buttonBlock.backgroundColor
 
+                width: buttonBlock.orientation == Qt.Horizontal ? implicitWidth : grid.widestItemWidth
+                height: buttonBlock.orientation == Qt.Horizontal ? grid.talestItemHeight : implicitHeight
+
                 Component.onCompleted: {
                     // Create the Binding objects defined by the ButtonBlock's "bindings" map property to allow
                     // the properties of the buttons to be bound to properties in the model with different names
@@ -156,12 +143,6 @@ Item {
                                 '}';
                         Qt.createQmlObject(bindingComponent, blockButton);    //mm do we ever need to explicitly delete these?
                     }
-
-                    // Find the widest/talest item to make all buttons the same width/height
-                    if(buttonBlock.orientation == Qt.Vertical)    //mm Can't make this work without QTBUG-14957
-                        grid.widestItemWidth = Math.max(grid.widestItemWidth, width);
-                    else
-                        grid.talestItemHeight = Math.max(grid.talestItemHeight, height);
                 }
 
                 ButtonBehavior {
@@ -186,15 +167,16 @@ Item {
                 }
 
 
-               // width: orientation == Qt.Vertical ? grid.widestItemWidth : item.width
-               // height: orientation == Qt.Vertical ? item.height : grid.talestItemHeight
                 property int minimumWidth: defaultStyle.minimumWidth
                 property int minimumHeight: defaultStyle.minimumHeight
 
-                width: Math.max(minimumWidth,
-                                labelComponent.item.width + leftMargin + rightMargin)
-                height: Math.max(minimumHeight,
-                                 labelComponent.item.height + topMargin + bottomMargin)
+                implicitWidth: opacity > 0 ? Math.max(minimumWidth,
+                                 labelComponent.item.implicitWidth + leftMargin + rightMargin) : 0
+                implicitHeight: opacity > 0 ? Math.max(minimumHeight,
+                                  labelComponent.item.implicitHeight + topMargin + bottomMargin) : 0
+
+                onImplicitWidthChanged: grid.updateImplicitSize()
+                onImplicitHeightChanged: grid.updateImplicitSize()
 
                 Loader {
                     id: labelComponent

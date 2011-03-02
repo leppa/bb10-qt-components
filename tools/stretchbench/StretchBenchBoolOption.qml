@@ -15,7 +15,11 @@ Item {
         clip: true
         width: parent.width
         height: Math.max(optionText.height, optionCheckBox.height)
-        Text { id: optionText; font.pixelSize: 16; anchors.verticalCenter: parent.verticalCenter }
+        Text {
+            id: optionText; font.pixelSize: 16;
+            color: enabled ? "black" : "gray"
+            anchors.verticalCenter: parent.verticalCenter
+        }
         CheckBox { id: optionCheckBox; anchors.right: parent.right }
     }
 }
