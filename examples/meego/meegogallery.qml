@@ -42,7 +42,7 @@ Rectangle {
                     TextField{}
                     TextArea{}
                 }
-                Slider{}
+                Slider{ anchors.horizontalCenter: parent.horizontalCenter}
                 ButtonBlock{
                     model: ListModel{
                         ListElement{text:"one" ; iconSource:"images/folder_new.png"}
