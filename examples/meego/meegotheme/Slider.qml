@@ -54,7 +54,7 @@ Components.Slider{
 
         Image { id: arrow }
 
-        state: styledItem.valueIndicatorPosition
+        state: styledItem.showValueIndicator
         states: [
             State {
                 name: "Top"
@@ -116,7 +116,7 @@ Components.Slider{
 
         // Native libmeegotouch slider value indicator pops up 100ms after pressing
         // the handle... but hiding happens without delay.
-        visible: styledItem.valueIndicatorVisible && styledItem.pressed
+        visible: styledItem.showValueIndicator.toLowerCase() != "none" && styledItem.pressed
         Behavior on visible {
             enabled: !indicatorBackground.visible
             PropertyAnimation {

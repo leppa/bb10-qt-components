@@ -1,17 +1,15 @@
-import Qt 4.7
+import QtQuick 1.1
 import "../../../components" as Components
-
-// ### import QtComponents to load meego imageprovider
 import com.meego.themebridge 1.0
 
 Components.TextArea {
-    id:textField
+    id: textField
 
-    leftMargin:meegostyle.current.get("paddingLeft")
-    rightMargin:meegostyle.current.get("paddingRight")
-    topMargin: meegostyle.current.get("paddingTop")
-    bottomMargin: meegostyle.current.get("paddingBottom")
-    minimumHeight: meegostyle.preferredHeight
+    leftMargin: meegostyle.current.get("paddingLeft")
+    rightMargin: meegostyle.current.get("paddingRight")
+    topMargin: meegostyle.current.get("paddingTop") + __documentMargin
+    bottomMargin: meegostyle.current.get("paddingBottom") + __documentMargin
+    property int __documentMargin: 4 //mm fudge copied from master branch
 
     placeholderText: ""
 
@@ -28,11 +26,10 @@ Components.TextArea {
         source: textField.activeFocus ?
                 "image://theme/meegotouch-textedit-background-selected" :
                 "image://theme/meegotouch-textedit-background"
-        border.left: textField.leftMargin
-        border.right: textField.rightMargin
-        // Note: top and bottom margins are too small
-        border.top: textField.leftMargin
-        border.bottom: textField.rightMargin
+        border {
+            left: textField.leftMargin; right: textField.rightMargin
+            top: textField.topMargin; bottom: textField.bottomMargin
+        }
     }
 }
 
