@@ -22,9 +22,9 @@ Components.Button {
         id: meegostyle
         styleClass: "MButtonStyle"
         mode: {
-            if (styledItem.pressed)
+            if (pressed)
                 return "pressed";
-            else if (styledItem.checked)
+            else if (checked)
                 return "selected";
             else
                 return "default";
