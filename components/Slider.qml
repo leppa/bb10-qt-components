@@ -185,6 +185,8 @@ Item {
             onActualPositionChanged: positionValueIndicator()
 
             function positionValueIndicator() {
+                anchors.top = undefined; anchors.bottom = undefined;
+                anchors.left = undefined; anchors.right = undefined;
                 anchors.horizontalCenter =
                         (actualPosition == Qt.AlignTop || actualPosition == Qt.AlignBottom) ?
                             handleLoader.horizontalCenter : undefined;
@@ -193,8 +195,6 @@ Item {
                         (actualPosition == Qt.AlignLeft || actualPosition == Qt.AlignRight) ?
                             handleLoader.verticalCenter : undefined;
 
-                anchors.top = undefined; anchors.bottom = undefined;
-                anchors.left = undefined; anchors.right = undefined;
                 switch(actualPosition) {
                 case Qt.AlignTop: anchors.bottom = handleLoader.top; break;
                 case Qt.AlignBottom: anchors.top = handleLoader.bottom; break;
