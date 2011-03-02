@@ -24,7 +24,7 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.0
+import QtQuick 1.1
 
 QtObject {
     property int minimumWidth: 200
@@ -36,54 +36,48 @@ QtObject {
     property int bottomMargin: 0
 
     property Component background: Component {
-        Item{
-            Rectangle{
-                anchors.fill:parent
-                width: parent.width-2
-                height: parent.height-2
-                color: backgroundColor
+        Item {
+            Rectangle { // solid center fill
+                anchors.fill: parent
+                anchors.margins: 1
+                color: styledItem.backgroundColor
                 radius: 5
             }
-            BorderImage {
-                anchors.fill:parent
-                source:"images/progressbar_groove.png"
-                border.left:10; border.right:10
-                border.top:10; border.bottom:10
+            BorderImage { // rounded border
+                anchors.fill: parent
+                source: "images/progressbar_groove.png"
+                border { left: 10; right: 10; top: 10; bottom: 10 }
             }
         }
     }
 
     property Component progress: Component {    // progress bar, known duration
-        BorderImage { // green progress indication
-            id:progress
+        BorderImage { // top-to-bottom shine
             opacity: styledItem.enabled ? 1: 0.7
-            source: complete > 0.95 ?
-                    "images/progressbar_indeterminate.png" : "images/progressbar_fill.png"
-            border.left:complete > 0.1 ? 6: 2;
-            border.right:complete > 0.1 ? 6: 2
-            border.top:10; border.bottom:10
-            clip:true
+            source: complete > 0.95 ? "images/progressbar_indeterminate.png" : "images/progressbar_fill.png"
+            border { left: complete > 0.1 ? 6: 2; right: complete > 0.1 ? 6: 2; top: 10; bottom: 10 }
+            clip: true
 
-            Rectangle{
-                anchors.fill:progress
+            Rectangle { // background solid fill (behind diagonal stripes)
+                anchors.fill: parent
+                anchors.rightMargin: 0
+                anchors.margins: 1
+
+                z: -1
+                radius: 2
                 color: styledItem.progressColor
-                z:-1
-                radius:2
-                smooth:true
-                clip:true
-                anchors.rightMargin:0
-                anchors.margins:1
-                Image {
+                smooth: true
+                clip: true
+                Image { // diagonal stripes
                     id: overlay
                     NumberAnimation on x {
-                        loops:Animation.Infinite;
-                        from:0;
-                        to:-overlay.sourceSize.width;
-                        duration:2000
+                        loops: Animation.Infinite
+                        from: 0; to: -overlay.sourceSize.width
+                        duration: 2000
                     }
-                    width:styledItem.width + sourceSize.width
-                    height:styledItem.height
-                    fillMode:Image.Tile
+                    width: styledItem.width + sourceSize.width
+                    height: styledItem.height
+                    fillMode: Image.Tile
                     source: "images/progressbar_overlay.png"
                 }
             }
@@ -93,46 +87,61 @@ QtObject {
     property Component indeterminateProgress: Component {   // progress bar, unknown duration
         Item {
             id: bar
-            anchors.fill:parent
-            onWidthChanged:indicator.x = width-indicator.width
-            BorderImage {
-                id:indicator
-                opacity: styledItem.enabled ? 1: 0.7
-                Behavior on x {
-                    NumberAnimation{easing.type:Easing.Linear; duration:1000}
-                }
-                onXChanged: {
-                    var w = bar.width - indicator.width
-                    if (x == w) x = 0
-                    else if (x==0) x = w
-                }
-                width: 80
-                height: parent.height
-                source:"images/progressbar_indeterminate.png"
-                border.left:10 ; border.right:10
-                border.top:10 ; border.bottom:10
-                clip:true
+            SequentialAnimation { // Animated the puck bouncing back-and-fourth
+                id: bounceAnim
+                running: true; loops: Animation.Infinite
+                property int scaledDuration: Math.max(1000*(width/minimumWidth), 100); // for constant speed
 
-                Rectangle{
-                    anchors.fill:indicator
+                property int bounceToValue: bar.width-puck.width
+                onBounceToValueChanged: { // work-arounds for QTBUG-17554 and QTBUG-17552
+                    outAnim.to = bounceToValue;
+                    inAnim.from = bounceToValue;
+                    restart() // Restart the bounceAnim, or it won't take the new width into account!
+                }
+
+                NumberAnimation {   // animate the bouncing back and fourth
+                    id: outAnim; target: puck; property: "x"
+                    from: 0; to: bounceAnim.bounceToValue
+                    easing.type: Easing.Linear; duration: bounceAnim.scaledDuration
+                }
+                NumberAnimation {   // animate the bouncing back and fourth
+                    id: inAnim; target: puck; property: "x"
+                    from: bounceAnim.bounceToValue; to: 0
+                    easing.type: Easing.Linear; duration: bounceAnim.scaledDuration
+                }
+            }
+
+            BorderImage { // top-to-bottom shine
+                id: puck
+                width: Math.min(80, bar.width/2)
+                height: bar.height
+
+                opacity: styledItem.enabled ? 1: 0.7
+                source: "images/progressbar_indeterminate.png"
+                border { left: 10; right: 10; top: 10; bottom: 10 }
+                clip: true
+
+                Rectangle { // background solid fill (behind diagonal stripes)
+                    anchors.fill: puck
+                    anchors.margins: 1
+                    anchors.rightMargin: 0
+
+                    z: -1
+                    radius: 2
                     color: styledItem.progressColor
-                    z:-1
-                    radius:2
-                    smooth:true
-                    clip:true
-                    anchors.rightMargin:0
-                    anchors.margins:1
-                    Image {
+                    smooth: true
+                    clip: true
+
+                    Image { // diagonal stripes
                         id: overlay
-                        NumberAnimation on x {
-                            loops:Animation.Infinite;
-                            from:0;
-                            to:-overlay.sourceSize.width;
-                            duration:2000
+                        width: styledItem.width + sourceSize.width
+                        height: styledItem.height
+                        NumberAnimation on x {  // animate stripes continously sliding left
+                            loops: Animation.Infinite;
+                            from: 0; to: -overlay.sourceSize.width;
+                            duration: 2000
                         }
-                        width:styledItem.width + sourceSize.width
-                        height:styledItem.height
-                        fillMode:Image.Tile
+                        fillMode: Image.Tile
                         source: "images/progressbar_overlay.png"
                     }
                 }
