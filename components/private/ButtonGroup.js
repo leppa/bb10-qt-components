@@ -3,12 +3,10 @@ var checkHandlers = [];
 var visibleButtons = [];
 var nonVisibleButtons = [];
 var direction;
-var exclusive;
 
 function create(that, options) {
     self = that;
     direction = options.direction || Qt.Horizontal;
-    exclusive = self.exclusive|| options.exclusive;
     self.childrenChanged.connect(rebuild);
 //    self.widthChanged.connect(resizeChildren);
     build();
@@ -47,22 +45,26 @@ function build() {
         }
         visibleButtons.push(item);
 
-        if (exclusive) {
-            if ("checkable" in item) {
-                item.checkable = true;
-            }
+        if ("checkable" in item)
+            item.checkable = true;
 
-            checkHandlers[i] = checkExclusive(item);
-            item.checkedChanged.connect(checkHandlers[i]);
+        if (self.exclusive) {
+            item.checked = false;
+            checkHandlers.push(checkExclusive(item));
+            item.checkedChanged.connect(checkHandlers[checkHandlers.length - 1]);
         }
     }
-
-    if (self.checkedButton && !self.checkedButton.visible)
-        self.checkedButton = undefined;
 
     var nrButtons = visibleButtons.length;
     if (nrButtons == 0)
         return;
+
+    if (self.checkedButton)
+        self.checkedButton.checked = true;
+    else if (self.exclusive) {
+        self.checkedButton = visibleButtons[0];
+        self.checkedButton.checked = true;
+    }
 
     if (nrButtons == 1) {
         finishButton(visibleButtons[0], "only");
@@ -98,6 +100,9 @@ function cleanup() {
 }
 
 function rebuild() {
+    if (self == undefined)
+        return;
+
     cleanup();
     build();
 }

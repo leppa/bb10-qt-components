@@ -34,6 +34,7 @@ Column {
     property Item checkedButton  // read-only
 
     // implementation
+    onExclusiveChanged: Behavior.rebuild()
 
     Component.onCompleted: Behavior.create(buttonColumn, {direction: Qt.Vertical})
     Component.onDestruction: Behavior.destroy()

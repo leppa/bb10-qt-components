@@ -34,6 +34,7 @@ Row {
     property Item checkedButton     // read-only
 
     // implementation
+    onExclusiveChanged: Behavior.rebuild()
 
     Component.onCompleted: Behavior.create(buttonRow, {direction: Qt.Horizontal})
     Component.onDestruction: Behavior.destroy()
