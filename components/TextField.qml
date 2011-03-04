@@ -21,20 +21,21 @@ FocusScope {
     property alias selectionStart: textInput.selectionStart
     property alias canPaste: textInput.canPaste
     property alias inputMask: textInput.inputMask
+    property alias echoMode: textInput.echoMode
     property alias validator: textInput.validator
     property alias acceptableInput: textInput.acceptableInput // true if text passed the validator. read-only
     property alias horizontalAlignment: textInput.horizontalAlignment
     property alias inputMethodHints: textInput.inputMethodHints
     property alias containsMouse: mouseEditBehavior.containsMouse
 
-    function forceActiveFocus() { textEdit.forceActiveFocus() }
+    function forceActiveFocus() { textInput.forceActiveFocus() }
     function cut() { textInput.cut() }
     function copy() { textInput.copy() }
     function paste() { textInput.paste() }
     function select(start, end) { textInput.select(start, end) }
     function selectAll() { textInput.selectAll() }
     function selectWord() { textInput.selectWord() }
-    function deselect() { textEdit.deselect() }
+    function deselect() { textInput.deselect() }
     function positionAt(x) {
         var p = mapToItem(textInput, x, 0);
         return textInput.positionAt(p.x);
@@ -42,7 +43,7 @@ FocusScope {
 
     function positionToRectangle(charPos) {
         var rect = textInput.positionToRectangle(charPos);
-        var mappedPos = mapFromItem(textInput, rect.x, rext.y);
+        var mappedPos = mapFromItem(textInput, rect.x, rect.y);
         rect.x = mappedPos.x; rect.y = mappedPos.y;
         return rect;
     }
