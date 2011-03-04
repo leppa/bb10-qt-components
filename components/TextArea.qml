@@ -122,7 +122,7 @@ FocusScope {
             anchors.right: parent.right
 
             color: enabled ? textColor: Qt.tint(textColor, "#80ffffff")
-            wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.WordWrap
+            wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.Wrap
             onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
 
             onActiveFocusChanged: activeFocus ? openSoftwareInputPanel() : closeSoftwareInputPanel()
