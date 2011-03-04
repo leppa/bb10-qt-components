@@ -13,15 +13,13 @@ function create(that, options) {
 }
 
 function isButton(item) {
-    if (item && "__position" in item)
+    if (item && item.hasOwnProperty("__position"))
         return true;
     return false;
 }
 
 function hasChecked(item) {
-    if (item && "checked" in item)
-        return true;
-    return false;
+    return (item && item.hasOwnProperty("checked"));
 }
 
 function destroy() {
@@ -45,7 +43,7 @@ function build() {
         }
         visibleButtons.push(item);
 
-        if ("checkable" in item)
+        if (self.exclusive && item.hasOwnProperty("checkable"))
             item.checkable = true;
 
         if (self.exclusive) {
