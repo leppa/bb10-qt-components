@@ -47,10 +47,11 @@ function build() {
         }
         visibleButtons.push(item);
 
-        if (exclusive && hasChecked(item)) {
-            if ("checkable" in item ) {
+        if (exclusive) {
+            if ("checkable" in item) {
                 item.checkable = true;
             }
+
             clickHandlers[i] = checkExclusive(item);
             item.clicked.connect(clickHandlers[i]);
         }
