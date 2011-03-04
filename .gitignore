@@ -93,3 +93,6 @@ qtc-debugging-helper
 
 # linux shared libraries
 *.so*
+
+# auto tests runner
+test_runner

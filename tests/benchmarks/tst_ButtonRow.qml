@@ -25,42 +25,12 @@
 ****************************************************************************/
 
 import QtQuick 1.0
-import QtQuickTest 1.0
+import "../auto"
 
-import "ComponentTestCase.js" as Util
+ComponentBenchmark {
+    name: "ButtonRow"
 
-TestCase {
-    property Item obj
-
-    visible: true
-    when: windowShown
-
-    function init() {
-        obj = testSubject.basic.createObject(this);
-    }
-
-    function cleanup() {
-        obj.destroy();
-    }
-
-    function test_check_for_missing()
-    {
-        var apiSkeleton = testSubject.api.createObject(null);
-
-        for (var prop in apiSkeleton) {
-            if (prop.match(".+Changed$") || prop == "objectName")
-                continue;
-
-            if (typeof this["test_" + prop] != "function") {
-                var type = (typeof apiSkeleton[prop] == "function" ? "function" : "property");
-                warn("No functional test for " + type + ": "  + prop);
-            }
-        }
-
-        apiSkeleton.destroy();
-    }
-
-    function test_defaults_sanity() {
-        Util.check_defaults(testSubject);
+    SpecButtonRow {
+        id: testSubject
     }
 }

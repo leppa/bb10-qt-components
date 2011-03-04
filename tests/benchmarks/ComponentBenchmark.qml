@@ -27,40 +27,34 @@
 import QtQuick 1.0
 import QtQuickTest 1.0
 
-import "ComponentTestCase.js" as Util
-
 TestCase {
+    width: 640
+    height: 480
+
     property Item obj
 
     visible: true
     when: windowShown
 
-    function init() {
+    function initTestCase() {
         obj = testSubject.basic.createObject(this);
+        obj.x = this.width / 2 - obj.width / 2
+        obj.y = this.height / 2 - obj.height / 2
     }
 
-    function cleanup() {
+    function cleanupTestCase() {
         obj.destroy();
     }
 
-    function test_check_for_missing()
-    {
-        var apiSkeleton = testSubject.api.createObject(null);
-
-        for (var prop in apiSkeleton) {
-            if (prop.match(".+Changed$") || prop == "objectName")
-                continue;
-
-            if (typeof this["test_" + prop] != "function") {
-                var type = (typeof apiSkeleton[prop] == "function" ? "function" : "property");
-                warn("No functional test for " + type + ": "  + prop);
-            }
-        }
-
-        apiSkeleton.destroy();
+    function benchmark_paint() {
+        obj.visible = false;
+        wait(0)
+        obj.visible = true;
+        wait(0)
     }
 
-    function test_defaults_sanity() {
-        Util.check_defaults(testSubject);
+    function benchmark_create_destroy() {
+        var bechmarkObj = testSubject.basic.createObject(null);
+        bechmarkObj.destroy();
     }
 }
