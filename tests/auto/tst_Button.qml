@@ -83,13 +83,16 @@ ComponentTestCase {
         compare(obj.pressed, false, message);
     }
 
+    property url testIconSource;
     function test_iconSource() {
         var message =
             "Testing if iconSource property can be set and verified.";
+        testIconSource ="data/nokia_logo.png";
         obj.iconSource = "data/nokia_logo.png";
-        compare(obj.iconSource, "data/nokia_logo.png", message);
+        compare(obj.iconSource, testIconSource, message);
+        testIconSource ="data/qt_logo.png";
         obj.iconSource = "data/qt_logo.png";
-        compare(obj.iconSource, "data/qt_logo.png", message);
+        compare(obj.iconSource, testIconSource, message);
         obj.iconSource = "";
         compare(obj.iconSource, "", message);
     }
