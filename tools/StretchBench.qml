@@ -22,7 +22,6 @@ Item {
 
             model: ListModel {
                 ListElement { component: "ChoiceList" }
-                ListElement { component: "ButtonBlock" }
                 ListElement { component: "ButtonRow" }
                 ListElement { component: "ButtonColumn" }
                 ListElement { component: "Switch" }
@@ -138,7 +137,6 @@ Item {
                     var name = componentsList.model.get(componentsList.currentIndex).component;
                     switch (name) {
                     case "Button": return buttonComponent;
-                    case "ButtonBlock": return buttonBlockComponent;
                     case "ButtonRow": return buttonRowComponent;
                     case "ButtonColumn": return buttonColumnComponent;
                     case "CheckBox": return checkBoxComponent;
@@ -212,15 +210,6 @@ Item {
             StretchBenchBoolOption { text: "Two-line text:"; id: buttonOptionTwoLineText }
             StretchBenchBoolOption { text: "Green background:"; id: buttonOptionGreenBackground }
             StretchBenchBoolOption { text: "White text:"; id: buttonOptionWhiteText }
-        }
-
-        Column {
-            anchors.fill: parent; anchors.margins: 10; spacing: 5
-            opacity: currentComponentName == "ButtonBlock" ? 1 : 0
-            StretchBenchBoolOption { text: "Dimmed:"; id: buttonBlockOptionDimmed }
-            StretchBenchBoolOption { text: "Vertical layout"; id: buttonBlockOptionVerticalLayout }
-            StretchBenchBoolOption { text: "First button opacity = 0"; id: buttonBlockOptionFirstButtonTransparent }
-            StretchBenchBoolOption { text: "Last button !visible"; id: buttonBlockOptionLastButtonNotVisible; enabled: false }
         }
 
         Column {
@@ -360,26 +349,6 @@ Item {
         }
     }
 
-    Component {
-        id: buttonBlockComponent
-        ButtonBlock {
-            //orientation: Qt.Vertical
-            model: ListModel {
-                ListElement { text: "Button A"; opacity: 1 }
-                ListElement { text: "Button B1"; opacity: 1 }
-                ListElement { text: "Button C12"; opacity: 1 }
-                ListElement { text: "Button D123"; opacity: 1 }
-            }
-            onClicked: model.setProperty(1, "text", "Foo")
-            enabled: !buttonBlockOptionDimmed.checked
-            orientation: buttonBlockOptionVerticalLayout.checked ? Qt.Vertical : Qt.Horizontal
-            Connections { target: buttonBlockOptionFirstButtonTransparent; onCheckedChanged: handleFirstButtonTransparentChanged() }
-            function handleFirstButtonTransparentChanged() {
-                model.setProperty(0, "opacity", buttonBlockOptionFirstButtonTransparent.checked ? 0 : 1);
-            }
-            Component.onCompleted: handleFirstButtonTransparentChanged() // set initial state
-        }
-    }
     Component {
         id: buttonRowComponent
         ButtonRow {

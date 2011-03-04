@@ -43,12 +43,10 @@ Rectangle {
                     TextArea{}
                 }
                 Slider{ anchors.horizontalCenter: parent.horizontalCenter}
-                ButtonBlock{
-                    model: ListModel{
-                        ListElement{text:"one" ; iconSource:"images/folder_new.png"}
-                        ListElement{text:"two" }
-                        ListElement{text:"three"}
-                    }
+                ButtonRow{
+                    Button{text:"one" ; iconSource:"images/folder_new.png"}
+                    Button{text:"two" }
+                    Button{text:"three"}
                 }
             }
             Column{
