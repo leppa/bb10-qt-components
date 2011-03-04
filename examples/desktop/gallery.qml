@@ -109,7 +109,7 @@ Rectangle {
                             // normalize value [0.0 .. 1.0]
                             value: (slider.value - slider.minimumValue) / (slider.maximumValue - slider.minimumValue)
                         }
-                        Slider {id:slider; value:50}
+                        Slider {id:slider; value:0.5}
                         smooth:true
                     }
                 }

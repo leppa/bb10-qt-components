@@ -44,7 +44,13 @@ Item {
     property bool animateHandle: true
     property string showValueIndicator: "above" // one of "above", "below", "left", "right", or "none"
     property int valueIndicatorMargin: 10
-    function formatValue(v) { return Math.round(v); }
+
+    function formatValue(v) {
+        if (parseInt(v) != v)
+            useDecimals = true;
+
+        return useDecimals ? (v.toFixed(2)) : v;
+    }
 
     property color progressColor: palette.highlight
     property color backgroundColor: palette.alternateBase
@@ -58,6 +64,10 @@ Item {
     property int minimumHeight: defaultStyle.minimumHeight
 
     // implementation
+
+    // The default implementation for label hides decimals until it hits a
+    // floating point value at which point it keeps decimals
+    property bool useDecimals: false
 
     implicitWidth: contents.isVertical ? Math.max(minimumHeight, handleLoader.item.implicitHeight) : minimumWidth
     implicitHeight: contents.isVertical ? minimumWidth : Math.max(minimumHeight, handleLoader.item.implicitHeight)    
@@ -81,14 +91,18 @@ Item {
 
         RangeModel {
             id: rangeModel
-            minimumValue: 0
-            maximumValue: 100
+            minimumValue: 0.0
+            maximumValue: 1.0
             value: 0
-            stepSize: 1.0
+            stepSize: 0
             inverted: false
 
             positionAtMinimum: contents.halfPinWidth // relative to *center* of handle
             positionAtMaximum: contents.width - contents.halfPinWidth
+
+            onMaximumChanged: useDecimals = false;
+            onMinimumChanged: useDecimals = false;
+            onStepSizeChanged: useDecimals = false;
         }
 
         Loader {
@@ -128,6 +142,7 @@ Item {
             width: handleLoader.width
             height: handleLoader.height
             transform: Translate { x: -contents.halfHandleWidth }
+            onXChanged: valueIndicatorLoader.indicatorText = slider.formatValue(rangeModel.valueForPosition(shadowHandle.x));
         }
 
         MouseArea {
@@ -167,7 +182,7 @@ Item {
             rotation: contents.isVertical ? 90 : 0
             visible: (actualPosition != undefined)
 
-            property string indicatorText: slider.formatValue(rangeModel.valueForPosition(handleLoader.x))
+            property string indicatorText
             property alias styledItem: slider
             sourceComponent: valueIndicator //mm Only load while handle is pressed?
 

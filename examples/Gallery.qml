@@ -51,7 +51,7 @@ Rectangle {
                         TextField { }
                         TextArea { placeholderText:"This is a\n multiline control."}
                         SpinBox{ }
-                        Slider { value: 50 }
+                        Slider { value: 0.5 }
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
@@ -107,7 +107,7 @@ Rectangle {
                             TextField { }
                             TextArea { placeholderText:"This is a\n multiline control."}
                             SpinBox{ }
-                            Slider { value: 50 }
+                            Slider { value: 0.5 }
                             Row{
                                 spacing:rowspacing
                                 anchors.horizontalCenter:parent.horizontalCenter
@@ -165,7 +165,7 @@ Rectangle {
                         TextField { backgroundColor: column3.bg; textColor: column3.fg}
                         TextArea  { placeholderText:"This is a\n multiline control."; backgroundColor: column3.bg; textColor: column3.fg}
                         SpinBox{ backgroundColor: column3.bg; textColor: column3.fg}
-                        Slider { value: 50; backgroundColor: column3.bg; progressColor: column3.pg;}
+                        Slider { value: 0.5; backgroundColor: column3.bg; progressColor: column3.pg;}
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
@@ -250,7 +250,7 @@ Rectangle {
                             }
                         }
                         Slider {
-                            value: 50
+                            value: 0.5
                             height: 20
                             handle: BorderImage{
                                 source: "customtheme/exampletheme/images/button_normal.png";
