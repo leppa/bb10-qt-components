@@ -137,10 +137,6 @@ FocusScope {
             textEdit: textEdit
             desktopBehavior: false
             flickable: flickHandler
-            copyPasteButtons: ButtonBlock {
-                opacity: 0  // initially hidden
-                Behavior on opacity { NumberAnimation { duration: 100 } }
-            }
         }
     }
 

@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "../"
 
 // KNOWN ISSUES
 // 1) Can't tell if the Paste button should be shown or not, see QTBUG-16190
@@ -10,7 +11,7 @@ Item {
     property TextInput textInput
     property TextEdit textEdit
     property Flickable flickable
-    property bool desktopBehavior: true
+    property bool desktopBehavior: false
     property alias containsMouse: mouseArea.containsMouse
 
     property Component copyPasteButtons
@@ -227,39 +228,49 @@ Item {
 
     Item {
         id: copyPastePopup
-
+        Component {
+            id: copyPasteButtons
+            ButtonRow {
+                Behavior on opacity { NumberAnimation { duration: 100 } }
+                Button{
+                    id: copyButton
+                    text: "Copy"
+                    visible: textEditor.selectedText.length > 0
+                    onClicked: {
+                         textEditor.copy()
+                         copyPastePopup.showing = false;
+                         copyPastePopup.wasClosedByCopy = true;
+                    }
+                }
+                Button{
+                    id: cutButton
+                    text: "Cut"
+                    visible: textEditor.selectedText.length > 0 && !textEditor.readOnly
+                    onClicked: textEditor.cut()
+                }
+                Button{
+                    id: pasteButton
+                    text: "Paste"
+                    visible: textEditor.canPaste
+                    onClicked: textEditor.paste()
+                }
+                Button{
+                    id: selectButton ;
+                    text: "Select"
+                    visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
+                    onClicked: textEditor.selectWord()
+                }
+                Button{
+                    id: selectAllButton;
+                    text: "Select all"
+                    visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
+                    onClicked: textEditor.selectAll()
+                }
+            }
+        }
         property alias showing: modalPopup.showing
         property bool wasCancelledByClick: false
         property bool wasClosedByCopy: false
-
-        property bool showCopyAction: textEditor.selectedText.length > 0
-        property bool showCutAction: textEditor.selectedText.length > 0 && !textEditor.readOnly
-        property bool showPasteAction: textEditor.canPaste
-        property bool showSelectAction: textEditor.text.length > 0 && textEditor.selectedText.length == 0
-        property bool showSelectAllAction: textEditor.text.length > 0 && textEditor.selectedText.length == 0
-
-        ListModel {
-            id: popupButtonModel
-            ListElement { text: "Copy"; opacity: 0 }        // index: 0
-            ListElement { text: "Cut"; opacity: 0 }         // index: 1
-            ListElement { text: "Paste"; opacity: 1 }       // index: 2
-            ListElement { text: "Select"; opacity: 0 }      // index: 3
-            ListElement { text: "Select all"; opacity: 0 }  // index: 4
-        }
-
-        onShowCopyActionChanged: popupButtonModel.setProperty(0, "opacity", showCopyAction ? 1 : 0);
-        onShowCutActionChanged: popupButtonModel.setProperty(1, "opacity", showCutAction ? 1 : 0);
-        onShowPasteActionChanged: popupButtonModel.setProperty(2, "opacity", showPasteAction ? 1 : 0);
-        onShowSelectActionChanged: popupButtonModel.setProperty(3, "opacity", showSelectAction ? 1 : 0);
-        onShowSelectAllActionChanged: popupButtonModel.setProperty(4, "opacity", showSelectAllAction ? 1 : 0);
-
-        Component.onCompleted: {
-            showCopyActionChanged();
-            showCutActionChanged();
-            showPasteActionChanged();
-            showSelectActionChanged();
-            showSelectAllActionChanged();
-        }
 
         function positionPopout(popup, window) {   // position poput above the text field's cursor
             var popoutPoint = selectionPopoutPoint();
@@ -280,24 +291,7 @@ Item {
             delay: 300
             onPrepareToShow: copyPastePopup.positionPopout(popup, window)
             onCancelledByClick: copyPastePopup.wasCancelledByClick = true
-
             popupComponent: copyPasteButtons
-            onPopupChanged: if(popup) popup.model = popupButtonModel
-
-            Connections {
-                target: modalPopup.popup
-                onClicked: {
-                    if(index == 0) {
-                        textEditor.copy();
-                        copyPastePopup.showing = false;
-                        copyPastePopup.wasClosedByCopy = true;
-                    }
-                    if(index == 1) textEditor.cut();
-                    if(index == 2) textEditor.paste();
-                    if(index == 3) textEditor.selectWord();
-                    if(index == 4) textEditor.selectAll();
-                }
-            }
         }
     }
 }
