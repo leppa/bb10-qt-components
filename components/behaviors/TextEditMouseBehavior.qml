@@ -231,7 +231,9 @@ Item {
         Component {
             id: copyPasteButtons
             ButtonRow {
-                exclusive:false
+                opacity: 0
+                exclusive: false
+
                 Behavior on opacity { NumberAnimation { duration: 100 } }
                 Button{
                     id: copyButton
@@ -256,13 +258,13 @@ Item {
                     onClicked: textEditor.paste()
                 }
                 Button{
-                    id: selectButton ;
+                    id: selectButton
                     text: "Select"
                     visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
                     onClicked: textEditor.selectWord()
                 }
                 Button{
-                    id: selectAllButton;
+                    id: selectAllButton
                     text: "Select all"
                     visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
                     onClicked: textEditor.selectAll()
