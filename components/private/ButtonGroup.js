@@ -53,7 +53,7 @@ function build() {
             }
 
             clickHandlers[i] = checkExclusive(item);
-            item.clicked.connect(clickHandlers[i]);
+            item.checkedChanged.connect(clickHandlers[i]);
         }
     }
 
@@ -87,7 +87,7 @@ function finishButton(button, position) {
 function cleanup() {
     visibleButtons.forEach(function(item, i) {
         if (clickHandlers[i])
-            item.clicked.disconnect(clickHandlers[i]);
+            item.checkedChanged.disconnect(clickHandlers[i]);
         item.visibleChanged.disconnect(rebuild);
     });
     clickHandlers = [];
@@ -121,7 +121,13 @@ function checkExclusive(item) {
     var button = item;
     return function() {
         for (var i = 0, ref; (ref = visibleButtons[i]); i++) {
-            ref.checked = button === ref;
+            if (ref.checked == (button === ref))
+                continue;
+
+            // Disconnect the signal to avoid recursive calls
+            ref.checkedChanged.disconnect(clickHandlers[i]);
+            ref.checked = !ref.checked;
+            ref.checkedChanged.connect(clickHandlers[i]);
         }
         self.checkedButton = button;
     }
