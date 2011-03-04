@@ -4,7 +4,7 @@ import "./styles/default" as DefaultStyles
 Item {
     id: busyIndicator
 
-    property bool running: true
+    property bool running: false
     property Component background: defaultStyle.background
 
     // implementation
