@@ -231,6 +231,7 @@ Item {
         Component {
             id: copyPasteButtons
             ButtonRow {
+                exclusive:false
                 Behavior on opacity { NumberAnimation { duration: 100 } }
                 Button{
                     id: copyButton
