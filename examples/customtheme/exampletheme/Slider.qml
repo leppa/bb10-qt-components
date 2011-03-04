@@ -12,25 +12,25 @@ Components.Slider{
                 "images/button_normal.png"
         border.top:6 ; border.bottom:6
         border.left:6 ; border.right:6
+    }
 
+    valueIndicator:
         BorderImage {
             id: name
             source: "images/label.png"
-            border.top:12
-            border.bottom:12
-            anchors.bottom:parent.top
+            border.top: 12
+            border.bottom: 12
             height: 30
-            Text{
+            Text {
                 anchors.centerIn:parent
                 anchors.verticalCenterOffset:-4
-                id:label
-                text:value
-                color:"white"
+                text: indicatorText
+                color: "white"
             }
             opacity: pressed
             Behavior on opacity { NumberAnimation{easing.type:Easing.OutCubic  } }
         }
-    }
+
 
     groove: Item {
         BorderImage {

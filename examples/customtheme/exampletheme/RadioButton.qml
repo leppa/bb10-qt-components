@@ -6,7 +6,8 @@ Components.RadioButton{
         source: "images/radiobutton_normal.png"
     }
 
-    checkmark:Image{
+    checkmark:Image {
+	visible: checked
         anchors.centerIn:parent
         source: "images/radiobutton_check.png"
         Behavior on opacity { NumberAnimation{easing.type:Easing.OutCubic}}

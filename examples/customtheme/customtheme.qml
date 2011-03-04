@@ -14,10 +14,10 @@ Rectangle {
                 spacing:6
                 Repeater {
                     model: ["Button 1", "Button 2", "Button 3" ]
-                    Button { text:modelData }
+                    Button { text: modelData }
                 }
             }
-            TextField { text:modelData }
+            TextField { }
             Slider { value:50 }
             Row {
                 spacing:4

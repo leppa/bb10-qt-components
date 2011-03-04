@@ -9,7 +9,8 @@ Components.CheckBox{
         border.left:6
         border.right:8
     }
-    checkmark:Image{
+    checkmark:Image {
+	visible: checked
         anchors.centerIn:parent
         source: "images/checkbox_check.png"
         Behavior on opacity { NumberAnimation{easing.type:Easing.OutCubic}}
