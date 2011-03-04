@@ -26,6 +26,7 @@ QtObject {
 
                 Rectangle { // Background center fill
                     anchors.fill: parent
+                    anchors.margins: 1
                     anchors.leftMargin: anchors.leftMargin
                     anchors.rightMargin: anchors.rightMargin
                     anchors.topMargin: anchors.topMargin
