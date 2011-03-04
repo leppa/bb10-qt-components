@@ -11,7 +11,7 @@ Item {
     property TextInput textInput
     property TextEdit textEdit
     property Flickable flickable
-    property bool desktopBehavior: false
+    property bool desktopBehavior: true
     property alias containsMouse: mouseArea.containsMouse
 
     property Component copyPasteButtons
