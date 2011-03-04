@@ -55,8 +55,7 @@ QtObject {
     property Component basic:
     Component {
         RadioButton {
-            width: 200
-            height: 200
+            checked: true
         }
     }
 }

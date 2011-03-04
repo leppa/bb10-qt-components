@@ -78,7 +78,6 @@ QtObject {
     Component {
         TextField {
             width: 200
-            height: 200
             text: "Test TextField"
         }
     }

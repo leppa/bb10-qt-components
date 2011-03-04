@@ -57,12 +57,17 @@ QtObject {
     property Component basic:
     Component {
         Item {
-            ScrollDecorator {
-                flickableItem: listViewBasic
-            }
+            width: 200
+            height: 200
 
             ListView {
                 id: listViewBasic
+
+                anchors.fill: parent
+            }
+
+            ScrollDecorator {
+                flickableItem: listViewBasic
             }
         }
     }

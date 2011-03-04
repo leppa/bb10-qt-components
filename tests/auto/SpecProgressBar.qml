@@ -58,7 +58,10 @@ QtObject {
     Component {
         ProgressBar {
             width: 200
-            height: 200
+
+            minimumValue: 0.0
+            maximumValue: 1.0
+            value: 0.5
         }
     }
 }

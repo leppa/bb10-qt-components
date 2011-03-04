@@ -54,9 +54,9 @@ ComponentTestCase {
         var message =
             "Clicking on the RadioButton should change the checked value.";
         mouseClick(obj, obj.width / 2, obj.height / 2);
-        compare(obj.checked, true, message);
-        mouseClick(obj, obj.width / 2, obj.height / 2);
         compare(obj.checked, false, message);
+        mouseClick(obj, obj.width / 2, obj.height / 2);
+        compare(obj.checked, true, message);
     }
 
     function test_pressed() {

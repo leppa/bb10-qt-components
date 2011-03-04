@@ -51,8 +51,8 @@ QtObject {
     property Component basic:
     Component {
         BusyIndicator {
-            width: 200
-            height: 200
+            width: 50
+            height: 50
         }
     }
 }

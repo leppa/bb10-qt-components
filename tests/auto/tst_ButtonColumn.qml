@@ -64,26 +64,26 @@ ComponentTestCase {
         compare(obj.children[2].checked, true, message);
 
         var message =
-            "Changing back exclusive to true, the last checked item should remain checked."
+            "Changing back exclusive to true, the last checked item when in exclusive " +
+            "mode should remain checked."
         obj.exclusive = true;
-        compare(obj.checkedButton, obj.children[1], message);
+        compare(obj.checkedButton, obj.children[2], message);
         compare(obj.children[0].checked, false, message);
-        compare(obj.children[1].checked, true, message);
-        compare(obj.children[2].checked, false, message);
+        compare(obj.children[1].checked, false, message);
+        compare(obj.children[2].checked, true, message);
 
         var message =
-            "Changing exclusive from false to true when no item is selected, should" +
-            "select the first item.";
+            "Changing exclusive from false to true when no item is selected, should " +
+            "select the last item checked when in non-exclusive mode.";
         obj.exclusive = false;
-        obj.children[1].checked = false;
-        compare(obj.checkedButton, undefined, message);
+        obj.children[2].checked = false;
         compare(obj.children[0].checked, false, message);
         compare(obj.children[1].checked, false, message);
         compare(obj.children[2].checked, false, message);
         obj.exclusive = true;
-        compare(obj.checkedButton, obj.children[0], message);
-        compare(obj.children[0].checked, true, message);
+        compare(obj.checkedButton, obj.children[2], message);
+        compare(obj.children[0].checked, false, message);
         compare(obj.children[1].checked, false, message);
-        compare(obj.children[2].checked, false, message);
+        compare(obj.children[2].checked, true, message);
     }
 }
