@@ -42,8 +42,8 @@ FocusScope {
     }
 
     function positionToRectangle(charPos) {
-        var rect = textInput.positionToRectangle(charPos);
-        var mappedPos = mapFromItem(textInput, rect.x, rext.y);
+        var rect = textEdit.positionToRectangle(charPos);
+        var mappedPos = mapFromItem(textEdit, rect.x, rect.y);
         rect.x = mappedPos.x; rect.y = mappedPos.y;
         return rect;
     }
@@ -97,6 +97,9 @@ FocusScope {
         contentHeight: textEdit.implicitHeight
 
         function ensureVisible(textEditor, cursorRect) {
+            if (!flickHandler)
+                return
+
             var cursorPosMappedToFlickHandler = textEditor.mapToItem(flickHandler, cursorRect.x, cursorRect.y);
 
             if(cursorPosMappedToFlickHandler.x < 0) {
