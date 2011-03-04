@@ -1,5 +1,5 @@
 var self;
-var clickHandlers = [];
+var checkHandlers = [];
 var visibleButtons = [];
 var nonVisibleButtons = [];
 var direction;
@@ -52,8 +52,8 @@ function build() {
                 item.checkable = true;
             }
 
-            clickHandlers[i] = checkExclusive(item);
-            item.checkedChanged.connect(clickHandlers[i]);
+            checkHandlers[i] = checkExclusive(item);
+            item.checkedChanged.connect(checkHandlers[i]);
         }
     }
 
@@ -86,11 +86,11 @@ function finishButton(button, position) {
 
 function cleanup() {
     visibleButtons.forEach(function(item, i) {
-        if (clickHandlers[i])
-            item.checkedChanged.disconnect(clickHandlers[i]);
+        if (checkHandlers[i])
+            item.checkedChanged.disconnect(checkHandlers[i]);
         item.visibleChanged.disconnect(rebuild);
     });
-    clickHandlers = [];
+    checkHandlers = [];
 
     nonVisibleButtons.forEach(function(item, i) {
         item.visibleChanged.disconnect(rebuild);
@@ -125,9 +125,9 @@ function checkExclusive(item) {
                 continue;
 
             // Disconnect the signal to avoid recursive calls
-            ref.checkedChanged.disconnect(clickHandlers[i]);
+            ref.checkedChanged.disconnect(checkHandlers[i]);
             ref.checked = !ref.checked;
-            ref.checkedChanged.connect(clickHandlers[i]);
+            ref.checkedChanged.connect(checkHandlers[i]);
         }
         self.checkedButton = button;
     }
