@@ -33,4 +33,38 @@ ComponentTestCase {
     SpecSwitch {
         id: testSubject
     }
+
+    SignalSpy {
+        id: spy
+        signalName: "clicked"
+    }
+
+    function test_clicked() {
+        spy.target = obj;
+
+        var message =
+            "Clicking on the Switch must emit the signal clicked().";
+        mouseClick(obj, obj.width / 2, obj.height / 2);
+        mouseClick(obj, obj.width / 2, obj.height / 2);
+        mouseClick(obj, obj.width / 2, obj.height / 2);
+        compare(spy.count, 3, message);
+    }
+
+    function test_checked() {
+        var message =
+            "Clicking on the Switch should change the checked value.";
+        mouseClick(obj, obj.width / 2, obj.height / 2);
+        compare(obj.checked, false, message);
+        mouseClick(obj, obj.width / 2, obj.height / 2);
+        compare(obj.checked, true, message);
+    }
+
+    function test_pressed() {
+        var message =
+            "Pressing and releasing the mouse must change pressed property.";
+        mousePress(obj, obj.width / 2, obj.height / 2);
+        compare(obj.pressed, true, message);
+        mouseRelease(obj, obj.width / 2, obj.height / 2);
+        compare(obj.pressed, false, message);
+    }
 }
