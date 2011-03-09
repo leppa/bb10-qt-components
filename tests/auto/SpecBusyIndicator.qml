@@ -53,6 +53,8 @@ QtObject {
         BusyIndicator {
             width: 50
             height: 50
+
+            running: true
         }
     }
 }

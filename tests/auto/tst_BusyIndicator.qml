@@ -33,4 +33,15 @@ ComponentTestCase {
     SpecBusyIndicator {
         id: testSubject
     }
+
+    function test_running() {
+        var message =
+            "Testing if the running property can be checked.";
+        obj.running = false;
+        compare(obj.running, false, message);
+        obj.running = true;
+        compare(obj.running, true, message);
+        obj.running = false;
+        compare(obj.running, false, message);
+    }
 }
