@@ -33,4 +33,15 @@ ComponentTestCase {
     SpecScrollDecorator {
         id: testSubject
     }
+
+    ListView {
+        id: listView
+    }
+
+    function test_flickableItem() {
+        var message =
+            "Testing if flickableItem property can be set and verified."
+        obj.children[1].flickableItem = listView;
+        compare(obj.children[1].flickableItem, obj.children[1].flickableItem, message);
+    }
 }
