@@ -72,20 +72,24 @@ ComponentTestCase {
 
     function test_readOnly() {
         var message =
-            "Setting readOnly to true should prevent any modification in the text property.";
+            "Setting readOnly to true should prevent user input to modify the text.";
         obj.text = "Test123";
         obj.readOnly = true;
-        obj.text = "123Test";
-        expectFail("", message); // XXX: See QTBUG-15257
-        compare(obj.text, "Test123", message);
-        obj.text = "";
+        obj.forceActiveFocus();
+        keyClick(Qt.Key_T);
+        keyClick(Qt.Key_E);
+        keyClick(Qt.Key_S);
+        keyClick(Qt.Key_T);
         compare(obj.text, "Test123", message);
 
         message =
-            "Setting readOnly to false should allow modifications in the text property.";
+            "Setting readOnly to false should allow user input to modify the text.";
         obj.readOnly = false;
-        obj.text = "123Test";
-        compare(obj.text, "123Test", message);
+        keyClick(Qt.Key_T);
+        keyClick(Qt.Key_E);
+        keyClick(Qt.Key_S);
+        keyClick(Qt.Key_T);
+        compare(obj.text, "Test123test", message);
     }
 
     function test_select() {}
@@ -165,8 +169,8 @@ ComponentTestCase {
         obj.selectAll();
         obj.text = "ABC";
         compare(obj.selectedText, "", message);
-        compare(obj.selectionStart, 0, message);
-        compare(obj.selectionEnd, 0, message);
+        compare(obj.selectionStart, 3, message);
+        compare(obj.selectionEnd, 3, message);
 
         message =
             "Moving the cursor by pressing arrow keys should remove text selection.";
@@ -328,5 +332,18 @@ ComponentTestCase {
         keyClick(Qt.Key_T);
         keyClick(Qt.Key_4);
         compare(obj.text, "test", message);
+    }
+
+    function test_inputMethodHints() {
+        var message =
+            "Testing if inputMethodHints property can be set and verified.";
+        obj.inputMethodHints = Qt.ImhNone;
+        compare(obj.inputMethodHints, Qt.ImhNone, message);
+        obj.inputMethodHints = Qt.ImhPreferNumbers;
+        compare(obj.inputMethodHints, Qt.ImhPreferNumbers, message);
+        obj.inputMethodHints = Qt.ImhEmailCharactersOnly;
+        compare(obj.inputMethodHints, Qt.ImhEmailCharactersOnly, message);
+        obj.inputMethodHints = Qt.ImhDigitsOnly;
+        compare(obj.inputMethodHints, Qt.ImhDigitsOnly, message);
     }
 }

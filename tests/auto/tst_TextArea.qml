@@ -43,9 +43,9 @@ ComponentTestCase {
 
     function test_cursorPosition() {
         var message =
-            "When setting some text, the cursor should be positioned at the end of this text.";
+            "When setting some text, the cursor should keep the current position.";
         obj.text = "Test123";
-        compare(obj.cursorPosition, 7, message);
+        compare(obj.cursorPosition, 0, message);
 
         message =
             "Defining the cursor position to a number smaller than the text size should " +
@@ -86,20 +86,24 @@ ComponentTestCase {
 
     function test_readOnly() {
         var message =
-            "Setting readOnly to true should prevent any modification in the text property.";
+            "Setting readOnly to true should prevent user input to modify the text.";
         obj.text = "Test123";
         obj.readOnly = true;
-        obj.text = "123Test";
-        expectFail("", message); // XXX: See QTBUG-15257
-        compare(obj.text, "Test123", message);
-        obj.text = "";
+        obj.forceActiveFocus();
+        keyClick(Qt.Key_T);
+        keyClick(Qt.Key_E);
+        keyClick(Qt.Key_S);
+        keyClick(Qt.Key_T);
         compare(obj.text, "Test123", message);
 
         message =
-            "Setting readOnly to false should allow modifications in the text property.";
+            "Setting readOnly to false should allow user input to modify the text.";
         obj.readOnly = false;
-        obj.text = "123Test";
-        compare(obj.text, "123Test", message);
+        keyClick(Qt.Key_T);
+        keyClick(Qt.Key_E);
+        keyClick(Qt.Key_S);
+        keyClick(Qt.Key_T);
+        compare(obj.text, "Test123test", message);
     }
 
     function test_select() {}
