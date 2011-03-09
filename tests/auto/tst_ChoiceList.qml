@@ -33,4 +33,38 @@ ComponentTestCase {
     SpecChoiceList {
         id: testSubject
     }
+
+    ListModel {
+        id: emptyChoices
+    }
+
+    ListModel {
+        id: choices
+
+        ListElement { text: "Alpha" }
+        ListElement { text: "Beta" }
+        ListElement { text: "Gamma" }
+        ListElement { text: "Delta" }
+    }
+
+    function test_currentIndex() {}
+    function test_model() {
+        // FIXME: Can't test selection properly here because it depends
+        // a lot on layout.
+
+        var message =
+            "Setting an empty model should set the currentIndex to -1.";
+        obj.model = emptyChoices;
+        compare(obj.currentIndex, -1, message);
+
+        var message =
+            "Setting model to null should set the currentIndex to -1.";
+        obj.model = null;
+        compare(obj.currentIndex, -1, message);
+
+        var message =
+            "Setting model a valid and non-empty model should set the currentIndex to 0.";
+        obj.model = choices;
+        compare(obj.currentIndex, 0, message);
+    }
 }
