@@ -1,12 +1,13 @@
 import QtQuick 1.1
+import Qt.labs.components 1.0 // RangeModel
 import "./styles/default" as DefaultStyles
 
 Item {
     id: progressBar
 
-    property real value: 0
-    property real minimumValue: 0
-    property real maximumValue: 1
+    property alias value: rangeModel.value
+    property alias minimumValue: rangeModel.minimumValue
+    property alias maximumValue: rangeModel.maximumValue
     property bool indeterminate: false
 
     property color backgroundColor: syspal.base
@@ -28,6 +29,15 @@ Item {
 
     implicitWidth: Math.max(minimumWidth, grooveLoader.item.implicitWidth) + leftMargin + rightMargin
     implicitHeight: Math.max(minimumHeight, grooveLoader.item.implicitHeight) + topMargin + bottomMargin
+
+    RangeModel {
+        id: rangeModel
+        minimumValue: 0.0
+        maximumValue: 1.0
+        value: 0
+        stepSize: 0
+        inverted: false
+    }
 
     Loader { // groove background
         id: grooveLoader
