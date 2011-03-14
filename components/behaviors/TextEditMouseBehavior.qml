@@ -13,6 +13,8 @@ Item {
     property Flickable flickable
     property bool desktopBehavior: true
     property alias containsMouse: mouseArea.containsMouse
+    property bool zoomable: false
+    property real zoomFactor: 1.0
 
     property Component copyPasteButtons
 
@@ -183,8 +185,12 @@ Item {
             if(desktopBehavior)
                 textEditor.selectAll();
             else {
-                textEditor.cursorPosition = characterPositionAt(mouse);
-                textEditor.selectWord(); // select word at cursor position
+                if(zoomable) {
+                    zoomFactor = (zoomFactor == 1 ? 2 : 1) //mm For now. Add PinchArea later.
+                } else {
+                    textEditor.cursorPosition = characterPositionAt(mouse);
+                    textEditor.selectWord(); // select word at cursor position
+                }
             }
         }
     }

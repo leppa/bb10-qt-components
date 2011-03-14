@@ -26,6 +26,8 @@ FocusScope {
     property alias textFormat: textEdit.textFormat
     property alias inputMethodHints: textEdit.inputMethodHints
     property alias containsMouse: mouseEditBehavior.containsMouse
+    property alias zoomable: mouseEditBehavior.zoomable // enable pinch/double-click zoom by user
+    property alias zoomFactor: mouseEditBehavior.zoomFactor
 
     function forceActiveFocus() { textEdit.forceActiveFocus() }
     function cut() { textEdit.cut() }
@@ -66,10 +68,10 @@ FocusScope {
 
     // Implementation
 
-    implicitWidth: Math.max(minimumWidth,
+    implicitWidth: textEdit.scale * Math.max(minimumWidth,
                     Math.max(textEdit.implicitWidth,
                              placeholderTextComponent.implicitWidth) + leftMargin + rightMargin)
-    implicitHeight: Math.max(minimumHeight,
+    implicitHeight: textEdit.scale * Math.max(minimumHeight,
                      Math.max(textEdit.implicitHeight,
                               placeholderTextComponent.implicitHeight) + topMargin + bottomMargin)
 
@@ -88,13 +90,14 @@ FocusScope {
     Flickable { //mm is FocusScope, so TextArea's root doesn't need to be, no?
         id: flickable
         clip: true
-
         anchors.fill: parent
         anchors.leftMargin: leftMargin
         anchors.topMargin: topMargin
         anchors.rightMargin: rightMargin
         anchors.bottomMargin: bottomMargin
+
         contentHeight: textEdit.implicitHeight
+        interactive: (flickable == flickHandler)
 
         function ensureVisible(textEditor, cursorRect) {
             if (!flickHandler)
@@ -117,23 +120,26 @@ FocusScope {
 
         TextEdit { // see QTBUG-14936
             id: textEdit
+
             font.pixelSize: _hints.fontPixelSize
             font.bold: _hints.fontBold
-
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+            width: flickable.width / scale
 
             color: enabled ? textColor: Qt.tint(textColor, "#80ffffff")
             wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.Wrap
             onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
 
             onActiveFocusChanged: activeFocus ? openSoftwareInputPanel() : closeSoftwareInputPanel()
+
+            transformOrigin: Item.TopLeft
+            scale: mouseEditBehavior.zoomFactor
+            Behavior on scale { NumberAnimation { duration: 100 } }
         }
 
         TextEditMouseBehavior { // Has to be inside the Flickable to work correctly with it
             id: mouseEditBehavior
-            anchors.fill: parent
+            width: textEdit.width*textEdit.scale
+            height: textEdit.height*textEdit.scale
             textEdit: textEdit
             desktopBehavior: false
             flickable: flickHandler
