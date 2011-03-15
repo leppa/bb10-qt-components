@@ -1,29 +1,23 @@
-import QtQuick 1.0
+import QtQuick 1.1
 
 QtObject {
-
     property int minimumWidth: 200
     property int minimumHeight: 25
 
-    property int leftMargin : 8
+    property int leftMargin: 8
     property int topMargin: 8
     property int rightMargin: 8
     property int bottomMargin: 8
 
-    property Component background:
-    Component {
-        id: defaultBackground
+    property Component background: Component {
         Item {
             opacity: enabled ? 1 : 0.7
             Rectangle {
-                x: 1
-                y: 1
-                width: parent.width-2
-                height: parent.height-2
+                anchors.fill: parent
+                anchors.margins: 1
                 color: backgroundColor
                 radius: 5
             }
-
             BorderImage {
                 anchors.fill: parent
                 id: backgroundimage
@@ -35,9 +29,7 @@ QtObject {
         }
     }
 
-    property Component up:
-    Component {
-        id: defaultUp
+    property Component up: Component {
         Item {
             anchors.right: parent.right
             anchors.top: parent.top
@@ -53,9 +45,7 @@ QtObject {
         }
     }
 
-    property Component down:
-    Component {
-        id: defaultDown
+    property Component down: Component {
         Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
@@ -68,6 +58,13 @@ QtObject {
                 opacity: (downEnabled && enabled) ? (downPressed ? 1 : 0.8) : 0.3
                 source: "images/spinbox_down.png"
             }
+        }
+    }
+
+    property Component hints: Component {
+        Item {
+            property int fontPixelSize: 14
+            property bool fontBold: false
         }
     }
 }

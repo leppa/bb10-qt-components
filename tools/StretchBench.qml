@@ -285,6 +285,10 @@ Item {
             anchors.fill: parent; anchors.margins: 10; spacing: 5
             opacity: currentComponentName == "SpinBox" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: spinBoxOptionDimmed }
+            StretchBenchBoolOption { text: "Set value to 50:"; id: spinBoxOptionValueSetTo50 }
+            StretchBenchBoolOption { text: "Green background:"; id: spinBoxOptionGreenBackground }
+            StretchBenchBoolOption { text: "White text:"; id: spinBoxOptionWhiteText }
+            StretchBenchBoolOption { text: "One decimal step size:"; id: spinBoxOptionOneDecimalStepSize }
         }
 
         Column {
@@ -529,7 +533,16 @@ Item {
     Component {
         id: spinBoxComponent
         SpinBox {
+            id: spinBox
             enabled: !spinBoxOptionDimmed.checked
+            backgroundColor: spinBoxOptionGreenBackground.checked ? "green" : syspal.base
+            textColor: spinBoxOptionWhiteText.checked ? "white" : syspal.text
+            stepSize: spinBoxOptionOneDecimalStepSize.checked ? 0.1 : 1
+
+            Connections {
+                target: spinBoxOptionValueSetTo50
+                onCheckedChanged: spinBox.setValue(spinBoxOptionValueSetTo50.checked ? 50 : 0)
+            }
         }
     }
 }

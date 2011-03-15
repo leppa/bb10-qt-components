@@ -1,9 +1,56 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "./styles/default" as DefaultStyles
 
 Item {
-    id: spinbox
-    SystemPalette{id:syspal}
+    id: spinBox
+
+    property real value: 0.0      // read-only. see setValue(), increment() and decrement()
+    property real minimumValue: 0
+    property real maximumValue: 100
+    property real stepSize: 1
+
+    function increment() {
+        value += stepSize;
+        if (value > maximumValue)
+            value = maximumValue;
+        textInput.text = value;
+    }
+
+    function decrement() {
+        value -= stepSize;
+        if (value < minimumValue)
+            value = minimumValue;
+        textInput.text = value;
+    }
+
+    function setValue(v) {
+        var newval = parseFloat(v);
+        if (newval > maximumValue)
+            newval = maximumValue;
+        else if (value < minimumValue)
+            newval = minimumValue;
+
+        value = newval;
+        textInput.text = value;
+    }
+
+    property alias upPressed: mouseUp.pressed
+    property alias downPressed: mouseDown.pressed
+    property alias upHovered: mouseUp.containsMouse
+    property alias downHovered: mouseDown.containsMouse
+    property alias containsMouse: mouseArea.containsMouse
+    property alias activeFocus: textInput.activeFocus
+    property alias font: textInput.font
+
+    property bool upEnabled: (value < maximumValue)      // read-only
+    property bool downEnabled: (value > minimumValue)    // read-only
+
+    property color backgroundColor: syspal.base
+    property color textColor: syspal.text
+
+    property Component background: defaultStyle.background
+    property Component up: defaultStyle.up
+    property Component down: defaultStyle.down
 
     property int minimumWidth: defaultStyle.minimumWidth
     property int minimumHeight: defaultStyle.minimumHeight
@@ -13,64 +60,20 @@ Item {
     property int rightMargin: defaultStyle.rightMargin
     property int bottomMargin: defaultStyle.bottomMargin
 
-    width: Math.max(minimumWidth,
-                    input.width + leftMargin + rightMargin)
+    // implementation
 
-    height: Math.max(minimumHeight,
-                     input.height + topMargin + bottomMargin)
+    implicitWidth: Math.max(minimumWidth, textInput.implicitWidth + leftMargin + rightMargin)
+    implicitHeight: Math.max(minimumHeight, textInput.implicitHeight + topMargin + bottomMargin)
 
-    property real value: 0.0
-    property real maximumValue: 99
-    property real minimumValue: 0
-    property real singlestep: 1
-
-    property bool upEnabled: value != maximumValue;
-    property bool downEnabled: value != minimumValue;
-
-    property alias upPressed: mouseUp.pressed
-    property alias downPressed: mouseDown.pressed
-    property alias upHovered: mouseUp.containsMouse
-    property alias downHovered: mouseDown.containsMouse
-    property alias containsMouse: mouseArea.containsMouse
-    property alias activeFocus: input.activeFocus // Forward active focus
-
-    property color backgroundColor: syspal.base
-    property color textColor: syspal.text
-
-    property Component background: defaultStyle.background
-    property Component up: defaultStyle.up
-    property Component down: defaultStyle.down
-    DefaultStyles.SpinBoxStyle { id: defaultStyle }
-
-    function increment() {
-        value += singlestep
-        if (value > maximumValue)
-            value = maximumValue
-        input.text = value
-    }
-
-    function decrement() {
-        value -= singlestep
-        if (value < minimumValue)
-            value = minimumValue
-        input.text = value
-    }
-
-    function setValue(v) {
-        var newval = parseFloat(v)
-        if (newval > maximumValue)
-            newval = maximumValue
-        else if (value < minimumValue)
-            newval = minimumValue
-        value = newval
-        input.text = value
-    }
-
-    // background
-    Loader {
-        id: backgroundComponent
+    Loader { // background
         anchors.fill: parent
+        property alias styledItem: spinBox
         sourceComponent: background
+    }
+
+    Loader {
+        id: hintsLoader
+        sourceComponent: defaultStyle.hints
     }
 
     MouseArea {
@@ -80,63 +83,69 @@ Item {
     }
 
     TextInput {
-        id: input
-        font.pixelSize: 14
-        anchors.margins: 5
+        id: textInput
+        anchors.fill: parent
         anchors.leftMargin: leftMargin
         anchors.topMargin: topMargin
         anchors.rightMargin: rightMargin
         anchors.bottomMargin: bottomMargin
-        anchors.fill: parent
+        focus: true
         selectByMouse: true
-        text: spinbox.value
+        text: spinBox.value
+        font.pixelSize: hintsLoader.item ? hintsLoader.item.fontPixelSize : 12
+        font.bold: hintsLoader.item ? hintsLoader.item.fontBold : false
         validator: DoubleValidator { bottom: 11; top: 31 }
-        onTextChanged: { spinbox.setValue(text); }
+        onTextChanged: spinBox.setValue(text)
         color: textColor
         opacity: parent.enabled ? 1 : 0.5
     }
 
     Loader {
-        id: upButton
-        property alias pressed : spinbox.upPressed
-        property alias hover : spinbox.upHovered
-        property alias enabled : spinbox.upEnabled
+        id: upButtonLoader
+        property alias pressed: spinBox.upPressed
+        property alias hover: spinBox.upHovered
+        property alias enabled: spinBox.upEnabled
+        property alias styledItem: spinBox
         sourceComponent: up
         MouseArea {
             id: mouseUp
-            anchors.fill: upButton.item
+            anchors.fill: upButtonLoader.item
             onClicked: increment()
 
-            property bool autoincrement: false;
-            onReleased: autoincrement = false
-            Timer { running: mouseUp.pressed; interval: 350 ; onTriggered: mouseUp.autoincrement = true }
-            Timer { running: mouseUp.autoincrement; interval: 60 ; repeat: true ; onTriggered: increment() }
+            property bool autoIncrement: false
+            onReleased: autoIncrement = false
+            Timer { running: mouseUp.pressed; interval: 350; onTriggered: mouseUp.autoIncrement = true }
+            Timer { running: mouseUp.autoIncrement; interval: 60; repeat: true; onTriggered: increment() }
         }
         onLoaded: {
-            item.parent = spinbox
-            mouseUp.parent = item
+            item.parent = spinBox;
+            mouseUp.parent = item;
         }
     }
 
     Loader {
-        id: downButton
-        property alias pressed : spinbox.downPressed
-        property alias hover : spinbox.downHovered
-        property alias enabled : spinbox.downEnabled
+        id: downButtonLoader
+        property alias pressed: spinBox.downPressed
+        property alias hover: spinBox.downHovered
+        property alias enabled: spinBox.downEnabled
+        property alias styledItem: spinBox
         sourceComponent: down
         MouseArea {
             id: mouseDown
-            anchors.fill: downButton.item
+            anchors.fill: downButtonLoader.item
             onClicked: decrement()
 
-            property bool autoincrement: false;
-            onReleased: autoincrement = false
-            Timer { running: mouseDown.pressed; interval: 350 ; onTriggered: mouseDown.autoincrement = true }
-            Timer { running: mouseDown.autoincrement; interval: 60 ; repeat: true ; onTriggered: decrement() }
+            property bool autoIncrement: false
+            onReleased: autoIncrement = false
+            Timer { running: mouseDown.pressed; interval: 350; onTriggered: mouseDown.autoIncrement = true }
+            Timer { running: mouseDown.autoIncrement; interval: 60; repeat: true; onTriggered: decrement() }
         }
         onLoaded: {
-            item.parent = spinbox
-            mouseDown.parent = item
+            item.parent = spinBox;
+            mouseDown.parent = item;
         }
     }
+
+    DefaultStyles.SpinBoxStyle { id: defaultStyle }
+    SystemPalette { id: syspal }
 }
