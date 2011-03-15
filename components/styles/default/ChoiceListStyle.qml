@@ -15,7 +15,7 @@ QtObject {
             Rectangle { // Background center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: backgroundColor
+                color: styling.backgroundColor
                 radius: 5
             }
             BorderImage {
@@ -40,7 +40,7 @@ QtObject {
     property Component label: Component {
         Text {
             id:t
-            color: textColor
+            color: styling.textColor
             text: model && currentIndex >= 0 ? model.get(currentIndex).text : ""
             opacity: enabled ? 1 : 0.5
         }
@@ -60,7 +60,7 @@ QtObject {
             Rectangle { // Background center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: backgroundColor
+                color: styling.backgroundColor
                 radius: 5
             }
             BorderImage {
@@ -80,10 +80,10 @@ QtObject {
             width: styledItem.width
             height: Math.max(itemText.height, 28)
             color: highlighted ? "#556699" : "transparent"
-	    radius:2
-	    border.width:1
-	    border.color:Qt.darker(color)
-	    clip:true
+            radius: 2
+            border.width: 1
+            border.color: Qt.darker(color)
+            clip: true
             Text {
                 id: itemText
                 anchors.verticalCenter: parent.verticalCenter
@@ -91,7 +91,7 @@ QtObject {
                 anchors.leftMargin: 6
 
                 font.bold: index == currentIndex
-                color: highlighted ? "white" : styledItem.textColor
+                color: highlighted ? "white" : styling.textColor
                 anchors.margins: 10
                 text: model ? model.get(index).text : ""  // list properties can't be automatically be added to the scope, so use get()
             }

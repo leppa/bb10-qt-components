@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "./styles"       // TextFieldStylingProperties
 import "./styles/default" as DefaultStyles
 import "./behaviors"    // TextEditMouseBehavior
 
@@ -48,37 +49,36 @@ FocusScope {
         return rect;
     }
 
-    property color textColor: syspal.text
-    property color backgroundColor: syspal.base
+    property TextFieldStylingProperties styling: TextFieldStylingProperties {
+        textColor: syspal.text
+        backgroundColor: syspal.base
 
-    property Component background: defaultStyle.background
-    property Component hints: defaultStyle.hints
+        background: defaultStyle.background
+        hints: defaultStyle.hints
 
-    property int leftMargin: defaultStyle.leftMargin
-    property int topMargin: defaultStyle.topMargin
-    property int rightMargin: defaultStyle.rightMargin
-    property int bottomMargin: defaultStyle.bottomMargin
+        leftMargin: defaultStyle.leftMargin
+        topMargin: defaultStyle.topMargin
+        rightMargin: defaultStyle.rightMargin
+        bottomMargin: defaultStyle.bottomMargin
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
+    }
 
     // Implementation
 
-    implicitWidth: Math.max(minimumWidth,
-                    textInput.implicitWidth + leftMargin + rightMargin)
-
-    implicitHeight: Math.max(minimumHeight,
-                     textInput.implicitHeight + topMargin + bottomMargin)
+    implicitWidth: Math.max(styling.minimumWidth, textInput.implicitWidth + styling.horizontalMargins())
+    implicitHeight: Math.max(styling.minimumHeight, textInput.implicitHeight + styling.verticalMargins())
 
     property alias desktopBehavior: mouseEditBehavior.desktopBehavior
     property alias _hints: hintsLoader.item
     clip: true
 
-    Loader { id: hintsLoader; sourceComponent: hints }
+    Loader { id: hintsLoader; sourceComponent: styling.hints }
     Loader {
         anchors.fill: parent
         property alias styledItem: textField
-        sourceComponent: background
+        sourceComponent: styling.background
     }
 
     TextInput { // see QTBUG-14936
@@ -86,17 +86,17 @@ FocusScope {
         font.pixelSize: _hints.fontPixelSize
         font.bold: _hints.fontBold
 
-        anchors.leftMargin: leftMargin
-        anchors.topMargin: topMargin
-        anchors.rightMargin: rightMargin
-        anchors.bottomMargin: bottomMargin
+        anchors.leftMargin: styling.leftMargin
+        anchors.topMargin: styling.topMargin
+        anchors.rightMargin: styling.rightMargin
+        anchors.bottomMargin: styling.bottomMargin
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
         opacity: desktopBehavior || activeFocus ? 1 : 0
-        color: enabled ? textColor : Qt.tint(textColor, "#80ffffff")
+        color: enabled ? styling.textColor : Qt.tint(styling.textColor, "#80ffffff")
         echoMode: passwordMode ? _hints.passwordEchoMode : TextInput.Normal
 
         onActiveFocusChanged: {

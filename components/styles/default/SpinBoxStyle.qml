@@ -15,12 +15,11 @@ QtObject {
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: 1
-                color: backgroundColor
+                color: styling.backgroundColor
                 radius: 5
             }
             BorderImage {
                 anchors.fill: parent
-                id: backgroundimage
                 smooth: true
                 source: "images/lineedit_normal.png"
                 border.left: 6; border.top: 6

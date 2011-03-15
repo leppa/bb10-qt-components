@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "./styles"   // SwitchStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
@@ -9,22 +10,24 @@ Item {
     property bool checked: false
     property alias containsMouse: mouseArea.containsMouse
 
-    property color switchColor: syspal.button
-    property color backgroundColor: syspal.alternateBase
-    property color positiveHighlightColor: syspal.highlight
-    property color negativeHighlightColor: "transparent"
-    property color textColor: syspal.text
+    property SwitchStylingProperties styling: SwitchStylingProperties {
+        switchColor: syspal.button
+        backgroundColor: syspal.alternateBase
+        positiveHighlightColor: syspal.highlight
+        negativeHighlightColor: "transparent"
+        textColor: syspal.text
 
-    property Component groove: defaultStyle.groove
-    property Component handle: defaultStyle.handle
+        groove: defaultStyle.groove
+        handle: defaultStyle.handle
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
+    }
 
     // implementation
 
-    implicitWidth: Math.max(minimumWidth, grooveLoader.item.implicitWidth)
-    implicitHeight: Math.max(minimumHeight, grooveLoader.item.implicitHeight)
+    implicitWidth: Math.max(styling.minimumWidth, grooveLoader.item.implicitWidth)
+    implicitHeight: Math.max(styling.minimumHeight, grooveLoader.item.implicitHeight)
 
     onCheckedChanged: snapHandleIntoPlace();
 
@@ -33,7 +36,7 @@ Item {
         anchors.fill: parent
         property alias styledItem: toggleSwitch
         property real handleCenterX: handleLoader.item.x + (handleLoader.item.width/2)
-        sourceComponent: groove
+        sourceComponent: styling.groove
     }
 
     Loader {
@@ -41,7 +44,7 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         property alias styledItem: toggleSwitch
-        sourceComponent: handle
+        sourceComponent: styling.handle
 
         Component.onCompleted: item.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
     }

@@ -40,7 +40,7 @@ QtObject {
             Rectangle { // solid center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: styledItem.backgroundColor
+                color: styling.backgroundColor
                 radius: 5
             }
             BorderImage { // rounded border
@@ -65,7 +65,7 @@ QtObject {
 
                 z: -1
                 radius: 2
-                color: styledItem.progressColor
+                color: styling.progressColor
                 smooth: true
                 clip: true
                 Image { // diagonal stripes
@@ -128,7 +128,7 @@ QtObject {
 
                     z: -1
                     radius: 2
-                    color: styledItem.progressColor
+                    color: styling.progressColor
                     smooth: true
                     clip: true
 

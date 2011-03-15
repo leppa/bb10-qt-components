@@ -17,7 +17,6 @@ Rectangle {
                     Button { text: modelData }
                 }
             }
-            TextField { }
             Slider { value:50 }
             Row {
                 spacing:4

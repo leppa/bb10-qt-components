@@ -42,14 +42,14 @@ Rectangle {
                         anchors.top:parent.top
                         anchors.topMargin:6
 
-                        Text{ font.bold:true; text:"Default:" ; styleColor: "white" ; color:"#333" ; style:"Raised"}
+                        Text{ font.bold: true; text: "Default:" ; styleColor: "white" ; color: "#333" ; style: "Raised"}
                         Button { text:"Push me" }
                         ButtonRow {
                             Button{ text: "A" }
                             Button{ text: "B" }
                         }
                         TextField { }
-                        TextArea { placeholderText:"This is a\n multiline control."}
+                        TextArea { placeholderText: "This is a\n multiline control."}
                         SpinBox{ }
                         Slider { value: 0.5 }
                         Row{
@@ -79,8 +79,8 @@ Rectangle {
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
-                            BusyIndicator{}
-                            BusyIndicator{running:false}
+                            BusyIndicator { running: true }
+                            BusyIndicator { running: false }
                         }
                     }
                 }
@@ -132,11 +132,11 @@ Rectangle {
                                 }
                             }
                             ProgressBar { indeterminate:true }
-                            Row{
-                                spacing:rowspacing
-                                anchors.horizontalCenter:parent.horizontalCenter
-                                BusyIndicator{}
-                                BusyIndicator{running:false}
+                            Row {
+                                spacing: rowspacing
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                BusyIndicator { running: true }
+                                BusyIndicator { running: false }
                             }
                         }
                     }
@@ -157,32 +157,32 @@ Rectangle {
                         property color pg: "#f70"
 
                         Text{ font.bold:true; text:"Colored:" ; styleColor: "#333" ; color:"white" ; style:"Raised"}
-                        Button { text:"Push me" ; backgroundColor: column3.bg; textColor: column3.fg}
+                        Button { text:"Push me" ; styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
                         ButtonRow {
-                            Button{ text: "A" ; backgroundColor: column3.bg}
-                            Button{ text: "B" ; backgroundColor: column3.bg}
+                            Button{ text: "A" ; styling.backgroundColor: column3.bg}
+                            Button{ text: "B" ; styling.backgroundColor: column3.bg}
                         }
-                        TextField { backgroundColor: column3.bg; textColor: column3.fg}
-                        TextArea  { placeholderText:"This is a\n multiline control."; backgroundColor: column3.bg; textColor: column3.fg}
-                        SpinBox{ backgroundColor: column3.bg; textColor: column3.fg}
-                        Slider { value: 0.5; backgroundColor: column3.bg; progressColor: column3.pg;}
+                        TextField { styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
+                        TextArea  { placeholderText:"This is a\n multiline control."; styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
+                        SpinBox{ styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
+                        Slider { value: 0.5; styling.backgroundColor: column3.bg; styling.progressColor: column3.pg;}
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
-                            Switch { switchColor: column3.bg; backgroundColor: column3.bg; positiveHighlightColor:column3.pg}
-                            Switch { switchColor: column3.bg; backgroundColor: column3.bg; positiveHighlightColor:column3.pg; checked: true }
+                            Switch { styling { switchColor: column3.bg; backgroundColor: column3.bg; positiveHighlightColor:column3.pg }}
+                            Switch { styling { switchColor: column3.bg; backgroundColor: column3.bg; positiveHighlightColor:column3.pg;} checked: true }
                         }
                         Row{
-                            CheckBox { backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on backgroundColor {} }
-                            CheckBox { checked:true; backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on backgroundColor {}}
-                            RadioButton{ backgroundColor: checked ? column3.pg : column3.bg  ; ColorAnimation on backgroundColor {}}
-                            RadioButton { checked:true; backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on backgroundColor {} }
+                            CheckBox { styling { backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on backgroundColor {} }}
+                            CheckBox { checked: true; styling.backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on styling.backgroundColor {}}
+                            RadioButton{ styling.backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on styling.backgroundColor {}}
+                            RadioButton { checked: true; styling.backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on styling.backgroundColor {} }
                             spacing:rowspacing
                         }
-                        ChoiceList{ model: choices; backgroundColor: column3.bg; textColor: column3.fg}
+                        ChoiceList{ model: choices; styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
                         ProgressBar {
-                            backgroundColor: column3.bg;
-                            progressColor: column3.pg
+                            styling.backgroundColor: column3.bg;
+                            styling.progressColor: column3.pg
                             Timer {
                                 running: true
                                 repeat: true
@@ -193,12 +193,12 @@ Rectangle {
                                 }
                             }
                         }
-                        ProgressBar{ indeterminate:true; backgroundColor: column3.bg; progressColor: column3.pg}
+                        ProgressBar{ indeterminate:true; styling { backgroundColor: column3.bg; progressColor: column3.pg }}
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
-                            BusyIndicator{}
-                            BusyIndicator{running:false}
+                            BusyIndicator { running: true }
+                            BusyIndicator { running: false }
                         }
                     }
                 }
@@ -215,57 +215,73 @@ Rectangle {
                         anchors.topMargin:6
 
                         Text{ font.bold:true; text:"Custom:" ; styleColor: "white" ; color:"#333" ; style:"Raised"}
-                        Button { text:"Push me" ; background: shinyButton;}
+                        Button { text:"Push me" ; styling.background: shinyButton;}
                         ButtonRow {
-                            Button { text: "A" ; background:shinyButton}
-                            Button{ text: "B" ; background:shinyButton}
+                            Button { text: "A" ; styling.background: shinyButton}
+                            Button{ text: "B" ; styling.background: shinyButton}
                         }
-                        TextField { background: shinyEdit}
-                        TextArea {  placeholderText:"This is a\n multiline control."; background: shinyEdit}
+                        TextField { styling.background: shinyEdit}
+                        TextArea {  placeholderText:"This is a\n multiline control."; styling.background: shinyEdit}
                         SpinBox{
-                            background: shinyEdit
-                            leftMargin: 40
-                            rightMargin: 40
-                            up: BorderImage {
-                                width:height;
-                                source:pressed ?
-                                        "customtheme/exampletheme/images/button_pressed.png" :
-                                        "customtheme/exampletheme/images/button_normal.png"
-                                anchors.left:parent.left
-                                anchors.top:parent.top
-                                anchors.bottom:parent.bottom
-                                border.left:6; border.right:6; border.top:6; border.bottom:6
-                                Text{ text:"+" ; anchors.centerIn:parent}
+                            styling.background: shinyEdit
+                            styling.leftMargin: 40
+                            styling.rightMargin: 40
+                            styling.up: upComponent // see QTBUG-17276
+                            Component {
+                                id: upComponent
+                                BorderImage {
+                                    width: height
+                                    source: pressed ?
+                                            "customtheme/exampletheme/images/button_pressed.png" :
+                                            "customtheme/exampletheme/images/button_normal.png"
+                                    anchors.left: parent.left
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    border.left: 6; border.right: 6; border.top: 6; border.bottom: 6
+                                    Text { text: "+" ; anchors.centerIn: parent}
+                                }
                             }
-                            down: BorderImage{
-                                width:height;
-                                source:pressed ?
-                                        "customtheme/exampletheme/images/button_pressed.png" :
-                                        "customtheme/exampletheme/images/button_normal.png"
-                                anchors.right:parent.right
-                                anchors.top:parent.top
-                                anchors.bottom:parent.bottom
-                                border.left:6; border.right:6; border.top:6; border.bottom:6
-                                Text{ text:"-" ; anchors.centerIn:parent}
+                            styling.down: downComponent // see QTBUG-17276
+                            Component {
+                                id: downComponent
+                                BorderImage {
+                                    width: height
+                                    source: pressed ?
+                                                "customtheme/exampletheme/images/button_pressed.png" :
+                                    "customtheme/exampletheme/images/button_normal.png"
+                                    anchors.right: parent.right
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    border.left: 6; border.right: 6; border.top: 6; border.bottom: 6
+                                    Text{ text: "-" ; anchors.centerIn: parent}
+                                }
                             }
                         }
                         Slider {
                             value: 0.5
                             height: 20
-                            handle: BorderImage{
-                                source: "customtheme/exampletheme/images/button_normal.png";
-                                width: 20; height: 20
-                                border { left:7; right: 7; top:7; bottom:7 }
+                            styling.handle: sliderHandleComponent // see QTBUG-17276
+                            Component {
+                                id: sliderHandleComponent
+                                BorderImage{
+                                    source: "customtheme/exampletheme/images/button_normal.png";
+                                    width: 20; height: 20
+                                    border { left:7; right: 7; top:7; bottom:7 }
+                                }
                             }
-                            pinWidth: 20
-                            groove: Item {
-                                anchors.fill:parent
-                                BorderImage {
-                                    source: "customtheme/exampletheme/images/edit_normal.png"
-                                    width: parent.width;
-                                    height:20; smooth:true
-                                    border.left: 4; border.right: 4
-                                    border.top:4; border.bottom:4
+                            styling.pinWidth: 20
+                            styling.groove: sliderGrooveComponent // see QTBUG-17276
+                            Component {
+                                id: sliderGrooveComponent
+                                Item {
+                                    anchors.fill:parent
+                                    BorderImage {
+                                        source: "customtheme/exampletheme/images/edit_normal.png"
+                                        width: parent.width;
+                                        height:20; smooth:true
+                                        border.left: 4; border.right: 4
+                                        border.top:4; border.bottom:4
+                                    }
                                 }
                             }
                         }
@@ -273,13 +289,13 @@ Rectangle {
                             spacing:rowspacing
                             Switch {
                                 id:aa
-                                groove: shinyEdit;
-                                handle: handle
+                                styling.groove: shinyEdit;
+                                styling.handle: handle
                             }
                             Switch {
                                 id:bb
-                                groove: shinyEdit;
-                                handle: handle
+                                styling.groove: shinyEdit;
+                                styling.handle: handle
                                 checked: true
                             }
                             Component {
@@ -294,14 +310,14 @@ Rectangle {
                             }
                         }
                         Row {
-                            CheckBox { background: shinyCheckBackground; checkmark: shinyCheckMark }
-                            CheckBox { background: shinyCheckBackground; checkmark: shinyCheckMark; checked: true}
-                            RadioButton { background: shinyCheckBackground; checkmark: shinyCheckMark }
-                            RadioButton { background: shinyCheckBackground; checkmark: shinyCheckMark; checked: true}
+                            CheckBox { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark }
+                            CheckBox { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark; checked: true}
+                            RadioButton { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark }
+                            RadioButton { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark; checked: true}
                             spacing: rowspacing
                         }
 
-                        ChoiceList{ model: choices; background: shinyButton; popupFrame: shinyButton}
+                        ChoiceList{ model: choices; styling.background: shinyButton; styling.popupFrame: shinyButton}
 
                         ProgressBar {
                             Timer {
@@ -314,27 +330,27 @@ Rectangle {
                                 }
                             }
 
-                            progress: shinyBar
-                            background: shinyEdit
-                            indeterminateProgress: shinyBar
+                            styling.progress: shinyBar
+                            styling.background: shinyEdit
+                            styling.indeterminateProgress: shinyBar
                         }
 
                         ProgressBar {
-                            indeterminate:true
-                            progress: shinyBar
-                            indeterminateProgress: shinyBar
+                            indeterminate: true
+                            styling.progress: shinyBar
+                            styling.indeterminateProgress: shinyBar
                         }
                         Row{
                             spacing:rowspacing
-                            anchors.horizontalCenter:parent.horizontalCenter
-                            BusyIndicator{background:shinySpinner}
-                            BusyIndicator{background:shinySpinner; running:false}
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            BusyIndicator { styling.background: shinySpinner; running: true }
+                            BusyIndicator { styling.background: shinySpinner; running: false }
                         }
                     }
                 }
             }
             Component{
-                id:shinySpinner
+                id: shinySpinner
                 BorderImage {
                     width:30; height:30
                     source: "customtheme/exampletheme/images/button_normal.png"

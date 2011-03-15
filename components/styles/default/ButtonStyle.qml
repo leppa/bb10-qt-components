@@ -19,20 +19,16 @@ QtObject {
                 anchors.fill: parent
                 // Give connected buttons a negative styling margin, to make
                 // them overlap and the rounded edge can be clipped away
-                anchors.leftMargin:   isPositioned && (position == "rightmost"  || position =="h_middle") ? -leftMargin : 0
-                anchors.rightMargin:  isPositioned && (position == "leftmost"   || position =="h_middle") ? -rightMargin : 0
-                anchors.topMargin:    isPositioned && (position == "bottom"     || position =="v_middle") ? -bottomMargin : 0
-                anchors.bottomMargin: isPositioned && (position == "top"        || position =="v_middle") ? -topMargin : 0
+                anchors.leftMargin:   isPositioned && (position == "rightmost"  || position =="h_middle") ? -styling.leftMargin : 0
+                anchors.rightMargin:  isPositioned && (position == "leftmost"   || position =="h_middle") ? -styling.rightMargin : 0
+                anchors.topMargin:    isPositioned && (position == "bottom"     || position =="v_middle") ? -styling.bottomMargin : 0
+                anchors.bottomMargin: isPositioned && (position == "top"        || position =="v_middle") ? -styling.topMargin : 0
 
                 Rectangle { // Background center fill
                     anchors.fill: parent
                     anchors.margins: 1
-                    anchors.leftMargin: anchors.leftMargin
-                    anchors.rightMargin: anchors.rightMargin
-                    anchors.topMargin: anchors.topMargin
-                    anchors.bottomMargin: anchors.bottomMargin
                     radius: 5
-                    color: backgroundColor
+                    color: styling.backgroundColor
                 }
                 BorderImage {
                     anchors.fill: parent
@@ -91,7 +87,7 @@ QtObject {
                 }
 
                 Text {
-                    color: textColor
+                    color: styling.textColor
                     anchors.verticalCenter: parent.verticalCenter
                     text: styledItem.text
                     horizontalAlignment: Text.Center

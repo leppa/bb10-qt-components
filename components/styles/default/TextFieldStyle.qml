@@ -15,7 +15,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: 5
-                color: styledItem.backgroundColor
+                color: styling.backgroundColor
             }
             BorderImage { // Background border
                 opacity: enabled ? 1 : 0.7

@@ -1,11 +1,15 @@
 import QtQuick 1.1
+import "./styles"       // BusyIndicatorStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
     id: busyIndicator
 
     property bool running: false
-    property Component background: defaultStyle.background
+
+    property BusyIndicatorStylingProperties styling: BusyIndicatorStylingProperties {
+        background: defaultStyle.background
+    }
 
     // implementation
 
@@ -18,7 +22,7 @@ Item {
                                busyIndicator.visible &&
                                busyIndicator.running
         anchors.fill: parent
-        sourceComponent: background
+        sourceComponent: styling.background
     }
 
     DefaultStyles.BusyIndicatorStyle { id: defaultStyle }

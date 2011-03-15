@@ -12,7 +12,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: width/2
-                color: backgroundColor
+                color: styling.backgroundColor
             }
             Image {
                 opacity: enabled ? 1 : 0.7
@@ -25,7 +25,7 @@ QtObject {
 
     property Component checkmark: Component {
         Image {
-            StyleTools.ColorConverter { id: cc; color: backgroundColor }
+            StyleTools.ColorConverter { id: cc; color: styling.backgroundColor }
             source: cc.grayValue() < 70? "images/radiobutton_check_white.png" : "images/radiobutton_check.png"
             opacity: (!enabled && checked) || pressed == true ? 0.5 : (!checked ? 0 : 1)
             Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }

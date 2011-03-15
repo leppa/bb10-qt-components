@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "./styles"       // SpinBoxStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
@@ -45,30 +46,32 @@ Item {
     property bool upEnabled: (value < maximumValue)      // read-only
     property bool downEnabled: (value > minimumValue)    // read-only
 
-    property color backgroundColor: syspal.base
-    property color textColor: syspal.text
+    property SpinBoxStylingProperties styling: SpinBoxStylingProperties {
+        backgroundColor: syspal.base
+        textColor: syspal.text
 
-    property Component background: defaultStyle.background
-    property Component up: defaultStyle.up
-    property Component down: defaultStyle.down
+        background: defaultStyle.background
+        up: defaultStyle.up
+        down: defaultStyle.down
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
 
-    property int leftMargin: defaultStyle.leftMargin
-    property int topMargin: defaultStyle.topMargin
-    property int rightMargin: defaultStyle.rightMargin
-    property int bottomMargin: defaultStyle.bottomMargin
+        leftMargin: defaultStyle.leftMargin
+        topMargin: defaultStyle.topMargin
+        rightMargin: defaultStyle.rightMargin
+        bottomMargin: defaultStyle.bottomMargin
+    }
 
     // implementation
 
-    implicitWidth: Math.max(minimumWidth, textInput.implicitWidth + leftMargin + rightMargin)
-    implicitHeight: Math.max(minimumHeight, textInput.implicitHeight + topMargin + bottomMargin)
+    implicitWidth: Math.max(styling.minimumWidth, textInput.implicitWidth + styling.horizontalMargins())
+    implicitHeight: Math.max(styling.minimumHeight, textInput.implicitHeight + styling.verticalMargins())
 
     Loader { // background
         anchors.fill: parent
         property alias styledItem: spinBox
-        sourceComponent: background
+        sourceComponent: styling.background
     }
 
     Loader {
@@ -85,10 +88,10 @@ Item {
     TextInput {
         id: textInput
         anchors.fill: parent
-        anchors.leftMargin: leftMargin
-        anchors.topMargin: topMargin
-        anchors.rightMargin: rightMargin
-        anchors.bottomMargin: bottomMargin
+        anchors.leftMargin: styling.leftMargin
+        anchors.topMargin: styling.topMargin
+        anchors.rightMargin: styling.rightMargin
+        anchors.bottomMargin: styling.bottomMargin
         focus: true
         selectByMouse: true
         text: spinBox.value
@@ -96,7 +99,7 @@ Item {
         font.bold: hintsLoader.item ? hintsLoader.item.fontBold : false
         validator: DoubleValidator { bottom: 11; top: 31 }
         onTextChanged: spinBox.setValue(text)
-        color: textColor
+        color: styling.textColor
         opacity: parent.enabled ? 1 : 0.5
     }
 
@@ -106,7 +109,7 @@ Item {
         property alias hover: spinBox.upHovered
         property alias enabled: spinBox.upEnabled
         property alias styledItem: spinBox
-        sourceComponent: up
+        sourceComponent: styling.up
         MouseArea {
             id: mouseUp
             anchors.fill: upButtonLoader.item
@@ -129,7 +132,7 @@ Item {
         property alias hover: spinBox.downHovered
         property alias enabled: spinBox.downEnabled
         property alias styledItem: spinBox
-        sourceComponent: down
+        sourceComponent: styling.down
         MouseArea {
             id: mouseDown
             anchors.fill: downButtonLoader.item

@@ -1,4 +1,5 @@
 import QtQuick 1.0
+import "./styles"           // ScrollIndicatorStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
@@ -7,7 +8,9 @@ Item {
     property Flickable scrollItem
     property bool horizontal: false
 
-    property Component content: defaultStyle.content
+    property ScrollIndicatorStylingProperties styling: ScrollIndicatorStylingProperties {
+        content: defaultStyle.content
+    }
 
     //private
     anchors.left: horizontal ? parent.left : undefined
@@ -48,7 +51,7 @@ Item {
             width: 12
             height: Math.max(parent.end-parent.start, width)
 
-            sourceComponent: content
+            sourceComponent: styling.content
         }
     }
 

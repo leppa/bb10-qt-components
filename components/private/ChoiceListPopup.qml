@@ -44,22 +44,22 @@ MouseArea {
             listView.width = choiceList.width;
             listView.height = listView.contentHeight    //mm see QTBUG-16037
 
-            if(listView.y < topMargin) {
+            if(listView.y < styling.topMargin) {
                 var excess = Math.floor(currentItemY - mappedListPos.y);
-                listView.y = topMargin;
+                listView.y = styling.topMargin;
                 listView.height += excess;
-                listView.contentY = excess + topMargin;
+                listView.contentY = excess + styling.topMargin;
 
-                if(listView.contentY != excess+topMargin) //mm setting listView.height seems to make it worse
-                    print("!!! ChoiceListPopup.qml: listView.contentY should be " + excess+topMargin + " but is " + listView.contentY)
+                if(listView.contentY != excess+styling.topMargin) //mm setting listView.height seems to make it worse
+                    print("!!! ChoiceListPopup.qml: listView.contentY should be " + excess+styling.topMargin + " but is " + listView.contentY)
             }
 
             if(listView.height+listView.contentY > listView.contentHeight) {
                 listView.height = listView.contentHeight-listView.contentY;
             }
 
-            if(listView.y+listView.height+bottomMargin > popup.height) {
-                listView.height = popup.height-listView.y-bottomMargin;
+            if(listView.y+listView.height+styling.bottomMargin > popup.height) {
+                listView.height = popup.height-listView.y-styling.bottomMargin;
             }
             break;
         case "Windows":

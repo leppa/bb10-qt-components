@@ -34,7 +34,7 @@ QtObject {
         opacity: enabled ? 1.0 : 0.7
 
         Rectangle {
-            color: styledItem.backgroundColor
+            color: styling.backgroundColor
             anchors.fill: sliderBackground
             anchors.margins: 1
             radius: 2
@@ -43,7 +43,7 @@ QtObject {
         Rectangle {
             height: 10
             radius: 4
-            color: styledItem.progressColor
+            color: styling.progressColor
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left; right: parent.right
@@ -84,7 +84,7 @@ QtObject {
                 width: parent.width - 7
                 height: parent.height - 7
                 smooth: true
-                color: styledItem.backgroundColor
+                color: styling.backgroundColor
                 radius: Math.floor(parent.width / 2)
                 z: -1   // behind the image
             }

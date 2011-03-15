@@ -246,8 +246,8 @@ Item {
                     id: copyButton
                     text: "Copy"
                     visible: textEditor.selectedText.length > 0
-                    backgroundColor: bgcolor
-                    textColor: "white"
+                    styling.backgroundColor: bgcolor
+                    styling.textColor: "white"
                     onClicked: {
                          textEditor.copy()
                          copyPastePopup.showing = false;
@@ -258,32 +258,32 @@ Item {
                     id: cutButton
                     text: "Cut"
                     visible: textEditor.selectedText.length > 0 && !textEditor.readOnly
-                    backgroundColor: bgcolor
-                    textColor: "white"
+                    styling.backgroundColor: bgcolor
+                    styling.textColor: "white"
                     onClicked: textEditor.cut()
                 }
                 Button {
                     id: pasteButton
                     text: "Paste"
                     visible: textEditor.canPaste
-                    backgroundColor: bgcolor
-                    textColor: "white"
+                    styling.backgroundColor: bgcolor
+                    styling.textColor: "white"
                     onClicked: textEditor.paste()
                 }
                 Button {
                     id: selectButton
                     text: "Select"
                     visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
-                    backgroundColor: bgcolor
-                    textColor: "white"
+                    styling.backgroundColor: bgcolor
+                    styling.textColor: "white"
                     onClicked: textEditor.selectWord()
                 }
                 Button {
                     id: selectAllButton
                     text: "Select all"
                     visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
-                    backgroundColor: bgcolor
-                    textColor: "white"
+                    styling.backgroundColor: bgcolor
+                    styling.textColor: "white"
                     onClicked: textEditor.selectAll()
                 }
             }

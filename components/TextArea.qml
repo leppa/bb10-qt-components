@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "./styles"       // TextAreaStylingProperties
 import "./styles/default" as DefaultStyles
 import "./behaviors"    // TextEditMouseBehavior
 
@@ -50,40 +51,42 @@ FocusScope {
         return rect;
     }
 
-    property color textColor: syspal.text
-    property color backgroundColor: syspal.base
+    property TextAreaStylingProperties styling: TextAreaStylingProperties {
+        textColor: syspal.text
+        backgroundColor: syspal.base
 
-    property Component background: defaultStyle.background
-    property Component hints: defaultStyle.hints
+        background: defaultStyle.background
+        hints: defaultStyle.hints
 
-    property int leftMargin: defaultStyle.leftMargin
-    property int topMargin: defaultStyle.topMargin
-    property int rightMargin: defaultStyle.rightMargin
-    property int bottomMargin: defaultStyle.bottomMargin
+        leftMargin: defaultStyle.leftMargin
+        topMargin: defaultStyle.topMargin
+        rightMargin: defaultStyle.rightMargin
+        bottomMargin: defaultStyle.bottomMargin
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
+    }
 
     property Flickable flickHandler: flickable
 
     // Implementation
 
-    implicitWidth: textEdit.scale * Math.max(minimumWidth,
+    implicitWidth: textEdit.scale * Math.max(styling.minimumWidth,
                     Math.max(textEdit.implicitWidth,
-                             placeholderTextComponent.implicitWidth) + leftMargin + rightMargin)
-    implicitHeight: textEdit.scale * Math.max(minimumHeight,
+                             placeholderTextComponent.implicitWidth) + styling.horizontalMargins())
+    implicitHeight: textEdit.scale * Math.max(styling.minimumHeight,
                      Math.max(textEdit.implicitHeight,
-                              placeholderTextComponent.implicitHeight) + topMargin + bottomMargin)
+                              placeholderTextComponent.implicitHeight) + styling.verticalMargins())
 
     property alias desktopBehavior: mouseEditBehavior.desktopBehavior
     property alias _hints: hintsLoader.item
     clip: true
 
-    Loader { id: hintsLoader; sourceComponent: hints }
+    Loader { id: hintsLoader; sourceComponent: styling.hints }
     Loader {
         anchors.fill: parent
         property alias styledItem: textArea
-        sourceComponent: background
+        sourceComponent: styling.background
     }
 
 
@@ -91,10 +94,10 @@ FocusScope {
         id: flickable
         clip: true
         anchors.fill: parent
-        anchors.leftMargin: leftMargin
-        anchors.topMargin: topMargin
-        anchors.rightMargin: rightMargin
-        anchors.bottomMargin: bottomMargin
+        anchors.leftMargin: styling.leftMargin
+        anchors.topMargin: styling.topMargin
+        anchors.rightMargin: styling.rightMargin
+        anchors.bottomMargin: styling.bottomMargin
 
         contentHeight: textEdit.implicitHeight
         interactive: (flickable == flickHandler)
@@ -125,7 +128,7 @@ FocusScope {
             font.bold: _hints.fontBold
             width: flickable.width / scale
 
-            color: enabled ? textColor: Qt.tint(textColor, "#80ffffff")
+            color: enabled ? styling.textColor: Qt.tint(styling.textColor, "#80ffffff")
             wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.Wrap
             onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
 
@@ -156,7 +159,7 @@ FocusScope {
 
     Text {
         id: placeholderTextComponent
-        x: leftMargin; y: topMargin
+        x: styling.leftMargin; y: styling.topMargin
         font: textEdit.font
         opacity: !textEdit.text.length && !textEdit.activeFocus ? 1 : 0
         color: "gray"

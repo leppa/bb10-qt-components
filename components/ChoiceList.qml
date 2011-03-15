@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "./styles"             // ChoiceListStylingProperties
 import "./styles/default" as DefaultStyles
 import "./private" as Private //  for ChoiceListPopup
 
@@ -17,44 +18,46 @@ Item {
     property alias containsMouse: mouseArea.containsMouse   //mm needed?
     property bool pressed: false    //mm needed?
 
-    property color textColor: syspal.text
-    property color backgroundColor: syspal.button //mm No way to style this e.g. when color should be syspal.base
+    property ChoiceListStylingProperties styling: ChoiceListStylingProperties {
+        textColor: syspal.text
+        backgroundColor: syspal.button //mm No way to style this e.g. when color should be syspal.base
 
-    property Component background: defaultStyle.background
-    property Component label: defaultStyle.label
-    property Component listItem: defaultStyle.listItem
-    property Component popupFrame: defaultStyle.popupFrame
+        background: defaultStyle.background
+        label: defaultStyle.label
+        listItem: defaultStyle.listItem
+        popupFrame: defaultStyle.popupFrame
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
 
-    property int leftMargin: defaultStyle.leftMargin
-    property int topMargin: defaultStyle.topMargin
-    property int rightMargin: defaultStyle.rightMargin
-    property int bottomMargin: defaultStyle.bottomMargin
+        leftMargin: defaultStyle.leftMargin
+        topMargin: defaultStyle.topMargin
+        rightMargin: defaultStyle.rightMargin
+        bottomMargin: defaultStyle.bottomMargin
+    }
 
     // Implementation
 
-    implicitWidth: Math.max(minimumWidth,
-                    labelLoader.item.implicitWidth + leftMargin + rightMargin)
-    implicitHeight: Math.max(minimumHeight,
-                     labelLoader.item.implicitHeight + topMargin + bottomMargin)
+    implicitWidth: Math.max(styling.minimumWidth,
+                    labelLoader.item.implicitWidth + styling.horizontalMargins())
+    implicitHeight: Math.max(styling.minimumHeight,
+                     labelLoader.item.implicitHeight + styling.verticalMargins())
 
     Loader {
         anchors.fill: parent
         property alias styledItem: choiceList
-        sourceComponent: background
+        sourceComponent: styling.background
     }
 
     Loader {
         id: labelLoader
         anchors {
             fill: parent
-            leftMargin: leftMargin; rightMargin: rightMargin
-            topMargin: topMargin; bottomMargin: bottomMargin
+            leftMargin: styling.leftMargin; rightMargin: styling.rightMargin
+            topMargin: styling.topMargin; bottomMargin: styling.bottomMargin
         }
         property alias styledItem: choiceList
-        sourceComponent: label
+        sourceComponent: styling.label
     }
 
     MouseArea {
@@ -72,8 +75,8 @@ Item {
 
     Private.ChoiceListPopup {
         id: popup
-        listItem: choiceList.listItem
-        popupFrame: choiceList.popupFrame
+        listItem: styling.listItem
+        popupFrame: styling.popupFrame
     }
 
     SystemPalette { id: syspal }

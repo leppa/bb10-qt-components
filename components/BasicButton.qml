@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import "./behaviors"    // ButtonBehavior
+import "./styles"     // BasicButtonStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
@@ -11,13 +12,15 @@ Item {
     property alias checkable: behavior.checkable  // button toggles between checked and !checked
     property alias checked: behavior.checked
 
-    property Component background: defaultStyle.background
+    property BasicButtonStylingProperties styling: BasicButtonStylingProperties {
+        backgroundColor: syspal.button
+        textColor: syspal.text;
 
-    property color backgroundColor: syspal.button
-    property color textColor: syspal.text;
+        background: defaultStyle.background
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
+    }
 
     // implementation
 
@@ -28,7 +31,7 @@ Item {
     Loader {
         id: backgroundLoader
         anchors.fill: parent
-        sourceComponent: background
+        sourceComponent: styling.background
         property alias styledItem: button
         property alias position: button.__position
     }

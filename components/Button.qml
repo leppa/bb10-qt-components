@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "./styles"     // ButtonStylingProperties
 import "./styles/default" as DefaultStyles
 
 BasicButton {
@@ -7,33 +8,38 @@ BasicButton {
     property string text
     property url iconSource
 
-    property Component label: defaultStyle.label
+    property ButtonStylingProperties styling: ButtonStylingProperties {
+        backgroundColor: syspal.button
+        textColor: syspal.text;
 
-    property int leftMargin: defaultStyle.leftMargin
-    property int topMargin: defaultStyle.topMargin
-    property int rightMargin: defaultStyle.rightMargin
-    property int bottomMargin: defaultStyle.bottomMargin
+        background: defaultStyle.background
+        label: defaultStyle.label
+
+        leftMargin: defaultStyle.leftMargin
+        topMargin: defaultStyle.topMargin
+        rightMargin: defaultStyle.rightMargin
+        bottomMargin: defaultStyle.bottomMargin
+
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
+    }
 
     // implementation
 
-    implicitWidth: Math.max(minimumWidth, labelLoader.item.implicitWidth + leftMargin + rightMargin)
-    implicitHeight: Math.max(minimumHeight, labelLoader.item.implicitHeight + topMargin + bottomMargin)
-
-    minimumWidth: defaultStyle.minimumWidth
-    minimumHeight: defaultStyle.minimumHeight
-
-    background: defaultStyle.background
+    implicitWidth: Math.max(styling.minimumWidth, labelLoader.item.implicitWidth + styling.horizontalMargins())
+    implicitHeight: Math.max(styling.minimumHeight, labelLoader.item.implicitHeight + styling.verticalMargins())
 
     Loader {
         id: labelLoader
         anchors.fill: parent
-        anchors.leftMargin: leftMargin
-        anchors.rightMargin: rightMargin
-        anchors.topMargin: topMargin
-        anchors.bottomMargin: bottomMargin
+        anchors.leftMargin: styling.leftMargin
+        anchors.rightMargin: styling.rightMargin
+        anchors.topMargin: styling.topMargin
+        anchors.bottomMargin: styling.bottomMargin
         property alias styledItem: button
-        sourceComponent: label
+        sourceComponent: styling.label
     }
 
     DefaultStyles.ButtonStyle { id: defaultStyle }
+    SystemPalette { id: syspal }
 }

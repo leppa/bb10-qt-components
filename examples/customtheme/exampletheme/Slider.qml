@@ -3,10 +3,10 @@ import "../../../components" as Components
 
 Components.Slider{
 
-    minimumWidth:160
-    minimumHeight:32
+    styling.minimumWidth:160
+    styling.minimumHeight:32
 
-    handle: BorderImage {
+    styling.handle: BorderImage {
         width:20
         source: pressed ? "images/button_pressed.png" :
                 "images/button_normal.png"
@@ -14,7 +14,7 @@ Components.Slider{
         border.left:6 ; border.right:6
     }
 
-    valueIndicator:
+    styling.valueIndicator:
         BorderImage {
             id: name
             source: "images/label.png"
@@ -32,7 +32,7 @@ Components.Slider{
         }
 
 
-    groove: Item {
+    styling.groove: Item {
         BorderImage {
             height:12
             width:parent.width

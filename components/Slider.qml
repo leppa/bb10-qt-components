@@ -26,6 +26,7 @@
 
 import QtQuick 1.1
 import Qt.labs.components 1.0   // RangeModel
+import "./styles"       // SliderStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
@@ -52,16 +53,18 @@ Item {
         return useDecimals ? (v.toFixed(2)) : v;
     }
 
-    property color progressColor: palette.highlight
-    property color backgroundColor: palette.alternateBase
+    property SliderStylingProperties styling: SliderStylingProperties {
+        progressColor: palette.highlight
+        backgroundColor: palette.alternateBase
 
-    property Component groove: defaultStyle.groove
-    property Component handle: defaultStyle.handle
-    property Component valueIndicator: defaultStyle.valueIndicator
-    property real pinWidth: handleLoader.width/2
+        groove: defaultStyle.groove
+        handle: defaultStyle.handle
+        valueIndicator: defaultStyle.valueIndicator
+        pinWidth: handleLoader.width/2
 
-    property int minimumWidth: defaultStyle.minimumWidth
-    property int minimumHeight: defaultStyle.minimumHeight
+        minimumWidth: defaultStyle.minimumWidth
+        minimumHeight: defaultStyle.minimumHeight
+    }
 
     // implementation
 
@@ -69,8 +72,8 @@ Item {
     // floating point value at which point it keeps decimals
     property bool useDecimals: false
 
-    implicitWidth: contents.isVertical ? Math.max(minimumHeight, handleLoader.item.implicitHeight) : minimumWidth
-    implicitHeight: contents.isVertical ? minimumWidth : Math.max(minimumHeight, handleLoader.item.implicitHeight)    
+    implicitWidth: contents.isVertical ? Math.max(styling.minimumHeight, handleLoader.item.implicitHeight) : styling.minimumWidth
+    implicitHeight: contents.isVertical ? styling.minimumWidth : Math.max(styling.minimumHeight, handleLoader.item.implicitHeight)
 
     DefaultStyles.SliderStyle { id: defaultStyle }
 
@@ -87,7 +90,7 @@ Item {
 
         // The width of the "pin" that the handle is attached to, defines
         // how much outside the groove the head of the handle extends
-        property real halfPinWidth: slider.pinWidth/2
+        property real halfPinWidth: styling.pinWidth/2
 
         RangeModel {
             id: rangeModel
@@ -108,7 +111,7 @@ Item {
         Loader {
             id: grooveLoader
             anchors.fill: parent
-            sourceComponent: groove
+            sourceComponent: styling.groove
 
             property alias styledItem: slider
             property real handlePosition: handleLoader.x
@@ -123,7 +126,7 @@ Item {
             anchors.verticalCenter: grooveLoader.verticalCenter
 
             property alias styledItem: slider
-            sourceComponent: handle
+            sourceComponent: styling.handle
 
             x: shadowHandle.x
             Behavior on x {
@@ -184,7 +187,7 @@ Item {
 
             property string indicatorText
             property alias styledItem: slider
-            sourceComponent: valueIndicator //mm Only load while handle is pressed?
+            sourceComponent: styling.valueIndicator //mm Only load while handle is pressed?
 
             property variant actualPosition
             actualPosition: {

@@ -6,8 +6,8 @@ CheckBox {
 
     // implementation
 
-    checkmark: defaultStyle.checkmark
-    background: defaultStyle.background
+    styling.checkmark: defaultStyle.checkmark
+    styling.background: defaultStyle.background
 
     DefaultStyles.RadioButtonStyle { id: defaultStyle}
 }

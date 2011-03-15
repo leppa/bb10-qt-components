@@ -154,17 +154,22 @@ Item {
                 }
 
                 Rectangle {
+                    id: marginsRect
                     color: "transparent"
-                    opacity: container.pressed && loader.item.topMargin != undefined ? 1 : 0
+                    opacity: container.pressed && loader.item.styling && loader.item.styling.topMargin != undefined ? 1 : 0
                     border.color: "yellow"
-
                     anchors.fill: parent
-                    anchors.leftMargin: Math.max(loader.item.leftMargin, 0)
-                    anchors.rightMargin: Math.max(loader.item.rightMargin, 0)
-                    anchors.topMargin: Math.max(loader.item.topMargin, 0)
-                    anchors.bottomMargin: Math.max(loader.item.bottomMargin, 0)
-
                     z: 2
+                    Connections {
+                        target: loader
+                        onItemChanged: {
+                            if(!loader.item || !loader.item.styling) return;
+                            marginsRect.anchors.leftMargin = Math.max(loader.item.styling.leftMargin, 0);
+                            marginsRect.anchors.rightMargin = Math.max(loader.item.styling.rightMargin, 0);
+                            marginsRect.anchors.topMargin = Math.max(loader.item.styling.topMargin, 0);
+                            marginsRect.anchors.bottomMargin = Math.max(loader.item.styling.bottomMargin, 0);
+                        }
+                    }
                 }
             }
         }
@@ -187,6 +192,9 @@ Item {
                 color: "blue"
             }
         }
+    }
+    ScrollDecorator {
+        flickableItem: testBenchRect
     }
 
     //
@@ -348,8 +356,8 @@ Item {
             checkable: buttonOptionLatching.checked
             text: buttonOptionTwoLineText.checked ? "Button\nwith two lines" : "Button"
             iconSource: buttonOptionHasIcon.checked ? "stretchbench/images/testIcon.png" : ""
-            backgroundColor: buttonOptionGreenBackground.checked ? "green" : "#fff"
-            textColor: buttonOptionWhiteText.checked ? "white" : "black"
+            styling.backgroundColor: buttonOptionGreenBackground.checked ? "green" : "#fff"
+            styling.textColor: buttonOptionWhiteText.checked ? "white" : "black"
         }
     }
 
@@ -390,7 +398,7 @@ Item {
         id: checkBoxComponent
         CheckBox {
             enabled: !checkBoxOptionDimmed.checked
-            backgroundColor: checkBoxOptionGreenBackground.checked ? "green" : "#fff"
+            styling.backgroundColor: checkBoxOptionGreenBackground.checked ? "green" : "#fff"
         }
     }
 
@@ -398,7 +406,7 @@ Item {
         id: radioButtonComponent
         RadioButton {
             enabled: !radioButtonOptionDimmed.checked
-            backgroundColor: radioButtonOptionGreenBackground.checked ? "green" : "#fff"
+            styling.backgroundColor: radioButtonOptionGreenBackground.checked ? "green" : "#fff"
         }
     }
 
@@ -459,7 +467,7 @@ Item {
         id: textFieldComponent
         TextField {
             enabled: !textFieldOptionDimmed.checked
-            textColor: textFieldOptionRedText.checked ? "red" : "black"
+            styling.textColor: textFieldOptionRedText.checked ? "red" : "black"
             font.italic: textFieldOptionItalicText.checked
             passwordMode: textFieldOptionPasswordMode.checked
             focus: textFieldOptionFocused.checked
@@ -471,7 +479,7 @@ Item {
         id: textAreaComponent
         TextArea {
             enabled: !textAreaOptionDimmed.checked
-            textColor: textAreaOptionRedText.checked ? "red" : "black"
+            styling.textColor: textAreaOptionRedText.checked ? "red" : "black"
             font.italic: textAreaOptionItalicText.checked
             focus: textAreaOptionFocused.checked
             readOnly: textAreaOptionReadOnly.checked
@@ -482,9 +490,9 @@ Item {
         id: switchComponent
         Switch {
             enabled: !switchOptionDimmed.checked
-            positiveHighlightColor: switchOptionGreenPositiveHighlight.checked ? "green" : syspal.highlight
-            negativeHighlightColor: switchOptionRedNegativeHighlight.checked ? "red" : "transparent"
-            switchColor: switchOptionBlueSwitchColor.checked ? "blue" : syspal.button
+            styling.positiveHighlightColor: switchOptionGreenPositiveHighlight.checked ? "green" : syspal.highlight
+            styling.negativeHighlightColor: switchOptionRedNegativeHighlight.checked ? "red" : "transparent"
+            styling.switchColor: switchOptionBlueSwitchColor.checked ? "blue" : syspal.button
         }
     }
 
@@ -535,8 +543,8 @@ Item {
         SpinBox {
             id: spinBox
             enabled: !spinBoxOptionDimmed.checked
-            backgroundColor: spinBoxOptionGreenBackground.checked ? "green" : syspal.base
-            textColor: spinBoxOptionWhiteText.checked ? "white" : syspal.text
+            styling.backgroundColor: spinBoxOptionGreenBackground.checked ? "green" : syspal.base
+            styling.textColor: spinBoxOptionWhiteText.checked ? "white" : syspal.text
             stepSize: spinBoxOptionOneDecimalStepSize.checked ? 0.1 : 1
 
             Connections {

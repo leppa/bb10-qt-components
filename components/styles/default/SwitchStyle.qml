@@ -11,7 +11,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: 5
-                color: backgroundColor
+                color: styling.backgroundColor
             }
 
             Item { // Clipping container of the positive and negative groove highlight
@@ -26,13 +26,13 @@ QtObject {
                     x: handleCenterX-parent.width-parent.anchors.leftMargin
 
                     Rectangle { // positive background highlight
-                        color: positiveHighlightColor
+                        color: styling.positiveHighlightColor
                         opacity: 0.8
                         anchors.top: parent.top; anchors.bottom: parent.bottom
                         anchors.left: parent.left; anchors.right: parent.horizontalCenter
                     }
                     Rectangle { // negative background highlight
-                        color: negativeHighlightColor
+                        color: styling.negativeHighlightColor
                         opacity: 0.8
                         anchors.top: parent.top; anchors.bottom: parent.bottom
                         anchors.left: parent.horizontalCenter; anchors.right: parent.right
@@ -56,7 +56,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: 5
-                color: switchColor
+                color: styling.switchColor
             }
             BorderImage {
                 anchors.fill: parent
