@@ -21,7 +21,6 @@ QML_FILES = \
         ProgressBar.qml \
         RadioButton.qml \
         ScrollDecorator.qml \
-        ScrollIndicator.qml \
         Slider.qml \
         SpinBox.qml \
         Switch.qml \
