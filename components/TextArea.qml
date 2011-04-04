@@ -128,6 +128,7 @@ FocusScope {
             font.bold: _hints.fontBold
             width: flickable.width / scale
 
+            persistentSelection: false
             color: enabled ? styling.textColor: Qt.tint(styling.textColor, "#80ffffff")
             wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.Wrap
             onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
