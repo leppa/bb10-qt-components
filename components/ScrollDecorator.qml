@@ -31,7 +31,7 @@ Item {
         Behavior on opacity { NumberAnimation { duration: 100 } }
 
         Loader {
-            property real offset: visibleArea.yPosition * parent.height
+            property real offset: Math.round(visibleArea.yPosition * parent.height)
             property real length: Math.min(visibleArea.heightRatio, 1.0) * parent.height
             property real overshoot: Math.max(-offset, 0, offset + length - parent.height)
 
@@ -55,7 +55,7 @@ Item {
         Behavior on opacity { NumberAnimation { duration: 100 } }
 
         Loader {
-            property real offset: visibleArea.xPosition * parent.width
+            property real offset: Math.round(visibleArea.xPosition * parent.width)
             property real length: Math.min(visibleArea.widthRatio, 1.0) * parent.width
             property real overshoot: Math.max(-offset, 0, offset + length - parent.width)
 
