@@ -6,7 +6,7 @@ TARGET = $$qtLibraryTarget(qtcomponentsplugin)
 DESTDIR = $$Q_COMPONENTS_BUILD_TREE/imports/$$TARGETPATH
 INCLUDEPATH += $$PWD $$PWD/models
 
-win32|mac:!wince*:!win32-msvc:!macx-xcode:CONFIG += debug_and_release
+win32|mac:!wince*:!win32-msvc:!macx-xcode:CONFIG += debug_and_release build_all
 CONFIG += qt plugin
 QT += declarative
 
@@ -20,18 +20,10 @@ QML_FILES += \
 
 symbian {
     TARGET.EPOCALLOWDLLDATA = 1
-    TARGET.CAPABILITY = CAP_GENERAL_DLL
+    TARGET.CAPABILITY = ALL -TCB
     TARGET.UID3 = 0x200346E1
     MMP_RULES += EXPORTUNFROZEN
     MMP_RULES += SMPSAFE
-
-    pluginstub.sources = qtcomponentsplugin.dll
-    pluginstub.path = /resource/qt/imports/$$TARGETPATH
-
-    resources.path = /resource/qt/imports/$$TARGETPATH
-    resources.sources += $$QML_FILES
-
-    DEPLOYMENT += pluginstub resources
 }
 
 HEADERS += qglobalenums.h

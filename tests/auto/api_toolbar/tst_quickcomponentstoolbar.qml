@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -25,7 +25,7 @@
 ****************************************************************************/
 
 import Qt 4.7
-import com.meego 1.0
+import Qt.labs.components.native 1.0
 
 Item {
 
@@ -37,18 +37,18 @@ Item {
         id: commonToolsA
         visible: false
         objectName: "toolsA"
-        ToolItem { iconId: "icon-m-toolbar-home"; }
-        ToolItem { iconId: "icon-m-toolbar-view-menu"; }
-        ToolItem { iconId: "icon-m-toolbar-back"; }
+        ToolButton { iconSource: "icon-m-toolbar-home"; }
+        ToolButton { iconSource: "icon-m-toolbar-view-menu"; }
+        ToolButton { iconSource: "icon-m-toolbar-back"; }
     }
 
     ToolBarLayout {
         id: commonToolsB
         visible: false
         objectName: "toolsB"
-        ToolItem { iconId: "icon-m-toolbar-home"; }
-        ToolItem { iconId: "icon-m-toolbar-view-menu"; }
-        ToolItem { iconId: "icon-m-toolbar-back"; }
+        ToolButton { iconSource: "icon-m-toolbar-home"; }
+        ToolButton { iconSource: "icon-m-toolbar-view-menu"; }
+        ToolButton { iconSource: "icon-m-toolbar-back"; }
     }
 
     function setToolsA()

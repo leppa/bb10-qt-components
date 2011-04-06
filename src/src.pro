@@ -1,14 +1,10 @@
 TEMPLATE = subdirs
-SUBDIRS = components native
-
-mx {
-    SUBDIRS += mx
-}
+SUBDIRS = components
 
 meego {
     SUBDIRS += meego meego/themebridge
 }
 
 symbian3 {
-    SUBDIRS += symbian symbian/themebridge
+    SUBDIRS += symbian symbian/extras
 }

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -25,30 +25,24 @@
 ****************************************************************************/
 
 import Qt 4.7
-import com.nokia.symbian 1.0
-import com.nokia.symbian.themebridge 1.0
+import Qt.labs.components 1.0
 
 ImplicitSizeItem {
-    id: progressBar
+    id: root
 
     // Common Public API
-    property real minimumValue: 0.0
-    property real maximumValue: 1.0
-    property real value: 0.0
+    property alias minimumValue: model.minimumValue
+    property alias maximumValue: model.maximumValue
+    property alias value: model.value
     property bool indeterminate: false
 
-    implicitWidth: style.current.preferredWidth
-    implicitHeight: style.current.preferredHeight
+    implicitWidth: Math.max(50, screen.width / 2) // TODO: use screen.displayWidth
+    implicitHeight: privateStyle.sliderThickness
 
-    Style {
-        id: style
-        styleClass: "ProgressBar"
-    }
-
-    Frame {
+    BorderImage {
         id: background
-        frameName: style.current.get("backgroundFrame")
-        frameType: style.current.get("backgroundType")
+        source: privateStyle.imagePath("qtg_fr_progressbar_track")
+        border { left: 20; top: 0; right: 20; bottom: 0 }
 
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
@@ -65,11 +59,15 @@ ImplicitSizeItem {
                     visible: true
                 }
                 PropertyChanges {
-                    target: indeterminateAnimation
+                    target: indeterminateMaskedImage
                     visible: false
                 }
                 PropertyChanges {
-                    target: propertyAnimation
+                    target: indeterminateMaskedImageExtra
+                    visible: false
+                }
+                PropertyChanges {
+                    target: indeterminateAnimation
                     running: false
                 }
             },
@@ -81,17 +79,28 @@ ImplicitSizeItem {
                     visible: false
                 }
                 PropertyChanges {
-                    target: indeterminateAnimation
+                    target: indeterminateMaskedImage
                     visible: true
                 }
                 PropertyChanges {
-                    target: propertyAnimation
+                    target: indeterminateMaskedImageExtra
+                    visible: true
+                }
+                PropertyChanges {
+                    target: indeterminateAnimation
                     running: true
                 }
             }
         ]
 
-        PropertyAnimation { id: propertyAnimation; loops: Animation.Infinite; running: true; target: indeterminateAnimation; property: "animationOffset"; from: 0; to: 200; easing.type: Easing.Linear; duration: 5000 }
+        ParallelAnimation {
+            id: indeterminateAnimation
+            loops: Animation.Infinite
+            running: true
+
+            PropertyAnimation { target: indeterminateMaskedImage; property: "offset.x"; from: height; to: 1; easing.type: Easing.Linear; duration: privateStyle.sliderThickness * 25 }
+            PropertyAnimation { target: indeterminateMaskedImageExtra; property: "offset.x"; from: 0; to: 1 - height; easing.type: Easing.Linear; duration: privateStyle.sliderThickness * 25 }
+        }
 
         Item {
             clip: true
@@ -100,37 +109,57 @@ ImplicitSizeItem {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
 
-            width: progressWidth()
+            width: model.position
 
-            function progressWidth() {
-                if (value <= minimumValue)
-                    return 0;
-                else if (value >= maximumValue)
-                    return progressBar.width;
-                else
-                    return ((value - minimumValue) / (maximumValue - minimumValue)) * progressBar.width;
-            }
-
-            Frame {
+            BorderImage {
                 id: frame
-                frameName: style.current.get("contentsFrame")
-                frameType: style.current.get("contentsType")
+                source: privateStyle.imagePath("qtg_fr_progressbar_fill")
+                border { left: 20; top: 0; right: 20; bottom: 0 }
 
                 anchors.left: parent.left
                 anchors.top: parent.top
 
-                width: progressBar.width
+                width: root.width
                 height: parent.height
             }
         }
 
-        ProgressBarAnimation {
-            id: indeterminateAnimation
+        MaskedImage {
+            id: indeterminateMaskedImage
             anchors.fill: parent
 
-            animationIcon: style.current.get("indeterminateIcon")
-            animationMask: style.current.get("indeterminateMask")
+            topMargin: 0
+            bottomMargin: 0
+            leftMargin: 20
+            rightMargin: 20
+
+            tiled: true
+            imageName: "qtg_graf_progressbar_wait"
+            maskName: "qtg_fr_progressbar_mask"
         }
+
+        // Secondary tile to keep the bar full when the animation scrolls
+        MaskedImage {
+            id: indeterminateMaskedImageExtra
+            anchors.fill: parent
+
+            topMargin: 0
+            bottomMargin: 0
+            leftMargin: 20
+            rightMargin: 20
+
+            tiled: false
+            imageName: "qtg_graf_progressbar_wait"
+            maskName: "qtg_fr_progressbar_mask"
+        }
+    }
+
+    RangeModel {
+        id: model
+        minimumValue: 0.0
+        maximumValue: 1.0
+        positionAtMinimum: 0.0
+        positionAtMaximum: background.width
     }
 }
 

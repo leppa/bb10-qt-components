@@ -1,6 +1,6 @@
-/****************************************************************************
+    /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -24,9 +24,8 @@
 **
 ****************************************************************************/
 import Qt 4.7
-import com.nokia.symbian.themebridge 1.0
 
-ImplicitSizeItem {
+FocusScopeItem {
     id: root
 
     // Common Public API
@@ -70,23 +69,21 @@ ImplicitSizeItem {
     }
 
     function positionAt(x) {
-        // ### TODO: remove the left margins from x
-        return textInput.positionAt(x)
+        return textInput.positionAt(mapToItem(textInput, x, 0).x)
     }
 
     function positionToRectangle(pos) {
-        // ### TODO: translate rect to TextField coord
-        return textInput.positionToRectangle(pos)
+        var rect = textInput.positionToRectangle(pos)
+        rect.x = mapFromItem(textInput, rect.x, 0).x
+        return rect;
     }
 
     // API extensions
-    implicitWidth: style.current.get("paddingLeft") +
-                   Math.max(style.textWidth(text, textInput.font), priv.minWidth) +
-                   style.current.get("paddingRight")
+    implicitWidth: 2 * platformStyle.paddingMedium +
+                   Math.max(privateStyle.textWidth(text, textInput.font), priv.minWidth)
 
-    implicitHeight: style.current.get("paddingTop") +
-                    style.fontHeight(textInput.font) +
-                    style.current.get("paddingBottom")
+    implicitHeight: 2 * platformStyle.paddingMedium +
+                    privateStyle.fontHeight(textInput.font)
 
     // Private data
     QtObject {
@@ -94,51 +91,43 @@ ImplicitSizeItem {
         // Minimum width is either placeholder text lenght or 5 spaces on current font.
         // Using placeholder text lenght as minimum width prevents implicit sized item from
         // shrinking on focus gain.
-        property real minWidth: placeholder.text ? style.textWidth(placeholder.text, textInput.font)
-                                                 : style.textWidth("     ", textInput.font)
+        property real minWidth: placeholder.text ? privateStyle.textWidth(placeholder.text, textInput.font)
+                                                 : privateStyle.textWidth("     ", textInput.font)
     }
 
-    Style {
-        id: style
-        mode: textInput.activeFocus ? "selected" : "default"
-        styleClass: "TextField"
-    }
-
-    Frame {
+    BorderImage {
         id: frame
         anchors.fill: parent
-        frameName: style.current.get("frameName")
-        frameType: style.current.get("frameType")
+        source: privateStyle.imagePath(textInput.activeFocus ? "qtg_fr_textfield_highlighted" : "qtg_fr_textfield_editable" )
+        border { left: 10; top: 10; right: 10; bottom: 10 }
     }
 
-    Item {
-        id: container
+    TextInput {
+        id: textInput; objectName: "textInput"
         anchors {
             fill: parent
-            leftMargin: style.current.get("paddingLeft"); rightMargin: style.current.get("paddingRight")
-            topMargin: style.current.get("paddingTop"); bottomMargin: style.current.get("paddingBottom")
+            leftMargin: platformStyle.paddingMedium; rightMargin: platformStyle.paddingMedium
+            topMargin: platformStyle.paddingMedium; bottomMargin: platformStyle.paddingMedium
         }
         clip: true
+        color: platformStyle.colorNormalDark
+        focus: true
+        font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeMedium }
+        // TODO: Use desktop text selection behaviour for now.
+        selectByMouse: true
+        selectedTextColor: platformStyle.colorNormalLight
+        selectionColor: platformStyle.colorTextSelection
+    }
 
-        Text {
-            id: placeholder
-            anchors.fill: parent
-            color: style.current.get("placeholderColor")
-            font: style.current.get("font")
-            visible: !textInput.activeFocus && !textInput.text && text
+    Text {
+        id: placeholder; objectName: "placeholder"
+        anchors {
+            fill: parent
+            leftMargin: platformStyle.paddingMedium; rightMargin: platformStyle.paddingMedium
+            topMargin: platformStyle.paddingMedium; bottomMargin: platformStyle.paddingMedium
         }
-
-        TextInput {
-            id: textInput
-            anchors.fill: parent
-            color: style.current.get("textColor")
-            font: style.current.get("font")
-            // TODO: Use desktop text selection behaviour for now.
-            selectByMouse: true
-            selectedTextColor: style.current.get("selectionTextColor")
-            selectionColor: style.current.get("selectionColor")
-            // TODO: Enable when Qt Mobility gets desktop backends for haptick feedback
-            //onFocusChanged: if (focus) style.play(ThemeEffect.Editor)
-        }
+        color: platformStyle.colorNormalMid
+        font: textInput.font
+        visible: !textInput.activeFocus && !textInput.text && text
     }
 }

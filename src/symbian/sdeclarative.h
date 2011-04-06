@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -30,18 +30,78 @@
 #include <QtCore/qobject.h>
 #include <QtDeclarative/qdeclarative.h>
 
+class SDeclarativePrivate;
+
 class SDeclarative : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(ImageSize)
+    Q_PROPERTY(InteractionMode listInteractionMode READ listInteractionMode WRITE setListInteractionMode NOTIFY listInteractionModeChanged FINAL)
+    Q_PROPERTY(QString currentTime READ currentTime NOTIFY currentTimeChanged)
+
+    Q_ENUMS(InteractionMode ImageSize ScrollBarVisibility SourceSize Feedback)
 
 public:
+    SDeclarative(QObject *parent = 0);
+    virtual ~SDeclarative();
+
+    enum InteractionMode {
+        TouchInteraction,
+        KeyNavigation
+    };
+
+    // deprecated - Use platformStyle.graphicSizeXxxx instead
     enum ImageSize {
         Undefined = 0,
         Small,
         Medium,
         Large,
         ImagePortrait
+    };
+
+    // No duplicate prefix naming because enum values are only visible via qml
+    enum ScrollBarVisibility {
+        ScrollBarWhenNeeded = 0,
+        ScrollBarWhenScrolling
+    };
+
+    enum SourceSize {
+        UndefinedSourceDimension = -2
+    };
+
+    enum Feedback {
+        Basic,
+        Sensitive,
+        BasicButton,
+        SensitiveButton,
+        BasicKeypad,
+        SensitiveKeypad,
+        BasicSlider,
+        SensitiveSlider,
+        BasicItem,
+        SensitiveItem,
+        ItemScroll,
+        ItemPick,
+        ItemDrop,
+        ItemMoveOver,
+        BounceEffect,
+        CheckBox,
+        MultipleCheckBox,
+        Editor,
+        TextSelection,
+        BlankSelection,
+        LineSelection,
+        EmptyLineSelection,
+        PopUp,
+        PopupOpen,
+        PopupClose,
+        Flick,
+        StopFlick,
+        MultiPointTouchActivate,
+        RotateStep,
+        LongPress,
+        PositiveTacticon,
+        NeutralTacticon,
+        NegativeTacticon
     };
 
     static inline QString resolveIconFileName(const QString &iconName)
@@ -55,6 +115,65 @@ public:
 
         return fileName;
     }
+
+    InteractionMode listInteractionMode() const;
+    void setListInteractionMode(InteractionMode mode);
+
+    static QString currentTime();
+
+Q_SIGNALS:
+    void listInteractionModeChanged();
+    void currentTimeChanged();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
+private:
+    Q_DISABLE_COPY(SDeclarative)
+    QScopedPointer<SDeclarativePrivate> d_ptr;
+};
+
+class SDialogStatus : public QObject
+{
+    Q_OBJECT
+    Q_ENUMS(Status)
+
+public:
+    enum Status {
+        Opening,
+        Open,
+        Closing,
+        Closed
+    };
+};
+
+class SPageOrientation : public QObject
+{
+    Q_OBJECT
+    Q_ENUMS(PageOrientation)
+
+public:
+    enum PageOrientation {
+        Automatic,
+        LockPortrait,
+        LockLandscape,
+        LockPrevious,
+        Manual
+    };
+};
+
+class SPageStatus : public QObject
+{
+    Q_OBJECT
+    Q_ENUMS(Status)
+
+public:
+    enum Status {
+        Inactive,
+        Activating,
+        Active,
+        Deactivating
+    };
 };
 
 QML_DECLARE_TYPE(SDeclarative)

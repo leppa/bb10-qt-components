@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -25,10 +25,18 @@
 ****************************************************************************/
 
 #include "sdeclarative.h"
+#include "sstylefactory.h"
+#include "sstylewrapper.h"
+#include "sdeclarativeicon.h"
+#include "sdeclarativefocusscopeitem.h"
+#include "sdeclarativeimplicitsizeitem.h"
+#include "sdeclarativeimageprovider.h"
+#include "sdeclarativemaskedimage.h"
 #include "sdeclarativescreen.h"
-#include "sdeclarativeprogressbaranimation.h"
-#include "sdeclarativewindowdecoration.h"
+#include "sbatteryinfo.h"
+#include "snetworkinfo.h"
 
+#include <QCoreApplication>
 #include <QtDeclarative>
 
 class SymbianPlugin : public QDeclarativeExtensionPlugin
@@ -39,18 +47,41 @@ public:
 
     void initializeEngine(QDeclarativeEngine *engine, const char *uri) {
         QDeclarativeExtensionPlugin::initializeEngine(engine, uri);
+        engine->addImageProvider(QLatin1String("theme"), new SDeclarativeImageProvider);
+        QDeclarativeContext *context = engine->rootContext();
 
-        SDeclarativeScreen *scr = new SDeclarativeScreen();
-        scr->setParent(engine->rootContext()); // context takes the ownership
+        SDeclarativeScreen *screen = new SDeclarativeScreen(context);
+        context->setContextProperty("screen", screen);
 
-        engine->rootContext()->setContextProperty("screen", scr);
-        qmlRegisterUncreatableType<SDeclarativeScreen>(uri, 1, 0,"Screen", "");
+        SStyleFactory *style = new SStyleFactory(screen, context);
+        context->setContextProperty("platformStyle", style->platformStyle());
+        context->setContextProperty("privateStyle", style->privateStyle());
+
+        SDeclarative *declarative = new SDeclarative(context);
+        context->setContextProperty("symbian", declarative);
+
+        SBatteryInfo *batteryInfo = new SBatteryInfo(context);
+        context->setContextProperty("batteryInfo", batteryInfo);
+
+        SNetworkInfo *networkInfo = new SNetworkInfo(context);
+        context->setContextProperty("networkInfo", networkInfo);
+
+        QObject::connect(engine, SIGNAL(quit()), QCoreApplication::instance(), SLOT(quit()));
     }
 
     void registerTypes(const char *uri) {
-        qmlRegisterUncreatableType<SDeclarative>(uri, 1, 0,"Symbian", "");
-        qmlRegisterType<SDeclarativeProgressBarAnimation>(uri, 1, 0, "ProgressBarAnimation");
-        qmlRegisterType<SDeclarativeWindowDecoration>(uri, 1, 0, "WindowDecoration");
+        qmlRegisterType<SDeclarativeIcon>(uri, 1, 0, "Icon");
+        qmlRegisterType<SDeclarativeMaskedImage>(uri, 1, 0, "MaskedImage");
+        qmlRegisterType<SStyleWrapper>(uri, 1, 0, "Style");
+        qmlRegisterType<SDeclarativeImplicitSizeItem>(uri, 1, 0, "ImplicitSizeItem");
+        qmlRegisterType<SDeclarativeFocusScopeItem>(uri, 1, 0, "FocusScopeItem");
+        qmlRegisterUncreatableType<SDeclarative>(uri, 1, 0, "Symbian", "");
+        qmlRegisterUncreatableType<SDeclarativeScreen>(uri, 1, 0, "Screen", "");
+        qmlRegisterUncreatableType<SDialogStatus>(uri, 1, 0, "DialogStatus", "");
+        qmlRegisterUncreatableType<SPageOrientation>(uri, 1, 0, "PageOrientation", "");
+        qmlRegisterUncreatableType<SPageStatus>(uri, 1, 0, "PageStatus", "");
+        qmlRegisterUncreatableType<SBatteryInfo>(uri, 1, 0, "BatteryInfo", "");
+        qmlRegisterUncreatableType<SNetworkInfo>(uri, 1, 0, "NetworkInfo", "");
     }
 };
 

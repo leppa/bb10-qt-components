@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -25,55 +25,94 @@
 ****************************************************************************/
 
 import Qt 4.7
-import com.nokia.symbian.themebridge 1.0
+import "." 1.0
 
 ImplicitSizeItem {
-    id: checkbox
+    id: root
 
     // Common Public API
     property bool checked: false
-    property bool pressed: mouseArea.containsMouse && mouseArea.pressed && checkable
+    property bool pressed: stateGroup.state == "Pressed"
 
     signal clicked
 
-    property bool checkable: true
     property alias text: label.text
 
-    Style {
-        id: style
-        styleClass: "CheckBox"
-        mode: {
-            if (pressed)
-                return "pressed"
-            else if (checkbox.checked)
-                return "selected"
-            else
-                return "default"
+    QtObject {
+        id: internal
+        objectName: "internal"
+
+        function bg_postfix() {
+            if (!root.enabled) {
+                if (root.checked)
+                    return "disabled_selected"
+                else
+                    return "disabled_unselected"
+            } else {
+                if (root.pressed)
+                    return "pressed"
+                else if (root.checked)
+                    return "normal_selected"
+                else
+                    return "normal_unselected"
+            }
+        }
+
+        function press() {
+            privateStyle.play(Symbian.BasicItem);
+        }
+
+        function toggle() {
+            clickedEffect.restart();
+            root.checked = !root.checked;
+            root.clicked();
+            privateStyle.play(Symbian.CheckBox);
         }
     }
 
-    implicitWidth: style.current.get("iconWidth") + style.current.get("padding") + style.textWidth(label.text, label.font)
-    implicitHeight: style.current.get("topMargin") + Math.max( style.current.get("iconHeight"), style.fontHeight(label.font) ) + style.current.get("bottomMargin")
+    StateGroup {
+        id: stateGroup
 
-    Icon {
+        states: [
+            State { name: "Pressed" },
+            State { name: "Canceled" }
+        ]
+
+        transitions: [
+            Transition {
+                to: "Pressed"
+                ScriptAction { script: internal.press() }
+            },
+            Transition {
+                from: "Pressed"
+                to: ""
+                ScriptAction { script: internal.toggle() }
+            }
+        ]
+    }
+
+    implicitWidth: label.text ? platformStyle.graphicSizeSmall + platformStyle.paddingMedium + privateStyle.textWidth(label.text, label.font)
+                              : platformStyle.graphicSizeSmall
+    implicitHeight: privateStyle.menuItemHeight
+
+    Image {
         id: contentIcon
-        iconName: style.current.get("iconName")
+        source: privateStyle.imagePath("qtg_graf_checkbox_" + internal.bg_postfix());
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: style.current.get("iconWidth")
-        height: style.current.get("iconHeight")
+        sourceSize.width: platformStyle.graphicSizeSmall
+        sourceSize.height: platformStyle.graphicSizeSmall
     }
 
     Text {
         id: label
         anchors.left: contentIcon.right
-        anchors.leftMargin: style.current.get("padding")
+        anchors.leftMargin: text ? platformStyle.paddingMedium : 0
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-
         elide: Text.ElideRight
-        font: style.current.get("font")
-        color: style.current.get("textColor")
+        font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeMedium }
+        color: platformStyle.colorNormalLight
     }
 
     MouseArea {
@@ -85,12 +124,15 @@ ImplicitSizeItem {
             PropertyAnimation { target: contentIcon; property: "scale"; from: 0.8; to: 1.0; easing.type: "OutQuad"; duration: 300 }
         }
 
-        onClicked: {
-            if (checkable) {
-                clickedEffect.restart();
-                checkbox.checked = !checkbox.checked;
-            }
-            checkbox.clicked();
+        onPressed: stateGroup.state = "Pressed"
+        onReleased: stateGroup.state = ""
+        onClicked: stateGroup.state = ""
+        onExited: stateGroup.state = "Canceled"
+        onCanceled: {
+            // Mark as canceled
+            stateGroup.state = "Canceled"
+            // Reset state. Can't expect a release since mouse was ungrabbed
+            stateGroup.state = ""
         }
     }
 }

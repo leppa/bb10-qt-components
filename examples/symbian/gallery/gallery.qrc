@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="tb_quit.svg">images/tb_quit.svg</file>
+    <file alias="tb_options.svg">images/tb_options.svg</file>
+</qresource>
+</RCC>

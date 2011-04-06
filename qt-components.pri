@@ -1,13 +1,18 @@
+!mobility:!no_mobility {
+    # bool load(feature, ignore_error)
+    load(mobilityconfig, true):CONFIG += mobility
+}
+
+CONFIG += qt-components depend_includepath
+
 unix:!symbian {
-    OBJECTS_DIR = .obj
-    MOC_DIR = .moc
-}
-
-meego {
-    DEFINES += Q_COMPONENTS_MEEGO
-    CONFIG += meegotouch
-}
-
-symbian3 {
-    DEFINES += Q_COMPONENTS_SYMBIAN
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = .release
+        MOC_DIR = .release
+        RCC_DIR = .release
+    } else {
+        OBJECTS_DIR = .debug
+        MOC_DIR = .debug
+        RCC_DIR = .debug
+    }
 }

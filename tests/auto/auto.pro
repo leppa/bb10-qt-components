@@ -1,28 +1,6 @@
-TEMPLATE=subdirs
-SUBDIRS=            \
-# This one depends on private Qt headers :-(
-#    qdatetimemodel  \
-    qrangemodel
+TEMPLATE = subdirs
 
-meego {
-   !win32:!macx:SUBDIRS += mlocalthemedaemonclient \
-                    mremotethemedaemonclient
+SUBDIRS += api.pro components.pro host.pro
 
-    # FIXME: although ostensibly generic API tests, these currently
-    # have a hardcoded dependency on meegotouch
-    SUBDIRS += \
-        api_button \
-        api_checkbox \
-        api_slider \
-        api_pagestack \
-        api_progressbar \
-        api_scrolldecorator \
-        api_textfield \ #TODO not yet finalized
-        api_textarea \ #TODO not yet finalized
-        api_toolbar
-}
-
-symbian3 {
-    SUBDIRS += \
-        symbian_textfield
-}
+meego:SUBDIRS += meego.pro
+symbian3:SUBDIRS += symbian.pro

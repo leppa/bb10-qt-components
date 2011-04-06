@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -27,7 +27,7 @@
 #ifndef SDECLARATIVESCREEN_H
 #define SDECLARATIVESCREEN_H
 
-#include <QDeclarativeItem>
+#include <QtDeclarative/qdeclarativeitem.h>
 
 class SDeclarativeScreenPrivate;
 
@@ -35,68 +35,94 @@ class SDeclarativeScreen : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged FINAL)
-    Q_PROPERTY(QString orientationString READ orientationString NOTIFY orientationChanged FINAL)
+    Q_PROPERTY(int width READ width NOTIFY widthChanged FINAL)
+    Q_PROPERTY(int height READ height NOTIFY heightChanged FINAL)
+    Q_PROPERTY(int displayWidth READ displayWidth NOTIFY displayChanged FINAL)
+    Q_PROPERTY(int displayHeight READ displayHeight NOTIFY displayChanged FINAL)
 
-    Q_PROPERTY(int width READ width NOTIFY sizeChanged)
-    Q_PROPERTY(int height READ height NOTIFY sizeChanged)
-    Q_PROPERTY(int rotation READ rotation NOTIFY orientationChanged FINAL)
+    Q_PROPERTY(int rotation READ rotation NOTIFY currentOrientationChanged FINAL)
+    Q_PROPERTY(Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged FINAL) // deprecated
+    Q_PROPERTY(Orientation currentOrientation READ currentOrientation NOTIFY currentOrientationChanged FINAL)
+    Q_PROPERTY(Orientations allowedOrientations READ allowedOrientations WRITE setAllowedOrientations NOTIFY allowedOrientationsChanged FINAL)
 
-    Q_PROPERTY(qreal ppi READ ppi)
-    Q_PROPERTY(qreal ppmm READ ppmm)
-    Q_PROPERTY(qreal unit READ unit NOTIFY displayChanged)
-    Q_PROPERTY(QSizeF physicalSize READ physicalSize)
+    Q_PROPERTY(qreal dpi READ dpi NOTIFY displayChanged FINAL)
+    Q_PROPERTY(DisplayCategory displayCategory READ displayCategory NOTIFY displayChanged FINAL)
+    Q_PROPERTY(Density density READ density NOTIFY displayChanged FINAL)
 
-    Q_PROPERTY(bool minimized READ isMinimized WRITE setMinimized NOTIFY minimizedChanged FINAL)
-
-    Q_ENUMS(Orientation)
+    Q_ENUMS(Orientation DisplayCategory Density)
+    Q_FLAGS(Orientations)
 
 public:
-    explicit SDeclarativeScreen(QDeclarativeItem *parent = 0);
+    explicit SDeclarativeScreen(QObject *parent = 0);
     virtual ~SDeclarativeScreen();
 
     enum Orientation {
-        Automatic,
-        Portrait,
-        Landscape,
-        PortraitInverted,
-        LandscapeInverted
+        Default = 0,
+        Portrait = 1,
+        Landscape = 2,
+        PortraitInverted = 4,
+        LandscapeInverted = 8,
+        All = 15,
+        Automatic = All // deprecated
     };
 
-    Orientation orientation() const;
-    QString orientationString() const;
-    void setOrientation(Orientation orientation);
+    enum DisplayCategory {
+        Small,
+        Normal,
+        Large,
+        ExtraLarge
+    };
 
-    int rotation() const;
+    enum Density {
+        Low,
+        Medium,
+        High,
+        ExtraHigh
+   };
+
+    Q_DECLARE_FLAGS(Orientations, Orientation)
 
     int width() const;
     int height() const;
+    int displayWidth() const;
+    int displayHeight() const;
 
-    bool isMinimized() const;
-    void setMinimized(bool minimized);
+    int rotation() const;
+    Orientation orientation() const; //deprecated
+    void setOrientation(Orientation orientation); //deprecated
+    Orientation currentOrientation() const;
+    Orientations allowedOrientations() const;
+    void setAllowedOrientations(Orientations orientations);
 
-    qreal ppi() const;
-    qreal ppmm() const;
-    qreal unit() const;
-    QSizeF physicalSize() const;
+    qreal dpi() const;
+    DisplayCategory displayCategory() const;
+    Density density() const;
+
+    Q_INVOKABLE void privateSetDisplay(int width, int height, qreal dpi);
 
 Q_SIGNALS:
-    void orientationChanged();
-    void minimizedChanged();
-    void sizeChanged();
+    void widthChanged();
+    void heightChanged();
+    void orientationChanged(); // deprecated
+    void currentOrientationChanged();
+    void allowedOrientationsChanged();
     void displayChanged();
+    void privateAboutToChangeOrientation();
 
 protected:
+    bool eventFilter(QObject *obj, QEvent *event);
     QScopedPointer<SDeclarativeScreenPrivate> d_ptr;
 
 private:
-    Q_PRIVATE_SLOT(d_func(), void _q_updateOrientationAngle())
-    Q_PRIVATE_SLOT(d_func(), void _q_updateScreenSize(const QSize&))
-
+    Q_PRIVATE_SLOT(d_func(), void _q_initView(const QSize &))
+    Q_PRIVATE_SLOT(d_func(), void _q_updateScreenSize(const QSize &))
+    Q_PRIVATE_SLOT(d_func(), void _q_desktopResized(int))
     Q_DISABLE_COPY(SDeclarativeScreen)
     Q_DECLARE_PRIVATE(SDeclarativeScreen)
 };
 
 QML_DECLARE_TYPE(SDeclarativeScreen)
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(SDeclarativeScreen::Orientations)
 
 #endif // SDECLARATIVESCREEN_H

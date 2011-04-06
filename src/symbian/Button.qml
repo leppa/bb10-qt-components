@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -25,7 +25,7 @@
 ****************************************************************************/
 
 import Qt 4.7
-import com.nokia.symbian.themebridge 1.0
+import "." 1.0
 
 ImplicitSizeItem {
     id: button
@@ -33,160 +33,218 @@ ImplicitSizeItem {
     // Common Public API
     property bool checked: false
     property bool checkable: false
-    property bool pressed: (state == "Pressed" || state == "PressAndHold") && mouseArea.containsMouse
+    property bool pressed: (stateGroup.state == "Pressed" || stateGroup.state == "PressAndHold") && mouseArea.containsMouse
     property alias text: label.text
-    property alias iconSource: contentIcon.iconName; // theme id or absolute filename
+    property alias iconSource: icon.source
+    property alias font: label.font
 
     signal clicked
-    signal released
-    signal pressAndHold
 
-    property bool autoRepeat: false
-    property int autoRepeatInterval: 50
-    property bool longPress: false
+    // Symbian specific signals and properties
+    signal platformReleased
+    signal platformPressAndHold
 
-    property variant __style: style
+    property bool platformAutoRepeat: false
+    property bool platformLongPress: false
 
-    implicitWidth: calculateImplicitWidth()
-    implicitHeight: calculateImplicitHeight()
-
-    function calculateImplicitWidth() {
+    implicitWidth: {
         var prefWidth = 20;
 
-        if (iconSource && text)
-            // leftMargin + iconWidth + padding + textWidth + rightMargin
-            prefWidth = style.current.get("iconMarginLeft") + style.current.get("iconWidth") + style.current.get("textMarginLeftInner")
-                        + style.textWidth(label.text, label.font) + style.current.get("textMarginRight");
-        else if (iconSource)
-            // leftMargin + iconWidth + rightMargin
-            prefWidth = style.current.get("iconMarginLeft") + style.current.get("iconWidth") + style.current.get("iconMarginRight");
+        if (iconSource != "" && text)
+            prefWidth = icon.sourceSize.width > privateStyle.textWidth(label.text, label.font)
+                ? icon.anchors.leftMargin + icon.sourceSize.width + icon.anchors.rightMargin
+                : label.anchors.leftMargin + privateStyle.textWidth(label.text, label.font) + label.anchors.rightMargin
+        else if (iconSource != "")
+            prefWidth = icon.anchors.leftMargin + icon.sourceSize.width + icon.anchors.rightMargin;
         else if (text)
-            // leftMargin + textWidth + rightMargin
-            prefWidth = style.current.get("textMarginLeft") + style.textWidth(label.text, label.font) + style.current.get("textMarginRight");
+            prefWidth = icon.anchors.leftMargin + privateStyle.textWidth(label.text, label.font) + label.anchors.rightMargin;
 
         return prefWidth;
     }
 
-    function calculateImplicitHeight() {
-        var prefHeight = style.current.get("iconMarginTop") + style.current.get("iconMarginBottom");
+    implicitHeight: {
+        var prefHeight = icon.anchors.topMargin + icon.anchors.bottomMargin;
 
-        if (iconSource && text)
-            prefHeight = prefHeight + Math.max(style.current.get("iconHeight"), style.fontHeight(label.font));
-        else if (iconSource)
-            prefHeight = prefHeight + style.current.get("iconHeight");
+        if (iconSource != "" && text)
+            prefHeight = prefHeight + icon.sourceSize.height + privateStyle.fontHeight(label.font);
+        else if (iconSource != "")
+            prefHeight = prefHeight + icon.sourceSize.height;
         else if (text)
-            prefHeight = prefHeight + style.fontHeight(label.font);
+            prefHeight = prefHeight + privateStyle.fontHeight(label.font);
 
         return prefHeight;
     }
 
-    function toggleChecked() {
-        if (checkable)
-            checked = !checked;
-    }
+    QtObject {
+        id: internal
+        objectName: "internal"
 
-    function press() {
-        // haptics
-        if (checkable && checked) {
-            // TODO: style.play(ThemeEffect.SensitiveButton);
-        } else {
-            // TODO: style.play(ThemeEffect.BasicButton);
-        }
-    }
+        property int autoRepeatInterval: 60
 
-    function release() {
-        if (tapRepeatTimer.running)
-            tapRepeatTimer.stop();
-        button.released();
-    }
-
-    function click() {
-        button.toggleChecked();
-
-        // Just to show some effect, TODO: real effect from theme
-        clickedEffect.restart();
-
-        // release haptics on succesfull click
-        if (!checkable || (checkable && !checked)) {
-            // TODO: style.play(ThemeEffect.BasicButton);
-        }
-
-        // emit signal
-        button.clicked();
-    }
-
-    function hold() {
-        // If autorepeat is enabled, do not emit long press, but repeat the tap action.
-        if (button.autoRepeat)
-            tapRepeatTimer.start();
-
-        if (button.longPress) // otherwise emit pressAndHold signal
-            button.pressAndHold();
-    }
-
-    function repeat() {
-        if (!checkable) {
-            // TODO: style.play(ThemeEffect.SensitiveButton);
-        }
-        // emit signal
-        button.clicked();
-    }
-
-    Style {
-        id: style
-        styleClass: "Button"
-        mode: {
-            if (state == "Pressed" || state == "PressAndHold")
+        function bg_postfix() {
+            if (stateGroup.state == "Pressed" || stateGroup.state == "PressAndHold")
                 return "pressed"
             else if (focus && checked)
                 return "pressed"
-            else if (focus)
-                return "focused"
             else if (checked)
-                return "checked"
+                return "latched"
             else
-                return "default"
+                return "normal"
+        }
+
+        function toggleChecked() {
+            if (checkable)
+                checked = !checked;
+        }
+
+        function press() {
+            if (checkable && checked)
+                privateStyle.play(Symbian.SensitiveButton);
+            else
+                privateStyle.play(Symbian.BasicButton);
+        }
+
+        function release() {
+            if (tapRepeatTimer.running)
+                tapRepeatTimer.stop();
+            button.platformReleased();
+        }
+
+        function click() {
+            internal.toggleChecked();
+
+            // Just to show some effect, TODO: real effect from theme
+            clickedEffect.restart();
+
+            if (!checkable || (checkable && !checked))
+                privateStyle.play(Symbian.BasicButton);
+
+            button.clicked();
+        }
+
+        function hold() {
+            // If autorepeat is enabled, do not emit long press, but repeat the tap action.
+            if (button.platformAutoRepeat)
+                tapRepeatTimer.start();
+
+            if (button.platformLongPress)
+                button.platformPressAndHold();
+        }
+
+        function repeat() {
+            if (!checkable)
+                privateStyle.play(Symbian.SensitiveButton);
+            button.clicked();
+        }
+
+        // The function imageSource() handles fetching correct graphics for the Button.
+        // If the parent of a Button is ButtonRow, segmented-style graphics are used to create a
+        // seamless row of buttons. Otherwise normal Button graphics are utilized.
+        function imageSource() {
+            if (parent && parent.hasOwnProperty("checkedButton") && parent.hasOwnProperty("__direction") && parent.__direction == Qt.Horizontal && parent.children.length > 1) {
+                var imageName = "qtg_fr_pushbutton_segmented"
+                if (button === parent.children[0])
+                    imageName += "_l_"
+                else if(button === parent.children[parent.children.length - 1])
+                    imageName += "_r_"
+                else
+                    imageName += "_c_"
+
+                return privateStyle.imagePath(imageName + internal.bg_postfix())
+            }
+            return privateStyle.imagePath("qtg_fr_pushbutton_" + internal.bg_postfix())
         }
     }
 
-    Frame {
+    StateGroup {
+        id: stateGroup
+
+        states: [
+            State { name: "Pressed"; },
+            State { name: "PressAndHold"; },
+            State { name: "Canceled"; }
+        ]
+
+        transitions: [
+            Transition {
+                to: "Pressed"
+                ScriptAction { script: internal.press(); }
+            },
+            Transition {
+                from: "Pressed"
+                to: "PressAndHold"
+                ScriptAction { script: internal.hold(); }
+            },
+            Transition {
+                from: "Pressed"
+                to: ""
+                ScriptAction { script: internal.release(); }
+                ScriptAction { script: internal.click(); }
+            },
+            Transition {
+                from: "PressAndHold"
+                to: ""
+                ScriptAction { script: internal.release(); }
+            },
+            Transition {
+                from: "Pressed"
+                to: "Canceled"
+                ScriptAction { script: internal.release(); }
+            },
+            Transition {
+                from: "PressAndHold"
+                to: "Canceled"
+                ScriptAction { script: internal.release(); }
+            }
+        ]
+    }
+
+    BorderImage {
         id: background
-        frameName: style.current.get("background")
-        frameType: style.current.get("frameType")
+        source: internal.imageSource()
+        border { left: 20; top: 20; right: 20; bottom: 20 }
         anchors.fill: parent
     }
 
-    Icon {
-        id: contentIcon
-        anchors.leftMargin: style.current.get("iconMarginLeft")
-        anchors.rightMargin: style.current.get("iconMarginRight")
-        anchors.topMargin: style.current.get("iconMarginTop")
-        anchors.bottomMargin: style.current.get("iconMarginBottom")
+    Item {
+        id: layout
+        width: implicitWidth < button.width ? implicitWidth : button.width
+        height: implicitHeight < button.height ? implicitHeight : button.height
+        anchors.centerIn: parent
 
-        anchors.left: parent.left
-        anchors.right: text == "" ? parent.right : undefined
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        Image {
+            id: icon
+            sourceSize.width : platformStyle.graphicSizeSmall
+            sourceSize.height : platformStyle.graphicSizeSmall
+            fillMode: Image.PreserveAspectFit
+            smooth: true
 
-        width: style.current.get("iconWidth")
-        height: style.current.get("iconHeight")
-    }
+            anchors {
+                horizontalCenter: layout.horizontalCenter
+                verticalCenter: layout.verticalCenter
+                verticalCenterOffset: text ? -platformStyle.paddingLarge : 0
+                margins: platformStyle.paddingLarge
+            }
+        }
 
-    Text {
-        id: label
-        elide: Text.ElideRight
-        anchors.leftMargin: iconSource != "" ? style.current.get("textMarginLeftInner") : style.current.get("textMarginLeft")
-        anchors.rightMargin: style.current.get("textMarginRight")
+        Text {
+            id: label
+            elide: layout.width >= button.width ? Text.ElideRight : Text.ElideNone
+            anchors {
+                leftMargin: platformStyle.paddingLarge
+                rightMargin: platformStyle.paddingLarge
+                left: layout.left
+                right: layout.right
+                top: iconSource != "" ? icon.bottom : layout.top
+                bottom: layout.bottom
+            }
 
-        anchors.left: iconSource != "" ? contentIcon.right : parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
 
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-
-        font: style.current.get("font")
-        color: style.current.get("textColor")
+            font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeMedium }
+            color: platformStyle.colorNormalLight
+        }
     }
 
     MouseArea {
@@ -194,30 +252,30 @@ ImplicitSizeItem {
 
         anchors.fill: parent
 
-        onPressed: button.state = "Pressed";
+        onPressed: stateGroup.state = "Pressed"
 
-        onReleased: button.state = "";
+        onReleased: stateGroup.state = ""
 
         onCanceled: {
             // Mark as canceled
-            button.state = "Canceled";
+            stateGroup.state = "Canceled";
             // Reset state. Can't expect a release since mouse was ungrabbed
-            button.state = "";
+            stateGroup.state = "";
         }
 
         onPressAndHold: {
-            if (button.state != "Canceled" && (longPress || autoRepeat))
-                button.state = "PressAndHold";
+            if (stateGroup.state != "Canceled" && (platformLongPress || platformAutoRepeat))
+                stateGroup.state = "PressAndHold";
         }
 
-        onExited: button.state = "Canceled"
+        onExited: stateGroup.state = "Canceled"
     }
 
     Timer {
         id: tapRepeatTimer
 
-        interval: button.autoRepeatInterval; running: false; repeat: true
-        onTriggered: { button.repeat(); }
+        interval: internal.autoRepeatInterval; running: false; repeat: true
+        onTriggered: internal.repeat()
     }
 
     // TODO: Temporary sequential animation
@@ -229,54 +287,15 @@ ImplicitSizeItem {
 
     Keys.onPressed: {
         if (event.key == Qt.Key_Select || event.key == Qt.Key_Return) {
-            button.state = "Pressed";
+            stateGroup.state = "Pressed";
             event.accepted = true;
         }
     }
 
     Keys.onReleased: {
         if (event.key == Qt.Key_Select || event.key == Qt.Key_Return) {
-            button.state = "";
+            stateGroup.state = "";
             event.accepted = true;
         }
     }
-
-    states: [
-        State { name: "Pressed"; },
-        State { name: "PressAndHold"; },
-        State { name: "Canceled"; }
-    ]
-
-    transitions: [
-        Transition {
-            to: "Pressed"
-            ScriptAction { script: button.press(); }
-        },
-        Transition {
-            from: "Pressed"
-            to: "PressAndHold"
-            ScriptAction { script: button.hold(); }
-        },
-        Transition {
-            from: "Pressed"
-            to: ""
-            ScriptAction { script: button.release(); }
-            ScriptAction { script: button.click(); }
-        },
-        Transition {
-            from: "PressAndHold"
-            to: ""
-            ScriptAction { script: button.release(); }
-        },
-        Transition {
-            from: "Pressed"
-            to: "Canceled"
-            ScriptAction { script: button.release(); }
-        },
-        Transition {
-            from: "PressAndHold"
-            to: "Canceled"
-            ScriptAction { script: button.release(); }
-        }
-    ]
 }

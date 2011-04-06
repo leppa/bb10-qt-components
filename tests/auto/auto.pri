@@ -1,3 +1,5 @@
+CONFIG += qtestlib testcase
+
 harmattan {
     INSTALLS += target qmlfiles
     qmlfiles.files = $$OTHER_FILES
@@ -8,5 +10,5 @@ harmattan {
 symbian {
     imports.sources = $$OTHER_FILES
     imports.path = .
-    DEPLOYMENT = imports
+    DEPLOYMENT += imports
 }
