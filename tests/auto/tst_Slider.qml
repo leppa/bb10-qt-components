@@ -53,30 +53,32 @@ ComponentTestCase {
             "maximumValue should observe the current value and adjust when necessary.";
         obj.value = 0.8;
         obj.maximumValue = 0.5;
-        compare(obj.value, 0.5, message);
+        verify(obj.value <= 0.5, message);
 
         var message =
             "minimumValue should observe the current value and adjust when necessary.";
         obj.value = 0.1;
         obj.minimumValue = 0.2;
-        compare(obj.value, 0.2, message);
+        verify(obj.value >= 0.2, message);
 
         // We don't want to enforce this with the RangeModel
-//        var message =
-//            "maximumValue can't never be lower than minimumValue.";
-//        obj.minimumValue = 0.4;
-//        obj.maximumValue = 0.2;
-//        compare(obj.maximumValue, 0.2, message);
-//        compare(obj.minimumValue, 0.2, message);
-//        compare(obj.value, 0.2, message);
+        var message =
+            "maximumValue can't never be lower than minimumValue.";
+        obj.minimumValue = 0.4;
+        obj.maximumValue = 0.2;
+        compare(obj.maximumValue, 0.2, message);
+        expectFailContinue("", "Not yet supported");
+        compare(obj.minimumValue, 0.2, message);
+        compare(obj.value, 0.2, message);
 
-//        var message =
-//            "minimumValue can't never be greater than maximumValue.";
-//        obj.maximumValue = 1.0;
-//        obj.minimumValue = 2.0;
-//        compare(obj.maximumValue, 2.0, message);
-//        compare(obj.minimumValue, 2.0, message);
-//        compare(obj.value, 2.0, message);
+        var message =
+            "minimumValue can't never be greater than maximumValue.";
+        obj.maximumValue = 1.0;
+        obj.minimumValue = 2.0;
+        expectFailContinue("", "Not yet supported");
+        compare(obj.maximumValue, 2.0, message);
+        compare(obj.minimumValue, 2.0, message);
+        compare(obj.value, 2.0, message);
     }
 
     function test_stepSize() {

@@ -32,7 +32,7 @@ import "./styles/default" as DefaultStyles
 Item {
     id: slider
 
-    property real value: rangeModel.value
+    property alias value: rangeModel.value
 
     property alias minimumValue: rangeModel.minimumValue
     property alias maximumValue: rangeModel.maximumValue
@@ -222,20 +222,26 @@ Item {
         }
     }
 
+    property bool __ready: false
+    Component.onCompleted: {
+        // It's probably not enough
+        __ready = true;
+    }
+
     // We need Binding elements that will not be broken
     // when we assign to the "value" property
     Binding {
         property: "value"
         target: rangeModel
         value: slider.value
-        when: !mouseArea.pressed
+        when: __ready && !mouseArea.pressed
     }
 
     Binding {
         property: "value"
         target: slider
         value: rangeModel.value
-        when:  mouseArea.pressed
+        when: __ready && mouseArea.pressed
     }
 
     // rangeModel position normally follow shadowHandle, except when

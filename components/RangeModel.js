@@ -81,6 +81,7 @@ setPositionRange: function(newMin, newMax)
 
     this.posAtMin = newMin;
     this.posAtMax = newMax;
+    this.position = this.positionForValue(this.value);
 
     this.updateValueAndPosition(oldValue, oldPos);
     this.recursionBlocked = false;
