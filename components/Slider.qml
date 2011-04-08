@@ -99,7 +99,6 @@ Item {
             maximumValue: 1.0
             stepSize: 0
 
-            onValueChanged: print(" internal value "+rangeModel.value)
             inverted: false
             positionAtMinimum: contents.halfPinWidth // relative to *center* of handle
             positionAtMaximum: contents.width - contents.halfPinWidth
