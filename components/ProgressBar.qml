@@ -1,11 +1,11 @@
 import QtQuick 1.1
-import Qt.labs.components 1.0 // RangeModel
 import "./styles"       // ProgressBarStylingProperties
 import "./styles/default" as DefaultStyles
+
 Item {
     id: progressBar
 
-    property alias value: rangeModel.value
+    property real value: rangeModel.value
     property alias minimumValue: rangeModel.minimumValue
     property alias maximumValue: rangeModel.maximumValue
     property bool indeterminate: false
@@ -72,5 +72,12 @@ Item {
     }
 
     DefaultStyles.ProgressBarStyle { id: defaultStyle }
+
+    Binding {
+        property: "value"
+        target: rangeModel
+        value: progressBar.value
+    }
+
     SystemPalette { id: syspal }
 }

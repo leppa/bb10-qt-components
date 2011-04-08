@@ -25,14 +25,16 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import Qt.labs.components 1.0   // RangeModel
+
 import "./styles"       // SliderStylingProperties
 import "./styles/default" as DefaultStyles
 
 Item {
     id: slider
 
-    property alias value: rangeModel.value
+    property real value: rangeModel.value
+    onValueChanged: print("ext value is now "+value)
+
     property alias minimumValue: rangeModel.minimumValue
     property alias maximumValue: rangeModel.maximumValue
     property alias stepSize: rangeModel.stepSize
@@ -96,15 +98,14 @@ Item {
             id: rangeModel
             minimumValue: 0.0
             maximumValue: 1.0
-            value: 0
             stepSize: 0
-            inverted: false
 
+            onValueChanged: print(" internal value "+rangeModel.value)
+            inverted: false
             positionAtMinimum: contents.halfPinWidth // relative to *center* of handle
             positionAtMaximum: contents.width - contents.halfPinWidth
-
-            onMaximumChanged: useDecimals = false;
-            onMinimumChanged: useDecimals = false;
+            onMaximumValueChanged: useDecimals = false;
+            onMinimumValueChanged: useDecimals = false;
             onStepSizeChanged: useDecimals = false;
         }
 
@@ -221,6 +222,20 @@ Item {
                 }
             }
         }
+    }
+
+    // We need Binding elements that will not be broken
+    // when we assign to the "value" property
+    Binding {
+        property: "value"
+        target: rangeModel
+        value: slider.value
+    }
+
+    Binding {
+        property: "value"
+        target: slider
+        value: rangeModel.value
     }
 
     // rangeModel position normally follow shadowHandle, except when
