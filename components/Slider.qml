@@ -33,7 +33,6 @@ Item {
     id: slider
 
     property real value: rangeModel.value
-    onValueChanged: print("ext value is now "+value)
 
     property alias minimumValue: rangeModel.minimumValue
     property alias maximumValue: rangeModel.maximumValue
@@ -230,12 +229,14 @@ Item {
         property: "value"
         target: rangeModel
         value: slider.value
+        when: !mouseArea.pressed
     }
 
     Binding {
         property: "value"
         target: slider
         value: rangeModel.value
+        when:  mouseArea.pressed
     }
 
     // rangeModel position normally follow shadowHandle, except when
