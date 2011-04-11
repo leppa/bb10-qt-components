@@ -209,28 +209,25 @@ ImplicitSizeItem {
                             valueIndicator.position()
                         }
                     }
-                    onPressed: privateStyle.play(Symbian.BasicSlider);
+                    onPressed: privateStyle.play(Symbian.BasicSlider)
                     onReleased: {
                         if (!updateValueWhileDragging)
                             model.position = orientation == Qt.Horizontal ? handle.x : handle.y
-                        privateStyle.play(Symbian.BasicSlider);
+                        privateStyle.play(Symbian.BasicSlider)
                     }
                 }
             }
+        }
 
-            Timer {
-                id: keyActivity
-                interval: 750
-                onTriggered: track.keysActive = false
-            }
+        Timer {
+            id: keyActivity
+            interval: 750
+            onTriggered: track.keysActive = false
         }
     }
 
     Keys.onPressed: {
         internal.handleKeyEvent(event)
-        track.keysActive = true
-        keyActivity.restart()
-        valueIndicator.position()
     }
 
     Component {
@@ -251,7 +248,7 @@ ImplicitSizeItem {
             if (!valueIndicatorVisible || status != Loader.Ready)
                 return
 
-            var point = null;
+            var point = null
             if (orientation == Qt.Horizontal) {
                 point = root.mapFromItem(track, handle.x + handle.width / 2 - valueIndicator.item.width / 2, 0)
 
@@ -282,22 +279,26 @@ ImplicitSizeItem {
         id: internal
 
         function handleKeyEvent(keyEvent) {
+            var oldValue = model.value
             if (orientation == Qt.Horizontal) {
                 if (keyEvent.key == Qt.Key_Left) {
-                    model.value = inverted ? model.value + model.stepSize : model.value - model.stepSize;
-                    keyEvent.accepted = true;
+                    model.value = inverted ? model.value + model.stepSize : model.value - model.stepSize
                 } else if (keyEvent.key == Qt.Key_Right) {
-                    model.value = inverted ? model.value - model.stepSize : model.value + model.stepSize;
-                    keyEvent.accepted = true;
+                    model.value = inverted ? model.value - model.stepSize : model.value + model.stepSize
                 }
             } else { //Vertical
                 if (keyEvent.key == Qt.Key_Up) {
-                    model.value = inverted ? model.value + model.stepSize : model.value - model.stepSize;
-                    keyEvent.accepted = true;
+                    model.value = inverted ? model.value + model.stepSize : model.value - model.stepSize
                 } else if (keyEvent.key == Qt.Key_Down) {
-                    model.value = inverted ? model.value - model.stepSize : model.value + model.stepSize;
-                    keyEvent.accepted = true;
+                    model.value = inverted ? model.value - model.stepSize : model.value + model.stepSize
                 }
+            }
+            if (oldValue != model.value)
+                keyEvent.accepted = true
+            if (keyEvent.accepted) {
+                track.keysActive = true
+                keyActivity.restart()
+                valueIndicator.position()
             }
         }
     }
