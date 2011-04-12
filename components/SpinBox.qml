@@ -1,36 +1,38 @@
 import QtQuick 1.1
 import "./styles"       // SpinBoxStylingProperties
 import "./styles/default" as DefaultStyles
+FocusScope {
+    id: spinbox
 
-Item {
-    id: spinBox
-
-    property real value: 0.0      // read-only. see setValue(), increment() and decrement()
+    property real value: 0.0
+    property real maximumValue: 99
     property real minimumValue: 0
-    property real maximumValue: 100
-    property real stepSize: 1
+    property real singleStep: 1
+    property string postfix
+
 
     function increment() {
-        value += stepSize;
+        setValue(textInput.text);
+        value += singleStep;
         if (value > maximumValue)
             value = maximumValue;
         textInput.text = value;
     }
 
     function decrement() {
-        value -= stepSize;
+        setValue(textInput.text)
+        value -= singleStep;
         if (value < minimumValue)
             value = minimumValue;
         textInput.text = value;
     }
 
-    function setValue(v) {
-        var newval = parseFloat(v);
+    function setValue(value) {
+        var newval = parseFloat(value);
         if (newval > maximumValue)
             newval = maximumValue;
         else if (value < minimumValue)
             newval = minimumValue;
-
         value = newval;
         textInput.text = value;
     }
@@ -40,7 +42,6 @@ Item {
     property alias upHovered: mouseUp.containsMouse
     property alias downHovered: mouseDown.containsMouse
     property alias containsMouse: mouseArea.containsMouse
-    property alias activeFocus: textInput.activeFocus
     property alias font: textInput.font
 
     property bool upEnabled: (value < maximumValue)      // read-only
@@ -49,7 +50,6 @@ Item {
     property SpinBoxStylingProperties styling: SpinBoxStylingProperties {
         backgroundColor: syspal.base
         textColor: syspal.text
-
         background: defaultStyle.background
         up: defaultStyle.up
         down: defaultStyle.down
@@ -63,20 +63,31 @@ Item {
         bottomMargin: defaultStyle.bottomMargin
     }
 
-    // implementation
+    QtObject {
+        id: componentPrivate
+        property bool valueUpdate: false
+    }
 
     implicitWidth: Math.max(styling.minimumWidth, textInput.implicitWidth + styling.horizontalMargins())
     implicitHeight: Math.max(styling.minimumHeight, textInput.implicitHeight + styling.verticalMargins())
+    Component.onCompleted: setValue(value)
 
-    Loader { // background
-        anchors.fill: parent
-        property alias styledItem: spinBox
-        sourceComponent: styling.background
+    onValueChanged: {
+        componentPrivate.valueUpdate = true
+        textInput.text = value
+        componentPrivate.valueUpdate = false
     }
 
     Loader {
         id: hintsLoader
         sourceComponent: defaultStyle.hints
+    }
+
+    // background
+    Loader {
+        id: backgroundComponent
+        anchors.fill: parent
+        sourceComponent: styling.background
     }
 
     MouseArea {
@@ -94,61 +105,69 @@ Item {
         anchors.bottomMargin: styling.bottomMargin
         focus: true
         selectByMouse: true
+
         text: spinBox.value
         font.pixelSize: hintsLoader.item ? hintsLoader.item.fontPixelSize : 12
         font.bold: hintsLoader.item ? hintsLoader.item.fontBold : false
         validator: DoubleValidator { bottom: 11; top: 31 }
-        onTextChanged: spinBox.setValue(text)
+        onTextChanged: spinbox.setValue(text)
+        onAccepted: {spinbox.setValue(textInput.text)}
+        onActiveFocusChanged: spinbox.setValue(textInput.text)
         color: styling.textColor
         opacity: parent.enabled ? 1 : 0.5
+        Text {
+            text: postfix
+            anchors.rightMargin: 4
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+        }
     }
 
     Loader {
-        id: upButtonLoader
-        property alias pressed: spinBox.upPressed
-        property alias hover: spinBox.upHovered
-        property alias enabled: spinBox.upEnabled
-        property alias styledItem: spinBox
+        id: upButton
+        property alias pressed : spinbox.upPressed
+        property alias hover : spinbox.upHovered
+        property alias enabled : spinbox.upEnabled
         sourceComponent: styling.up
         MouseArea {
             id: mouseUp
-            anchors.fill: upButtonLoader.item
+            anchors.fill: upButton.item
             onClicked: increment()
 
-            property bool autoIncrement: false
-            onReleased: autoIncrement = false
-            Timer { running: mouseUp.pressed; interval: 350; onTriggered: mouseUp.autoIncrement = true }
-            Timer { running: mouseUp.autoIncrement; interval: 60; repeat: true; onTriggered: increment() }
+            property bool autoincrement: false
+            onReleased: autoincrement = false
+            Timer { running: mouseUp.pressed; interval: 350 ; onTriggered: mouseUp.autoincrement = true }
+            Timer { running: mouseUp.autoincrement; interval: 60 ; repeat: true ; onTriggered: increment() }
         }
         onLoaded: {
-            item.parent = spinBox;
+            item.parent = spinbox;
             mouseUp.parent = item;
         }
     }
 
     Loader {
-        id: downButtonLoader
-        property alias pressed: spinBox.downPressed
-        property alias hover: spinBox.downHovered
-        property alias enabled: spinBox.downEnabled
-        property alias styledItem: spinBox
+        id: downButton
+        property alias pressed : spinbox.downPressed
+        property alias hover : spinbox.downHovered
+        property alias enabled : spinbox.downEnabled
         sourceComponent: styling.down
         MouseArea {
             id: mouseDown
-            anchors.fill: downButtonLoader.item
+            anchors.fill: downButton.item
             onClicked: decrement()
 
-            property bool autoIncrement: false
-            onReleased: autoIncrement = false
-            Timer { running: mouseDown.pressed; interval: 350; onTriggered: mouseDown.autoIncrement = true }
-            Timer { running: mouseDown.autoIncrement; interval: 60; repeat: true; onTriggered: decrement() }
+            property bool autoincrement: false
+            onReleased: autoincrement = false
+            Timer { running: mouseDown.pressed; interval: 350 ; onTriggered: mouseDown.autoincrement = true }
+            Timer { running: mouseDown.autoincrement; interval: 60 ; repeat: true ; onTriggered: decrement() }
         }
         onLoaded: {
-            item.parent = spinBox;
+            item.parent = spinbox;
             mouseDown.parent = item;
         }
     }
-
+    Keys.onUpPressed: increment()
+    Keys.onDownPressed: decrement()
     DefaultStyles.SpinBoxStyle { id: defaultStyle }
     SystemPalette { id: syspal }
 }
