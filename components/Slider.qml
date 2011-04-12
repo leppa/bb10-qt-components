@@ -55,8 +55,6 @@ Item {
     }
 
     property SliderStylingProperties styling: SliderStylingProperties {
-        progressColor: palette.highlight
-        backgroundColor: palette.alternateBase
 
         groove: defaultStyle.groove
         handle: defaultStyle.handle
@@ -263,6 +261,4 @@ Item {
         property: "x"
         value: rangeModel.position
     }
-
-    SystemPalette { id: palette }
 }

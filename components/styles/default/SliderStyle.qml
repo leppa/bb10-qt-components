@@ -34,7 +34,7 @@ QtObject {
         opacity: enabled ? 1.0 : 0.7
 
         Rectangle {
-            color: styling.backgroundColor
+            color: "white"
             anchors.fill: sliderBackground
             anchors.margins: 1
             radius: 2

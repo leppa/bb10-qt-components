@@ -142,69 +142,8 @@ Rectangle {
                     }
                 }
                 Rectangle{
-                    width:column3.width+2*rowspacing
-                    height:column3.height+2*rowspacing
-                    color:"#666"
-                    border.color:"#444"
-                    Column {
-                        x:rowspacing
-                        id:column3
-                        spacing: columnspacing
-                        anchors.top:parent.top
-                        anchors.topMargin:6
-                        property color bg: "#444"
-                        property color fg: "#eee"
-                        property color pg: "#f70"
-
-                        Text{ font.bold:true; text:"Colored:" ; styleColor: "#333" ; color:"white" ; style:"Raised"}
-                        Button { text:"Push me" ; styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
-                        ButtonRow {
-                            Button{ text: "A" ; styling.backgroundColor: column3.bg}
-                            Button{ text: "B" ; styling.backgroundColor: column3.bg}
-                        }
-                        TextField { styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
-                        TextArea  { placeholderText:"This is a\n multiline control."; styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
-                        SpinBox{ styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
-                        Slider { value: 0.5; styling.backgroundColor: column3.bg; styling.progressColor: column3.pg;}
-                        Row{
-                            spacing:rowspacing
-                            anchors.horizontalCenter:parent.horizontalCenter
-                            Switch { styling { switchColor: column3.bg; backgroundColor: column3.bg; positiveHighlightColor:column3.pg }}
-                            Switch { styling { switchColor: column3.bg; backgroundColor: column3.bg; positiveHighlightColor:column3.pg;} checked: true }
-                        }
-                        Row{
-                            CheckBox { styling { backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on backgroundColor {} }}
-                            CheckBox { checked: true; styling.backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on styling.backgroundColor {}}
-                            RadioButton{ styling.backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on styling.backgroundColor {}}
-                            RadioButton { checked: true; styling.backgroundColor: checked ? column3.pg : column3.bg; ColorAnimation on styling.backgroundColor {} }
-                            spacing:rowspacing
-                        }
-                        ChoiceList{ model: choices; styling.backgroundColor: column3.bg; styling.textColor: column3.fg}
-                        ProgressBar {
-                            styling.backgroundColor: column3.bg;
-                            styling.progressColor: column3.pg
-                            Timer {
-                                running: true
-                                repeat: true
-                                interval: 25
-                                onTriggered: {
-                                    var next = parent.value + 0.01;
-                                    parent.value = (next > parent.maximumValue) ? parent.minimumValue : next;
-                                }
-                            }
-                        }
-                        ProgressBar{ indeterminate:true; styling { backgroundColor: column3.bg; progressColor: column3.pg }}
-                        Row{
-                            spacing:rowspacing
-                            anchors.horizontalCenter:parent.horizontalCenter
-                            BusyIndicator { running: true }
-                            BusyIndicator { running: false }
-                        }
-                    }
-                }
-                Rectangle{
-                    width:column3.width+2*rowspacing
-                    height:column3.height+2*rowspacing
+                    width:column2.width+2*rowspacing
+                    height:column2.height+2*rowspacing
                     color:"#ccc"
                     border.color:"#444"
                     Column {

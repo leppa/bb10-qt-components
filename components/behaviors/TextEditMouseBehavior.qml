@@ -246,7 +246,6 @@ Item {
                     id: copyButton
                     text: "Copy"
                     visible: textEditor.selectedText.length > 0
-                    styling.backgroundColor: bgcolor
                     styling.textColor: "white"
                     onClicked: {
                          textEditor.copy()
@@ -258,7 +257,6 @@ Item {
                     id: cutButton
                     text: "Cut"
                     visible: textEditor.selectedText.length > 0 && !textEditor.readOnly
-                    styling.backgroundColor: bgcolor
                     styling.textColor: "white"
                     onClicked: textEditor.cut()
                 }
@@ -266,7 +264,6 @@ Item {
                     id: pasteButton
                     text: "Paste"
                     visible: textEditor.canPaste
-                    styling.backgroundColor: bgcolor
                     styling.textColor: "white"
                     onClicked: textEditor.paste()
                 }
@@ -274,7 +271,6 @@ Item {
                     id: selectButton
                     text: "Select"
                     visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
-                    styling.backgroundColor: bgcolor
                     styling.textColor: "white"
                     onClicked: textEditor.selectWord()
                 }
@@ -282,7 +278,6 @@ Item {
                     id: selectAllButton
                     text: "Select all"
                     visible: textEditor.text.length > 0 && textEditor.selectedText.length == 0
-                    styling.backgroundColor: bgcolor
                     styling.textColor: "white"
                     onClicked: textEditor.selectAll()
                 }
@@ -315,4 +310,3 @@ Item {
         }
     }
 }
-

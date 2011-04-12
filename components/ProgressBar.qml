@@ -11,8 +11,6 @@ Item {
     property bool indeterminate: false
 
     property ProgressBarStylingProperties styling: ProgressBarStylingProperties {
-        backgroundColor: syspal.base
-        progressColor: syspal.highlight
 
         background: defaultStyle.background
         progress: defaultStyle.progress
@@ -78,6 +76,4 @@ Item {
         target: rangeModel
         value: progressBar.value
     }
-
-    SystemPalette { id: syspal }
 }

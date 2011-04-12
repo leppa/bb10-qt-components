@@ -48,8 +48,7 @@ FocusScope {
     property bool downEnabled: (value > minimumValue)    // read-only
 
     property SpinBoxStylingProperties styling: SpinBoxStylingProperties {
-        backgroundColor: syspal.base
-        textColor: syspal.text
+        textColor: "black"
         background: defaultStyle.background
         up: defaultStyle.up
         down: defaultStyle.down
@@ -169,5 +168,4 @@ FocusScope {
     Keys.onUpPressed: increment()
     Keys.onDownPressed: decrement()
     DefaultStyles.SpinBoxStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }

@@ -2,7 +2,6 @@ import QtQuick 1.1
 
 QtObject {
     property color textColor
-    property color backgroundColor
 
     property Component background
     property Component hints

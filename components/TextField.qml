@@ -51,7 +51,6 @@ FocusScope {
 
     property TextFieldStylingProperties styling: TextFieldStylingProperties {
         textColor: syspal.text
-        backgroundColor: syspal.base
 
         background: defaultStyle.background
         hints: defaultStyle.hints
@@ -161,20 +160,4 @@ FocusScope {
     }
 
     DefaultStyles.TextFieldStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

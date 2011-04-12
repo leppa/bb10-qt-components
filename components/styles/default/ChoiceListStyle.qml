@@ -15,7 +15,7 @@ QtObject {
             Rectangle { // Background center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: styling.backgroundColor
+                color: "white"
                 radius: 5
             }
             BorderImage {
@@ -60,7 +60,7 @@ QtObject {
             Rectangle { // Background center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: styling.backgroundColor
+                color: "white"
                 radius: 5
             }
             BorderImage {

@@ -12,7 +12,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: 5
-                color: styling.backgroundColor
+                color: "white"
             }
             BorderImage {
                 anchors.fill: parent

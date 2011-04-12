@@ -9,8 +9,7 @@ BasicButton {
     property url iconSource
 
     property ButtonStylingProperties styling: ButtonStylingProperties {
-        backgroundColor: syspal.button
-        textColor: syspal.text;
+        textColor: "black"
 
         background: defaultStyle.background
         label: defaultStyle.label
@@ -41,5 +40,4 @@ BasicButton {
     }
 
     DefaultStyles.ButtonStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }

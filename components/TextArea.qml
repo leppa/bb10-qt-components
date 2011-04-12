@@ -52,8 +52,7 @@ FocusScope {
     }
 
     property TextAreaStylingProperties styling: TextAreaStylingProperties {
-        textColor: syspal.text
-        backgroundColor: syspal.base
+        textColor: "black"
 
         background: defaultStyle.background
         hints: defaultStyle.hints

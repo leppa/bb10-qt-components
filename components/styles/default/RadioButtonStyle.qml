@@ -12,7 +12,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: width/2
-                color: styling.backgroundColor
+                color: "white"
             }
             Image {
                 opacity: enabled ? 1 : 0.7

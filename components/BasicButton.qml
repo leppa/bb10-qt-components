@@ -13,11 +13,8 @@ Item {
     property alias checked: behavior.checked
 
     property BasicButtonStylingProperties styling: BasicButtonStylingProperties {
-        backgroundColor: syspal.button
-        textColor: syspal.text;
-
+        textColor: "black"
         background: defaultStyle.background
-
         minimumWidth: defaultStyle.minimumWidth
         minimumHeight: defaultStyle.minimumHeight
     }
@@ -43,5 +40,4 @@ Item {
     }
 
     DefaultStyles.BasicButtonStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }

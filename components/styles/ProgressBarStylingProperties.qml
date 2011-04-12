@@ -1,9 +1,6 @@
 import QtQuick 1.1
 
 QtObject {
-    property color backgroundColor
-    property color progressColor
-
     property Component background
     property Component progress
     property Component indeterminateProgress

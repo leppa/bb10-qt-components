@@ -12,8 +12,6 @@ Item {
     property alias containsMouse: behavior.containsMouse
 
     property CheckBoxStylingProperties styling: CheckBoxStylingProperties {
-        backgroundColor: syspal.base
-
         background: defaultStyle.background
         checkmark: defaultStyle.checkmark
 

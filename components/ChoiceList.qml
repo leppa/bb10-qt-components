@@ -20,7 +20,6 @@ Item {
 
     property ChoiceListStylingProperties styling: ChoiceListStylingProperties {
         textColor: syspal.text
-        backgroundColor: syspal.button //mm No way to style this e.g. when color should be syspal.base
 
         background: defaultStyle.background
         label: defaultStyle.label
@@ -79,6 +78,5 @@ Item {
         popupFrame: styling.popupFrame
     }
 
-    SystemPalette { id: syspal }
     DefaultStyles.ChoiceListStyle { id: defaultStyle }
 }

@@ -11,11 +11,7 @@ Item {
     property alias containsMouse: mouseArea.containsMouse
 
     property SwitchStylingProperties styling: SwitchStylingProperties {
-        switchColor: syspal.button
-        backgroundColor: syspal.alternateBase
-        positiveHighlightColor: syspal.highlight
-        negativeHighlightColor: "transparent"
-        textColor: syspal.text
+        textColor: "black"
 
         groove: defaultStyle.groove
         handle: defaultStyle.handle
@@ -84,5 +80,4 @@ Item {
     }
 
     DefaultStyles.SwitchStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }
