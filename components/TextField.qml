@@ -27,7 +27,7 @@ FocusScope {
     property alias acceptableInput: textInput.acceptableInput // true if text passed the validator. read-only
     property alias horizontalAlignment: textInput.horizontalAlignment
     property alias inputMethodHints: textInput.inputMethodHints
-    property alias containsMouse: mouseEditBehavior.containsMouse
+    property alias containsMouse: mouseArea.containsMouse
 
     function forceActiveFocus() { textInput.forceActiveFocus() }
     function cut() { textInput.cut() }
@@ -69,7 +69,6 @@ FocusScope {
     implicitWidth: Math.max(styling.minimumWidth, textInput.implicitWidth + styling.horizontalMargins())
     implicitHeight: Math.max(styling.minimumHeight, textInput.implicitHeight + styling.verticalMargins())
 
-    property alias desktopBehavior: mouseEditBehavior.desktopBehavior
     property alias _hints: hintsLoader.item
     clip: true
 
@@ -78,6 +77,12 @@ FocusScope {
         anchors.fill: parent
         property alias styledItem: textField
         sourceComponent: styling.background
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
     }
 
     TextInput { // see QTBUG-14936
@@ -94,13 +99,12 @@ FocusScope {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
-        opacity: desktopBehavior || activeFocus ? 1 : 0
+        opacity: activeFocus ? 1 : 0
         color: enabled ? styling.textColor : Qt.tint(styling.textColor, "#80ffffff")
         echoMode: passwordMode ? _hints.passwordEchoMode : TextInput.Normal
 
         onActiveFocusChanged: {
-            if (!desktopBehavior)
-                state = (activeFocus ? "focused" : "");
+            state = (activeFocus ? "focused" : "");
 
             if (activeFocus)
                 openSoftwareInputPanel();
@@ -136,27 +140,8 @@ FocusScope {
         font: textInput.font
         opacity: !textInput.text.length && !textInput.activeFocus ? 1 : 0
         color: "gray"
-        text: ""
+        text: "Enter text"
         Behavior on opacity { NumberAnimation { duration: 90 } }
-    }
-
-    Text {
-        id: unfocusedText
-        anchors.fill: textInput
-        clip: true
-        font: textInput.font
-        opacity: !desktopBehavior && !passwordMode && textInput.text.length && !textInput.activeFocus ? 1 : 0
-        color: textInput.color
-        elide: Text.ElideRight
-        text: textInput.text
-    }
-
-
-    TextEditMouseBehavior {
-        id: mouseEditBehavior
-        anchors.fill: parent
-        textInput: textInput
-        desktopBehavior: false
     }
 
     DefaultStyles.TextFieldStyle { id: defaultStyle }

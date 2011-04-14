@@ -1,7 +1,6 @@
 import QtQuick 1.1
 import "./styles"       // TextAreaStylingProperties
 import "./styles/default" as DefaultStyles
-import "./behaviors"    // TextEditMouseBehavior
 
 // KNOWN ISSUES
 // 1) TextArea does not loose focus when !enabled if it is a FocusScope (see QTBUG-16161)
@@ -26,9 +25,7 @@ FocusScope {
     property alias wrapMode: textEdit.wrapMode  //mm Missing from spec
     property alias textFormat: textEdit.textFormat
     property alias inputMethodHints: textEdit.inputMethodHints
-    property alias containsMouse: mouseEditBehavior.containsMouse
-    property alias zoomable: mouseEditBehavior.zoomable // enable pinch/double-click zoom by user
-    property alias zoomFactor: mouseEditBehavior.zoomFactor
+    property alias containsMouse: mouseArea.containsMouse
 
     function forceActiveFocus() { textEdit.forceActiveFocus() }
     function cut() { textEdit.cut() }
@@ -77,7 +74,6 @@ FocusScope {
                      Math.max(textEdit.implicitHeight,
                               placeholderTextComponent.implicitHeight) + styling.verticalMargins())
 
-    property alias desktopBehavior: mouseEditBehavior.desktopBehavior
     property alias _hints: hintsLoader.item
     clip: true
 
@@ -120,6 +116,11 @@ FocusScope {
             }
         }
 
+        MouseArea{
+            id: mouseArea
+            anchors.fill:parent
+        }
+
         TextEdit { // see QTBUG-14936
             id: textEdit
 
@@ -129,24 +130,15 @@ FocusScope {
 
             persistentSelection: false
             color: enabled ? styling.textColor: Qt.tint(styling.textColor, "#80ffffff")
-            wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.Wrap
+            wrapMode: TextEdit.Wrap
             onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
 
             onActiveFocusChanged: activeFocus ? openSoftwareInputPanel() : closeSoftwareInputPanel()
 
             transformOrigin: Item.TopLeft
-            scale: mouseEditBehavior.zoomFactor
             Behavior on scale { NumberAnimation { duration: 100 } }
         }
 
-        TextEditMouseBehavior { // Has to be inside the Flickable to work correctly with it
-            id: mouseEditBehavior
-            width: textEdit.width*textEdit.scale
-            height: textEdit.height*textEdit.scale
-            textEdit: textEdit
-            desktopBehavior: false
-            flickable: flickHandler
-        }
     }
 
     MouseArea { // Make sure TextArea is focused even when clicking on its margins

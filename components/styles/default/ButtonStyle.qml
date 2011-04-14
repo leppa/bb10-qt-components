@@ -10,19 +10,14 @@ QtObject {
 
             Item {
                 anchors.fill: parent
+                property int buttonborder: 8
                 // Give connected buttons a negative styling margin, to make
                 // them overlap and the rounded edge can be clipped away
-                anchors.leftMargin:   isPositioned && (position == "rightmost"  || position =="h_middle") ? -styling.leftMargin : 0
-                anchors.rightMargin:  isPositioned && (position == "leftmost"   || position =="h_middle") ? -styling.rightMargin : 0
-                anchors.topMargin:    isPositioned && (position == "bottom"     || position =="v_middle") ? -styling.bottomMargin : 0
-                anchors.bottomMargin: isPositioned && (position == "top"        || position =="v_middle") ? -styling.topMargin : 0
+                anchors.leftMargin:   isPositioned && (position == "rightmost"  || position =="h_middle") ? - buttonborder : 0
+                anchors.rightMargin:  isPositioned && (position == "leftmost"   || position =="h_middle") ? - buttonborder : 0
+                anchors.topMargin:    isPositioned && (position == "bottom"     || position =="v_middle") ? - buttonborder : 0
+                anchors.bottomMargin: isPositioned && (position == "top"        || position =="v_middle") ? - buttonborder : 0
 
-                Rectangle { // Background center fill
-                    anchors.fill: parent
-                    anchors.margins: 1
-                    radius: 5
-                    color: "white"
-                }
                 BorderImage {
                     anchors.fill: parent
                     smooth: true
@@ -30,30 +25,6 @@ QtObject {
                     border.left: 6; border.top: 6
                     border.right: 6; border.bottom: 6
                 }
-            }
-
-            // Draw straight border lines between connected buttons
-            Rectangle {
-                width: 1
-                visible: isPositioned && !checked && !pressed && (position == "rightmost" || position == "h_middle")
-                anchors.top: parent.top
-                anchors.topMargin: 2
-                anchors.bottomMargin: 2
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                opacity: 0.4
-                color: "white"
-            }
-            Rectangle {
-                width: 1
-                opacity: 0.4
-                visible: isPositioned && !checked && !pressed && (position == "leftmost" || position == "h_middle")
-                anchors.top: parent.top
-                anchors.topMargin: 2
-                anchors.bottomMargin: 2
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                color: "black"
             }
 
             Item {
@@ -78,7 +49,7 @@ QtObject {
                     }
 
                     Text {
-                        color: styling.textColor
+                        color: "black"
                         anchors.verticalCenter: parent.verticalCenter
                         text: styledItem.text
                         horizontalAlignment: Text.Center
