@@ -26,16 +26,10 @@ QtObject {
                     x: handleCenterX-parent.width-parent.anchors.leftMargin
 
                     Rectangle { // positive background highlight
-                        color: styling.positiveHighlightColor
+                        color: "#0af"
                         opacity: 0.8
                         anchors.top: parent.top; anchors.bottom: parent.bottom
                         anchors.left: parent.left; anchors.right: parent.horizontalCenter
-                    }
-                    Rectangle { // negative background highlight
-                        color: styling.negativeHighlightColor
-                        opacity: 0.8
-                        anchors.top: parent.top; anchors.bottom: parent.bottom
-                        anchors.left: parent.horizontalCenter; anchors.right: parent.right
                     }
                 }
             }
