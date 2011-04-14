@@ -249,10 +249,10 @@ Rectangle {
                             }
                         }
                         Row {
-                            CheckBox { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark }
-                            CheckBox { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark; checked: true}
-                            RadioButton { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark }
-                            RadioButton { styling.background: shinyCheckBackground; styling.checkmark: shinyCheckMark; checked: true}
+                            CheckBox { styling.background: shinyCheckBackground; }
+                            CheckBox { styling.background: shinyCheckBackground;  checked: true}
+                            RadioButton { styling.background: shinyCheckBackground; }
+                            RadioButton { styling.background: shinyCheckBackground; checked: true}
                             spacing: rowspacing
                         }
 
@@ -317,14 +317,12 @@ Rectangle {
                     source: "customtheme/exampletheme/images/edit_normal.png"
                     border.left: 6; border.top: 6
                     border.right: 6; border.bottom: 6
-                }
-            }
-            Component{
-                id: shinyCheckMark
-                Image {
-                    visible: styledItem.checked || styledItem.pressed ? 1 : 0
-                    opacity: !enabled || styledItem.pressed ? 0.7 : 1
-                    source: "customtheme/exampletheme/images/checkbox_check.png"
+                    Image {
+                        anchors.centerIn: parent
+                        visible: styledItem.checked || styledItem.pressed ? 1 : 0
+                        opacity: !enabled || styledItem.pressed ? 0.7 : 1
+                        source: "customtheme/exampletheme/images/checkbox_check.png"                    }
+
                 }
             }
             Component{

@@ -13,29 +13,17 @@ Item {
 
     property CheckBoxStylingProperties styling: CheckBoxStylingProperties {
         background: defaultStyle.background
-        checkmark: defaultStyle.checkmark
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
     }
 
     // implementation
-
-    implicitWidth: styling.minimumWidth
-    implicitHeight: styling.minimumHeight
+    implicitWidth: 32
+    implicitHeight: 32
 
     Loader {
         id: backgroundLoader
         anchors.fill: parent
         property alias styledItem: checkBox
         sourceComponent: styling.background
-    }
-
-    Loader {
-        id: checkmarkLoader
-        anchors.centerIn: parent
-        property alias styledItem: checkBox
-        sourceComponent: styling.checkmark
     }
 
     ButtonBehavior {
@@ -46,5 +34,4 @@ Item {
     }
 
     DefaultStyles.CheckBoxStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }
