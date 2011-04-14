@@ -50,7 +50,7 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 1
                 radius: 5
-                color: styling.switchColor
+                color: "blue"
             }
             BorderImage {
                 anchors.fill: parent

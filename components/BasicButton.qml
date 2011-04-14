@@ -15,15 +15,11 @@ Item {
     property BasicButtonStylingProperties styling: BasicButtonStylingProperties {
         textColor: "black"
         background: defaultStyle.background
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
     }
 
     // implementation
 
     property string __position: "only"
-    implicitWidth: Math.max(minimumWidth, backgroundLoader.item.width)
-    implicitHeight: Math.max(minimumHeight, backgroundLoader.item.height)
 
     Loader {
         id: backgroundLoader

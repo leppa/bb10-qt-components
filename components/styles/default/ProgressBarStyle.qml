@@ -65,7 +65,7 @@ QtObject {
 
                 z: -1
                 radius: 2
-                color: styling.progressColor
+                color: "red"
                 smooth: true
                 clip: true
                 Image { // diagonal stripes
@@ -128,7 +128,7 @@ QtObject {
 
                     z: -1
                     radius: 2
-                    color: styling.progressColor
+                    color: "green"
                     smooth: true
                     clip: true
 

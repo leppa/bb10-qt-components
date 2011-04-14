@@ -326,17 +326,19 @@ Rectangle {
                 }
             }
             Component{
-                id:shinyButton
+                id: shinyButton
                 Item {
                     clip:true
+                    property string label:text
                     BorderImage {
-                        x:position == "rightmost" ? -2 : 0
-                        width:parent.width + (position == "leftmost" ? 5 : 0)
-                        height:parent.height
+                        x: position == "rightmost" ? -2 : 0
+                        width: parent.width + (position == "leftmost" ? 5 : 0)
+                        height: parent.height
                         source: styledItem.pressed ? "customtheme/exampletheme/images/button_pressed.png":
                                 "customtheme/exampletheme/images/button_normal.png"
                         border.left: 6; border.top: 6
                         border.right: 6; border.bottom: 6
+                        Text{ text: label; anchors.centerIn: parent}
                     }
                 }
             }
