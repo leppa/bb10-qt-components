@@ -11,24 +11,13 @@ Item {
     property bool indeterminate: false
 
     property ProgressBarStylingProperties styling: ProgressBarStylingProperties {
-
         background: defaultStyle.background
-        progress: defaultStyle.progress
-        indeterminateProgress: defaultStyle.indeterminateProgress
-
-        leftMargin: defaultStyle.leftMargin
-        topMargin: defaultStyle.topMargin
-        rightMargin: defaultStyle.rightMargin
-        bottomMargin: defaultStyle.bottomMargin
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
     }
 
     // implementation
 
-    implicitWidth: Math.max(styling.minimumWidth, grooveLoader.item.implicitWidth) + styling.horizontalMargins()
-    implicitHeight: Math.max(styling.minimumHeight, grooveLoader.item.implicitHeight) + styling.verticalMargins()
+    implicitWidth: 200
+    implicitHeight: 30
 
     RangeModel {
         id: rangeModel
@@ -42,31 +31,9 @@ Item {
     Loader { // groove background
         id: grooveLoader
         property alias styledItem: progressBar
+        property real complete: (value-minimumValue)/(maximumValue-minimumValue)
         sourceComponent: styling.background
         anchors.fill: parent
-    }
-
-    Item {
-        anchors {
-            fill: parent
-            leftMargin: styling.leftMargin; rightMargin: styling.rightMargin;
-            topMargin: styling.topMargin; bottomMargin: styling.bottomMargin
-        }
-
-        Loader { // regular progress bar
-            anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
-            width: Math.round((progressBar.width-styling.horizontalMargins()) * complete)
-
-            property alias styledItem: progressBar
-            property real complete: (value-minimumValue)/(maximumValue-minimumValue)
-            sourceComponent: !indeterminate ? styling.progress : undefined
-        }
-
-        Loader { // bar for indeterminate progress
-            anchors.fill: parent
-            property alias styledItem: progressBar
-            sourceComponent: indeterminate ? styling.indeterminateProgress : undefined
-        }
     }
 
     DefaultStyles.ProgressBarStyle { id: defaultStyle }

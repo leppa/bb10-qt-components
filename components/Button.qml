@@ -15,8 +15,8 @@ Item {
     property string text
     property url iconSource
 
-    width: 100
-    height: 30
+    implicitWidth: 100
+    implicitHeight: 30
 
     property ButtonStylingProperties styling: ButtonStylingProperties {
         background: defaultStyle.background
