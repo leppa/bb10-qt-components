@@ -1,36 +1,19 @@
 import QtQuick 1.1
 
 QtObject {
-    property int minimumWidth: 80
-    property int minimumHeight: 32
 
     property Component groove: Component {
         Item {
             opacity: enabled ? 1 : 0.7
-            Rectangle { // Background center fill
-                anchors.fill: parent
-                anchors.margins: 1
-                radius: 5
-                color: "white"
-            }
-
             Item { // Clipping container of the positive and negative groove highlight
                 anchors.fill: parent
                 anchors.margins: 2
                 clip: true
-
                 Item { // The highlight item is twice the width of there switch, clipped by its parent,
                        // and sliding back and forth keeping the center under the handle
                     height: parent.height
                     width: 2*parent.width
                     x: handleCenterX-parent.width-parent.anchors.leftMargin
-
-                    Rectangle { // positive background highlight
-                        color: "#0af"
-                        opacity: 0.8
-                        anchors.top: parent.top; anchors.bottom: parent.bottom
-                        anchors.left: parent.left; anchors.right: parent.horizontalCenter
-                    }
                 }
             }
 
@@ -46,12 +29,6 @@ QtObject {
     property Component handle: Component {
         Item {
             width: 42
-            Rectangle { // center fill
-                anchors.fill: parent
-                anchors.margins: 1
-                radius: 5
-                color: "blue"
-            }
             BorderImage {
                 anchors.fill: parent
                 opacity: enabled ? 1 : 0.7

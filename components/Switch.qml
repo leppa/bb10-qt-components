@@ -11,19 +11,14 @@ Item {
     property alias containsMouse: mouseArea.containsMouse
 
     property SwitchStylingProperties styling: SwitchStylingProperties {
-        textColor: "black"
-
         groove: defaultStyle.groove
         handle: defaultStyle.handle
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
     }
 
     // implementation
 
-    implicitWidth: Math.max(styling.minimumWidth, grooveLoader.item.implicitWidth)
-    implicitHeight: Math.max(styling.minimumHeight, grooveLoader.item.implicitHeight)
+    implicitWidth: 80
+    implicitHeight: 30
 
     onCheckedChanged: snapHandleIntoPlace();
 

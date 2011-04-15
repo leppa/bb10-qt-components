@@ -55,14 +55,14 @@ Item {
     }
 
     property SliderStylingProperties styling: SliderStylingProperties {
-
         groove: defaultStyle.groove
         handle: defaultStyle.handle
         valueIndicator: defaultStyle.valueIndicator
+
         pinWidth: handleLoader.width/2
 
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
+        defaultWidth: defaultStyle.defaultWidth
+        defaultHeight: defaultStyle.defaultHeight
     }
 
     // implementation
@@ -71,8 +71,8 @@ Item {
     // floating point value at which point it keeps decimals
     property bool useDecimals: false
 
-    implicitWidth: contents.isVertical ? Math.max(styling.minimumHeight, handleLoader.item.implicitHeight) : styling.minimumWidth
-    implicitHeight: contents.isVertical ? styling.minimumWidth : Math.max(styling.minimumHeight, handleLoader.item.implicitHeight)
+    implicitWidth: contents.isVertical ? defaultStyle.defaultHeight : defaultStyle.defaultWidth
+    implicitHeight: contents.isVertical ? defaultStyle.defaultWidth : defaultStyle.defaultHeight
 
     DefaultStyles.SliderStyle { id: defaultStyle }
 

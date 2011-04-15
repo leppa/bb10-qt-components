@@ -27,8 +27,8 @@
 import QtQuick 1.1
 
 QtObject {
-    property int minimumWidth: 200
-    property int minimumHeight: 40
+    property int defaultWidth: 200
+    property int defaultHeight: 40
 
     property Component groove: Item {
         opacity: enabled ? 1.0 : 0.7
@@ -43,7 +43,8 @@ QtObject {
         Rectangle {
             height: 10
             radius: 4
-            color: styling.progressColor
+            color: "steelblue"
+
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left; right: parent.right
@@ -84,7 +85,7 @@ QtObject {
                 width: parent.width - 7
                 height: parent.height - 7
                 smooth: true
-                color: styling.backgroundColor
+                color: "white"
                 radius: Math.floor(parent.width / 2)
                 z: -1   // behind the image
             }
