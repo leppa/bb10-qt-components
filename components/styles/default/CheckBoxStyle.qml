@@ -1,6 +1,10 @@
 import QtQuick 1.1
 
 QtObject {
+
+    property int width: 32
+    property int height: 32
+
     property Component background: Component {
         Item {
             opacity: enabled ? 1 : 0.7

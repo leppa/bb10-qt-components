@@ -13,11 +13,13 @@ Item {
 
     property CheckBoxStylingProperties styling: CheckBoxStylingProperties {
         background: defaultStyle.background
+        width: defaultStyle.width
+        height: defaultStyle.height
     }
 
     // implementation
-    implicitWidth: 32
-    implicitHeight: 32
+    implicitWidth: styling.width
+    implicitHeight: styling.height
 
     Loader {
         id: backgroundLoader
