@@ -27,6 +27,4 @@ Item {
         anchors.fill: parent
         onClicked: button.clicked()
     }
-
-    DefaultStyles.BasicButtonStyle { id: defaultStyle }
 }

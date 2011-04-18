@@ -47,21 +47,22 @@ Rectangle {
                         Button {
                             id: btn
                             text: "Push me"
-
                             Rectangle {
                                 anchors.fill: parent
+                                border.color: "#222"
                                 color: btn.pressed ? "blue " : "red"
                                 Text {
                                     anchors.centerIn: parent
                                     text: btn.text
                                 }
                             }
-
                         }
                         ButtonRow {
-                            Button{ text: "A"
+                            Button{
+                                text: "A"
                                 Rectangle {
                                     anchors.fill: parent
+                                    border.color: "#222"
                                     color: parent.parent.pressed ? "blue " : "red"
                                     Text {
                                         anchors.centerIn: parent
@@ -69,10 +70,12 @@ Rectangle {
                                     }
                                 }
                             }
-                            Button{ text: "B"
+                            Button{
+                                text: "B"
                                 Rectangle {
                                     anchors.fill: parent
                                     color: parent.parent.pressed ? "blue " : "red"
+                                    border.color: "#222"
                                     Text {
                                         anchors.centerIn: parent
                                         text: btn.text
@@ -81,32 +84,35 @@ Rectangle {
                             }
                         }
                         TextField {
-                            Rectangle{anchors.fill:parent;
-                                radius:2 ;
-                                border.color:"black";
-                                color:"white";
-                                anchors.bottomMargin:1;
+                            Rectangle{
+                                anchors.fill:parent
+                                radius: 2
+                                border.color:"black"
+                                color:"white"
+                                anchors.bottomMargin:1
                                 anchors.rightMargin:1
                             }
                         }
 
                         TextArea {
-                            Rectangle{anchors.fill:parent;
-                                radius:2 ;
-                                border.color:"black";
-                                color:"white";
-                                anchors.bottomMargin:1;
-                                anchors.rightMargin:1
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: 2
+                                border.color: "black"
+                                color: "white"
+                                anchors.bottomMargin: 1
+                                anchors.rightMargin: 1
                             }
                             placeholderText: "This is a\n multiline control."
                         }
                         SpinBox{
-                            Rectangle{anchors.fill:parent;
-                                radius:2 ;
-                                border.color:"black";
-                                color:"white";
-                                anchors.bottomMargin:1;
-                                anchors.rightMargin:1
+                            Rectangle {
+                                anchors.fill:parent
+                                radius: 2
+                                border.color: "black"
+                                color: "white"
+                                anchors.bottomMargin: 1
+                                anchors.rightMargin: 1
                             }
 
                         }
@@ -121,9 +127,9 @@ Rectangle {
                                 height: 8
                                 border.color: "black"
                                 color: "white"
-                                Rectangle{
-                                    anchors.top:parent.top
-                                    anchors.bottom:parent.bottom
+                                Rectangle {
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
                                     anchors.left: parent.left
                                     width: parent.parent.handlePosition
                                     color: "blue"
@@ -131,55 +137,55 @@ Rectangle {
                             }
                         }
                         Row {
-                            spacing:rowspacing
-                            anchors.horizontalCenter:parent.horizontalCenter
+                            spacing: rowspacing
+                            anchors.horizontalCenter: parent.horizontalCenter
                             Switch {
-                                Rectangle{
-                                    anchors.fill:parent;
-                                    radius:2 ;
-                                    border.color:"black";
-                                    color:"white";
-                                    anchors.bottomMargin:1;
-                                    anchors.rightMargin:1
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color: "white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
                                 }
-                                styling.handle: Rectangle{
+                                styling.handle: Rectangle {
                                     width: parent.height
                                     height: parent.height
-                                    border.color:"black";
-                                    color:"red";
+                                    border.color: "black"
+                                    color: "red"
                                 }
 
                             }
                             Switch {
                                 checked: true
                                 Rectangle{
-                                    anchors.fill:parent;
-                                    radius:2 ;
-                                    border.color:"black";
-                                    color:"white";
-                                    anchors.bottomMargin:1;
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color: "white"
+                                    anchors.bottomMargin:1
                                     anchors.rightMargin:1
                                 }
                                 styling.handle: Rectangle{
                                     width: parent.height
                                     height: parent.height
-                                    border.color:"black";
-                                    color:"red";
+                                    border.color:"black"
+                                    color: "red"
                                 }
-
                             }
                         }
                         Row{
                             CheckBox {
                                 Rectangle{
-                                    anchors.fill:parent
-                                    radius:2
-                                    border.color:"black"
-                                    color:"white"
-                                    anchors.bottomMargin:1
-                                    anchors.rightMargin:1
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color: "white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
                                     Rectangle {
-                                        width:12; height:12
+                                        width: 12
+                                        height: 12
                                         visible: parent.parent.parent.checked
                                         anchors.centerIn: parent
                                         radius: 5
@@ -189,52 +195,56 @@ Rectangle {
                                 }
                             }
                             CheckBox {
+                                checked: true
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color:" white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
+                                    Rectangle {
+                                        width: 12
+                                        height: 12
+                                        visible: parent.parent.parent.checked
+                                        anchors.centerIn: parent
+                                        radius: 5
+                                        color: "black"
+                                        smooth: true
+                                    }
+                                }
+                            }
+                            RadioButton {
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color: "white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
+                                    Rectangle {
+                                        width:12
+                                        height:12
+                                        visible: parent.parent.parent.checked
+                                        anchors.centerIn: parent
+                                        radius: 5
+                                        color: "black"
+                                        smooth: true
+                                    }
+                                }
+                            }
+                            RadioButton {
                                 checked:true
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: 2
                                     border.color: "black"
-                                    color:" white"
+                                    color: "white"
                                     anchors.bottomMargin: 1
                                     anchors.rightMargin: 1
                                     Rectangle {
-                                        width: 12 ; height: 12
-                                        visible: parent.parent.parent.checked
-                                        anchors.centerIn: parent
-                                        radius: 5
-                                        color: "black"
-                                        smooth: true
-                                    }
-                                }
-                            }
-                            RadioButton{
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: 2
-                                    border.color: "black"
-                                    color:" white"
-                                    anchors.bottomMargin: 1
-                                    anchors.rightMargin: 1
-                                    Rectangle {
-                                        width:12; height:12
-                                        visible: parent.parent.parent.checked
-                                        anchors.centerIn: parent
-                                        radius: 5
-                                        color: "black"
-                                        smooth: true
-                                    }
-                                }
-                            }
-                            RadioButton { checked:true
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: 2
-                                    border.color: "black"
-                                    color:" white"
-                                    anchors.bottomMargin: 1
-                                    anchors.rightMargin: 1
-                                    Rectangle {
-                                        width:12; height:12
+                                        width:12
+                                        height:12
                                         visible: parent.parent.parent.checked
                                         anchors.centerIn: parent
                                         radius: 5
@@ -245,15 +255,15 @@ Rectangle {
                             }
                             spacing: rowspacing
                         }
-                        ChoiceList{
+                        ChoiceList {
                             model: choices
-                            Rectangle{
+                            Rectangle {
                                 anchors.fill: parent
-                                radius:2
-                                border.color:"black"
-                                color:"white"
-                                anchors.bottomMargin:1
-                                anchors.rightMargin:1
+                                radius: 2
+                                border.color: "black"
+                                color: "white"
+                                anchors.bottomMargin: 1
+                                anchors.rightMargin: 1
                             }
 
                         }
@@ -272,7 +282,7 @@ Rectangle {
                                 radius: 2
                                 anchors.fill: parent
                                 border.color: "black"
-                                color:" white"
+                                color: "white"
                                 anchors.bottomMargin: 1
                                 anchors.rightMargin: 1
                                 Rectangle {
@@ -288,12 +298,12 @@ Rectangle {
 
                         }
                         ProgressBar {
-                            indeterminate:true
+                            indeterminate: true
                             Rectangle {
                                 radius: 2
                                 anchors.fill: parent
                                 border.color: "black"
-                                color:" white"
+                                color: "white"
                                 anchors.bottomMargin: 1
                                 anchors.rightMargin: 1
                                 Rectangle {
@@ -306,12 +316,10 @@ Rectangle {
                                     smooth: true
                                 }
                             }
-
-
                         }
-                        Row{
-                            spacing:rowspacing
-                            anchors.horizontalCenter:parent.horizontalCenter
+                        Row {
+                            spacing: rowspacing
+                            anchors.horizontalCenter: parent.horizontalCenter
                             BusyIndicator { running: true }
                             BusyIndicator { running: false }
                         }
@@ -320,7 +328,6 @@ Rectangle {
             }
         }
     }
-
     ScrollDecorator {
         flickableItem: flickable
     }

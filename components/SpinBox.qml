@@ -49,7 +49,6 @@ FocusScope {
 
     property SpinBoxStylingProperties styling: SpinBoxStylingProperties {
         textColor: "black"
-        background: defaultStyle.background
         up: defaultStyle.up
         down: defaultStyle.down
 
