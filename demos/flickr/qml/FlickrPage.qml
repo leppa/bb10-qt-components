@@ -24,33 +24,22 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+import QtQuick 1.0
+import Qt.labs.components.native 1.0
+import "UIConstants.js" as UI
 
-Item {
-    id: root
-    anchors.fill: parent
+Page {
+    Rectangle {
+        id: background
 
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
-    }
+        anchors.fill: parent
+        color: UI.FLICKRPAGE_BG_COLOR
 
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
+        Image {
+            source: "images/stripes.png"
+            fillMode: Image.Tile
+            anchors.fill: parent
+            opacity: UI.FLICKRPAGE_BG_OPACITY
         }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
     }
 }

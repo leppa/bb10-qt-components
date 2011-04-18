@@ -24,33 +24,42 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+import QtQuick 1.0
 
 Item {
     id: root
-    anchors.fill: parent
 
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
+    property string image: ""
+    property int timeout: 1000
+    property int fadeout: 500
+
+    signal finished
+
+    function activate() {
+        animation.start();
     }
 
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
+    anchors.fill: parent
+
+    Image {
+        id: splash
+
+        anchors.fill: parent
+        source: root.image
+    }
+
+    SequentialAnimation {
+        id: animation
+
+        PauseAnimation { duration: root.timeout }
+
+        PropertyAnimation {
+            target: splash
+            properties: "opacity"
+            duration: root.fadeout
+            to: 0
         }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
+
+        ScriptAction { script: finished(); }
     }
 }

@@ -24,33 +24,12 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+import QtQuick 1.0
+import "UIConstants.js" as UI
 
-Item {
-    id: root
-    anchors.fill: parent
-
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
-    }
-
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
-        }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
-    }
+Text {
+    width: parent.width
+    color: UI.DETAILTEXT_COLOR
+    wrapMode: Text.WordWrap
 }
+

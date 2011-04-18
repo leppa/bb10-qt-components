@@ -24,33 +24,25 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+import QtQuick 1.0
 
 Item {
-    id: root
-    anchors.fill: parent
+    id: wrapper
 
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
-    }
+    signal photoClicked(string url, int photoWidth, int photoHeight,
+                        string author, string date, string description,
+                        string tags, string title)
 
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
+    Thumbnail {
+        source: photoThumbnailUrl
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                wrapper.photoClicked(photoUrl, photoWidth, photoHeight,
+                                     photoAuthor, photoDate, photoDescription,
+                                     photoTags, photoTitle);
+            }
         }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
     }
 }

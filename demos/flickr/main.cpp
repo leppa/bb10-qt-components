@@ -24,33 +24,40 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+//![0]
+#include <QApplication>
+#include <QDeclarativeEngine>
+#include <QDeclarativeView>
+#include <QNetworkProxy>
+#include <QUrl>
 
-Item {
-    id: root
-    anchors.fill: parent
+int main(int argc, char **argv)
+{
+    QApplication app(argc, argv);
 
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
+    QUrl proxyUrl(qgetenv("http_proxy"));
+    if (proxyUrl.isValid() && !proxyUrl.host().isEmpty()) {
+        int proxyPort = (proxyUrl.port() > 0) ? proxyUrl.port() : 8080;
+        QNetworkProxy proxy(QNetworkProxy::HttpProxy, proxyUrl.host(), proxyPort);
+        QNetworkProxy::setApplicationProxy(proxy);
+    }
+    else {
+        QNetworkProxyQuery query(QUrl(QLatin1String("http://www.flickr.com")));
+        QNetworkProxy proxy = QNetworkProxyFactory::systemProxyForQuery(query).value(0);
+        if (proxy.type() != QNetworkProxy::NoProxy)
+            QNetworkProxy::setApplicationProxy(proxy);
     }
 
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
-        }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
-    }
+    QDeclarativeView view;
+    view.setSource(QUrl("qrc:/qml/flickr.qml"));
+
+#if defined(FLICKR_FULLSCREEN)
+    view.window()->showFullScreen();
+#else
+    view.window()->show();
+#endif
+
+    QObject::connect(view.engine(), SIGNAL(quit()), &view, SLOT(close()));
+    return app.exec();
 }
+//![0]

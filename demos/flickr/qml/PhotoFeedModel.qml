@@ -24,33 +24,31 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+import QtQuick 1.0
 
-Item {
-    id: root
-    anchors.fill: parent
+XmlListModel {
+    property string tags : ""
 
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
+    function commasep(x) {
+        // Trim the list of tags
+        var tmp = x.replace(/^\s+|\s+$/g,'');
+        // Put a comma between each tag, which are separated by one or more spaces
+        tmp = tmp.replace(/\s+/g,',');
+        return tmp;
     }
 
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
-        }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
-    }
+    source: "http://api.flickr.com/services/feeds/photos_public.gne?"
+            + (tags ? "tags="+commasep(tags)+"&" : "") + "format=rss2"
+    query: "/rss/channel/item"
+    namespaceDeclarations: "declare namespace media=\"http://search.yahoo.com/mrss/\";"
+
+    XmlRole { name: "photoTitle"; query: "title/string()" }
+    XmlRole { name: "photoThumbnailUrl"; query: "media:thumbnail/@url/string()" }
+    XmlRole { name: "photoUrl"; query: "media:content/@url/string()" }
+    XmlRole { name: "photoWidth"; query: "media:content/@width/number()" }
+    XmlRole { name: "photoHeight"; query: "media:content/@height/number()" }
+    XmlRole { name: "photoDescription"; query: "description/string()" }
+    XmlRole { name: "photoTags"; query: "media:category/string()" }
+    XmlRole { name: "photoAuthor"; query: "author/string()" }
+    XmlRole { name: "photoDate"; query: "pubDate/string()" }
 }

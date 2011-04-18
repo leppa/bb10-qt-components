@@ -24,33 +24,50 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.symbian 1.0
+import QtQuick 1.0
+import "UIConstants.js" as UI
 
 Item {
-    id: root
-    anchors.fill: parent
+    id: wrapper
 
-    TabBar {
-        id: tabBar
-        anchors.top: parent.top
-        TabButton { tab: selection; text: "Selection" }
-        TabButton { tab: font; text: "Font" }
-        TabButton { tab: other; text: "Other" }
-        TabButton { tab: maxLength; text: "MaxLength" }
-    }
+    property alias source: thumb.source
 
-    TabGroup {
-        id: tabGroup
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tabBar.bottom
-            bottom: parent.bottom
+    width: UI.THUMBNAIL_WRAPPER_SIDE; height: UI.THUMBNAIL_WRAPPER_SIDE
+    scale: scaleMe.scale
+
+    Item {
+        id: scaleMe
+
+        anchors.centerIn: parent
+        scale: 0.0
+
+        Behavior on scale {
+            NumberAnimation {
+                easing.type: Easing.InOutQuad
+                duration: 500
+            }
         }
-        TextFieldSelection { id: selection }
-        TextFieldFont { id: font }
-        TextFieldOther { id: other }
-        TextFieldMaxLength { id: maxLength }
+
+        Rectangle {
+            id: blackRect
+
+            width: UI.THUMBNAIL_WRAPPER_SIDE; height: UI.THUMBNAIL_WRAPPER_SIDE
+            anchors.centerIn: parent
+            color: UI.THUMBNAIL_WRAPPER_COLOR
+            smooth: true
+
+            Image {
+                id: thumb
+
+                anchors.centerIn: parent
+                smooth: true
+                width: UI.THUMBNAIL_SIDE; height: UI.THUMBNAIL_SIDE
+
+                onStatusChanged: {
+                    if (thumb.status == Image.Ready)
+                        scaleMe.scale = 1;
+                }
+            }
+        }
     }
 }
