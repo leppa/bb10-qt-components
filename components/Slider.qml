@@ -46,6 +46,7 @@ Item {
     property bool animateHandle: true
     property string showValueIndicator: "above" // one of "above", "below", "left", "right", or "none"
     property int valueIndicatorMargin: 10
+    default property alias data: content.data
 
     function formatValue(v) {
         if (parseInt(v) != v)
@@ -55,7 +56,6 @@ Item {
     }
 
     property SliderStylingProperties styling: SliderStylingProperties {
-        groove: defaultStyle.groove
         handle: defaultStyle.handle
         valueIndicator: defaultStyle.valueIndicator
 
@@ -105,10 +105,9 @@ Item {
             onStepSizeChanged: useDecimals = false;
         }
 
-        Loader {
-            id: grooveLoader
+        Item {
+            id: content
             anchors.fill: parent
-            sourceComponent: styling.groove
 
             property alias styledItem: slider
             property real handlePosition: handleLoader.x
@@ -120,7 +119,7 @@ Item {
         Loader {
             id: handleLoader
             transform: Translate { x: -contents.halfHandleWidth }
-            anchors.verticalCenter: grooveLoader.verticalCenter
+            anchors.verticalCenter: content.verticalCenter
 
             property alias styledItem: slider
             sourceComponent: styling.handle

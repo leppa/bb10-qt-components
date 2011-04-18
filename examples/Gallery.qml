@@ -110,12 +110,32 @@ Rectangle {
                             }
 
                         }
-                        Slider { value: 0.5 }
+                        Slider {
+                            value: 0.5
+
+                            Rectangle {
+                                radius: 2
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: 8
+                                border.color: "black"
+                                color: "white"
+                                Rectangle{
+                                    anchors.top:parent.top
+                                    anchors.bottom:parent.bottom
+                                    anchors.left: parent.left
+                                    width: parent.parent.handlePosition
+                                    color: "blue"
+                                }
+                            }
+                        }
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
                             Switch {
-                                Rectangle{anchors.fill:parent;
+                                Rectangle{
+                                    anchors.fill:parent;
                                     radius:2 ;
                                     border.color:"black";
                                     color:"white";
@@ -130,9 +150,10 @@ Rectangle {
                                 }
 
                             }
-                            Switch { checked: true
-
-                                Rectangle{anchors.fill:parent;
+                            Switch {
+                                checked: true
+                                Rectangle{
+                                    anchors.fill:parent;
                                     radius:2 ;
                                     border.color:"black";
                                     color:"white";
