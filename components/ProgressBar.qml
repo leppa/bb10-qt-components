@@ -9,6 +9,7 @@ Item {
     property alias minimumValue: rangeModel.minimumValue
     property alias maximumValue: rangeModel.maximumValue
     property bool indeterminate: false
+    default property alias data: content.data
 
     property ProgressBarStylingProperties styling: ProgressBarStylingProperties {
         background: defaultStyle.background
@@ -28,14 +29,21 @@ Item {
         inverted: false
     }
 
-    Loader { // groove background
-        id: grooveLoader
+    property real complete: (progressBar.value-progressBar.minimumValue)/(progressBar.maximumValue-progressBar.minimumValue)
+
+    Item {
+        id: content
+        anchors.fill:parent
         property alias styledItem: progressBar
-        property real complete: (value-minimumValue)/(maximumValue-minimumValue)
+    }
+
+/*    Loader {
+        // groove background
+        id: grooveLoader
         sourceComponent: styling.background
         anchors.fill: parent
     }
-
+*/
     DefaultStyles.ProgressBarStyle { id: defaultStyle }
 
     Binding {

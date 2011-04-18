@@ -26,6 +26,7 @@ FocusScope {
     property alias textFormat: textEdit.textFormat
     property alias inputMethodHints: textEdit.inputMethodHints
     property alias containsMouse: mouseArea.containsMouse
+    default property alias data: content.data
 
     function forceActiveFocus() { textEdit.forceActiveFocus() }
     function cut() { textEdit.cut() }
@@ -51,9 +52,7 @@ FocusScope {
     property TextAreaStylingProperties styling: TextAreaStylingProperties {
         textColor: "black"
 
-        background: defaultStyle.background
         hints: defaultStyle.hints
-
         leftMargin: defaultStyle.leftMargin
         topMargin: defaultStyle.topMargin
         rightMargin: defaultStyle.rightMargin
@@ -78,10 +77,9 @@ FocusScope {
     clip: true
 
     Loader { id: hintsLoader; sourceComponent: styling.hints }
-    Loader {
+    Item {
+        id: content
         anchors.fill: parent
-        property alias styledItem: textArea
-        sourceComponent: styling.background
     }
 
 

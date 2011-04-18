@@ -9,7 +9,7 @@ FocusScope {
     property real minimumValue: 0
     property real singleStep: 1
     property string postfix
-
+    default property alias data: content.data
 
     function increment() {
         setValue(textInput.text);
@@ -83,10 +83,9 @@ FocusScope {
     }
 
     // background
-    Loader {
-        id: backgroundComponent
+    Item {
+        id: content
         anchors.fill: parent
-        sourceComponent: styling.background
     }
 
     MouseArea {

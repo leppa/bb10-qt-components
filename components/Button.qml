@@ -12,6 +12,8 @@ Item {
     property alias checkable: behavior.checkable  // button toggles between checked and !checked
     property alias checked: behavior.checked
 
+    default property alias data: contentItem.data
+
     property string text
     property url iconSource
 
@@ -26,14 +28,9 @@ Item {
 
     property string __position: "only"
 
-    Loader {
-        id: backgroundLoader
+    Item {
+        id: contentItem
         anchors.fill: parent
-        property alias text:button.text
-        property alias iconSource:button.iconSource
-        sourceComponent: styling.background
-        property alias styledItem: button
-        property alias position: button.__position
     }
 
     ButtonBehavior {

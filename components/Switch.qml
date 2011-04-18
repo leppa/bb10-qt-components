@@ -9,6 +9,7 @@ Item {
     property bool pressed: mouseArea.pressed
     property bool checked: false
     property alias containsMouse: mouseArea.containsMouse
+    default property alias data: content.data
 
     property SwitchStylingProperties styling: SwitchStylingProperties {
         groove: defaultStyle.groove
@@ -22,12 +23,9 @@ Item {
 
     onCheckedChanged: snapHandleIntoPlace();
 
-    Loader {
-        id: grooveLoader
+    Item {
+        id: content
         anchors.fill: parent
-        property alias styledItem: toggleSwitch
-        property real handleCenterX: handleLoader.item.x + (handleLoader.item.width/2)
-        sourceComponent: styling.groove
     }
 
     Loader {

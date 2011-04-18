@@ -36,46 +36,247 @@ Rectangle {
                     width:column1.width+2*rowspacing
                     height:column1.height+2*rowspacing
                     Column {
-                        x:rowspacing
-                        id:column1
+                        x: rowspacing
+                        id: column1
                         spacing: columnspacing
-                        anchors.top:parent.top
-                        anchors.topMargin:6
+                        anchors.top: parent.top
+                        anchors.topMargin: 6
 
                         Text{ font.bold: true; text: "Default:" ; styleColor: "white" ; color: "#333" ; style: "Raised"}
-                        Button { text:"Push me" }
-                        ButtonRow {
-                            Button{ text: "A" }
-                            Button{ text: "B" }
+
+                        Button {
+                            id: btn
+                            text: "Push me"
+
+                            Rectangle {
+                                anchors.fill: parent
+                                color: btn.pressed ? "blue " : "red"
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: btn.text
+                                }
+                            }
+
                         }
-                        TextField { }
-                        TextArea { placeholderText: "This is a\n multiline control."}
-                        SpinBox{ }
+                        ButtonRow {
+                            Button{ text: "A"
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: parent.parent.pressed ? "blue " : "red"
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: btn.text
+                                    }
+                                }
+                            }
+                            Button{ text: "B"
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: parent.parent.pressed ? "blue " : "red"
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: btn.text
+                                    }
+                                }
+                            }
+                        }
+                        TextField {
+                            Rectangle{anchors.fill:parent;
+                                radius:2 ;
+                                border.color:"black";
+                                color:"white";
+                                anchors.bottomMargin:1;
+                                anchors.rightMargin:1
+                            }
+                        }
+
+                        TextArea {
+                            Rectangle{anchors.fill:parent;
+                                radius:2 ;
+                                border.color:"black";
+                                color:"white";
+                                anchors.bottomMargin:1;
+                                anchors.rightMargin:1
+                            }
+                            placeholderText: "This is a\n multiline control."
+                        }
+                        SpinBox{
+                            Rectangle{anchors.fill:parent;
+                                radius:2 ;
+                                border.color:"black";
+                                color:"white";
+                                anchors.bottomMargin:1;
+                                anchors.rightMargin:1
+                            }
+
+                        }
                         Slider { value: 0.5 }
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
-                            Switch { }
-                            Switch { checked: true }
+                            Switch {
+                                Rectangle{anchors.fill:parent;
+                                    radius:2 ;
+                                    border.color:"black";
+                                    color:"white";
+                                    anchors.bottomMargin:1;
+                                    anchors.rightMargin:1
+                                }
+                                styling.handle: Rectangle{
+                                    width: parent.height
+                                    height: parent.height
+                                    border.color:"black";
+                                    color:"red";
+                                }
+
+                            }
+                            Switch { checked: true
+
+                                Rectangle{anchors.fill:parent;
+                                    radius:2 ;
+                                    border.color:"black";
+                                    color:"white";
+                                    anchors.bottomMargin:1;
+                                    anchors.rightMargin:1
+                                }
+                                styling.handle: Rectangle{
+                                    width: parent.height
+                                    height: parent.height
+                                    border.color:"black";
+                                    color:"red";
+                                }
+
+                            }
                         }
                         Row{
-                            CheckBox { } CheckBox { checked:true}
-                            RadioButton{ } RadioButton { checked:true}
+                            CheckBox {
+                                Rectangle{
+                                    anchors.fill:parent
+                                    radius:2
+                                    border.color:"black"
+                                    color:"white"
+                                    anchors.bottomMargin:1
+                                    anchors.rightMargin:1
+                                    Rectangle {
+                                        width:12; height:12
+                                        visible: parent.parent.parent.checked
+                                        anchors.centerIn: parent
+                                        radius: 5
+                                        color: "black"
+                                        smooth: true
+                                    }
+                                }
+                            }
+                            CheckBox {
+                                checked:true
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color:" white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
+                                    Rectangle {
+                                        width: 12 ; height: 12
+                                        visible: parent.parent.parent.checked
+                                        anchors.centerIn: parent
+                                        radius: 5
+                                        color: "black"
+                                        smooth: true
+                                    }
+                                }
+                            }
+                            RadioButton{
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color:" white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
+                                    Rectangle {
+                                        width:12; height:12
+                                        visible: parent.parent.parent.checked
+                                        anchors.centerIn: parent
+                                        radius: 5
+                                        color: "black"
+                                        smooth: true
+                                    }
+                                }
+                            }
+                            RadioButton { checked:true
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: 2
+                                    border.color: "black"
+                                    color:" white"
+                                    anchors.bottomMargin: 1
+                                    anchors.rightMargin: 1
+                                    Rectangle {
+                                        width:12; height:12
+                                        visible: parent.parent.parent.checked
+                                        anchors.centerIn: parent
+                                        radius: 5
+                                        color: "black"
+                                        smooth: true
+                                    }
+                                }
+                            }
                             spacing: rowspacing
                         }
                         ChoiceList{ model: choices}
                         ProgressBar {
+                            id: progress
                             Timer {
                                 running: true
                                 repeat: true
                                 interval: 25
                                 onTriggered: {
-                                    var next = parent.value + 0.01;
-                                    parent.value = (next > parent.maximumValue) ? parent.minimumValue : next;
+                                    var next = progress.value + 0.01;
+                                    progress.value = (next > progress.maximumValue) ? progress.minimumValue : next;
                                 }
                             }
+                            Rectangle {
+                                radius: 2
+                                anchors.fill: parent
+                                border.color: "black"
+                                color:" white"
+                                anchors.bottomMargin: 1
+                                anchors.rightMargin: 1
+                                Rectangle {
+                                    anchors.left: parent.left
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    width: progress.value * progress.width
+                                    radius: 2
+                                    color: "green"
+                                    smooth: true
+                                }
+                            }
+
                         }
-                        ProgressBar { indeterminate:true }
+                        ProgressBar {
+                            indeterminate:true
+                            Rectangle {
+                                radius: 2
+                                anchors.fill: parent
+                                border.color: "black"
+                                color:" white"
+                                anchors.bottomMargin: 1
+                                anchors.rightMargin: 1
+                                Rectangle {
+                                    anchors.left: parent.left
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    width: progress * parent.width
+                                    radius: 5
+                                    color: "black"
+                                    smooth: true
+                                }
+                            }
+
+
+                        }
                         Row{
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
@@ -83,271 +284,6 @@ Rectangle {
                             BusyIndicator { running: false }
                         }
                     }
-                }
-                Item {
-                    width:column2.width+2*rowspacing
-                    height:column2.height+2*rowspacing
-                    Column {
-                        x:rowspacing
-                        id:column2
-                        spacing: columnspacing
-                        anchors.top:parent.top
-                        anchors.topMargin:6
-
-                        Column {
-                            enabled:false
-                            spacing: columnspacing
-                            anchors.topMargin:6
-                            Text{ font.bold:true; text:"Disabled:" ; styleColor: "white" ; color:"#333" ; style:"Raised"}
-                            Button { text:"Push me"}
-                            ButtonRow {
-                                Button{ text: "A" }
-                                Button{ text: "B" }
-                            }
-                            TextField { }
-                            TextArea { placeholderText:"This is a\n multiline control."}
-                            SpinBox{ }
-                            Slider { value: 0.5 }
-                            Row{
-                                spacing:rowspacing
-                                anchors.horizontalCenter:parent.horizontalCenter
-                                Switch { }
-                                Switch { checked: true }
-                            }
-                            Row{
-                                CheckBox { } CheckBox { checked:true}
-                                RadioButton{ } RadioButton { checked:true}
-                                spacing:rowspacing
-                            }
-                            ChoiceList{ model: choices}
-                            ProgressBar {
-                                Timer {
-                                    running: true
-                                    repeat: true
-                                    interval: 25
-                                    onTriggered: {
-                                        var next = parent.value + 0.01;
-                                        parent.value = (next > parent.maximumValue) ? parent.minimumValue : next;
-                                    }
-                                }
-                            }
-                            ProgressBar { indeterminate:true }
-                            Row {
-                                spacing: rowspacing
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                BusyIndicator { running: true }
-                                BusyIndicator { running: false }
-                            }
-                        }
-                    }
-                }
-                Rectangle{
-                    width:column2.width+2*rowspacing
-                    height:column2.height+2*rowspacing
-                    color:"#ccc"
-                    border.color:"#444"
-                    Column {
-                        x:rowspacing
-                        id:column4
-                        spacing: columnspacing
-                        anchors.top:parent.top
-                        anchors.topMargin:6
-
-                        Text{ font.bold:true; text:"Custom:" ; styleColor: "white" ; color:"#333" ; style:"Raised"}
-                        Button { text:"Push me" ; styling.background: shinyButton;}
-                        ButtonRow {
-                            Button { text: "A" ; styling.background: shinyButton}
-                            Button{ text: "B" ; styling.background: shinyButton}
-                        }
-                        TextField { styling.background: shinyEdit}
-                        TextArea {  placeholderText:"This is a\n multiline control."; styling.background: shinyEdit}
-                        SpinBox{
-                            styling.background: shinyEdit
-                            styling.leftMargin: 40
-                            styling.rightMargin: 40
-                            styling.up: upComponent // see QTBUG-17276
-                            Component {
-                                id: upComponent
-                                BorderImage {
-                                    width: height
-                                    source: pressed ?
-                                            "customtheme/exampletheme/images/button_pressed.png" :
-                                            "customtheme/exampletheme/images/button_normal.png"
-                                    anchors.left: parent.left
-                                    anchors.top: parent.top
-                                    anchors.bottom: parent.bottom
-                                    border.left: 6; border.right: 6; border.top: 6; border.bottom: 6
-                                    Text { text: "+" ; anchors.centerIn: parent}
-                                }
-                            }
-                            styling.down: downComponent // see QTBUG-17276
-                            Component {
-                                id: downComponent
-                                BorderImage {
-                                    width: height
-                                    source: pressed ?
-                                                "customtheme/exampletheme/images/button_pressed.png" :
-                                    "customtheme/exampletheme/images/button_normal.png"
-                                    anchors.right: parent.right
-                                    anchors.top: parent.top
-                                    anchors.bottom: parent.bottom
-                                    border.left: 6; border.right: 6; border.top: 6; border.bottom: 6
-                                    Text{ text: "-" ; anchors.centerIn: parent}
-                                }
-                            }
-                        }
-                        Slider {
-                            value: 0.5
-                            height: 20
-                            styling.handle: sliderHandleComponent // see QTBUG-17276
-                            Component {
-                                id: sliderHandleComponent
-                                BorderImage{
-                                    source: "customtheme/exampletheme/images/button_normal.png";
-                                    width: 20; height: 20
-                                    border { left:7; right: 7; top:7; bottom:7 }
-                                }
-                            }
-                            styling.pinWidth: 20
-                            styling.groove: sliderGrooveComponent // see QTBUG-17276
-                            Component {
-                                id: sliderGrooveComponent
-                                Item {
-                                    anchors.fill:parent
-                                    BorderImage {
-                                        source: "customtheme/exampletheme/images/edit_normal.png"
-                                        width: parent.width;
-                                        height:20; smooth:true
-                                        border.left: 4; border.right: 4
-                                        border.top:4; border.bottom:4
-                                    }
-                                }
-                            }
-                        }
-                        Row{
-                            spacing:rowspacing
-                            Switch {
-                                id:aa
-                                styling.groove: shinyEdit;
-                                styling.handle: handle
-                            }
-                            Switch {
-                                id:bb
-                                styling.groove: shinyEdit;
-                                styling.handle: handle
-                                checked: true
-                            }
-                            Component {
-                                id:handle
-                                BorderImage {
-                                    width:bb.height
-                                    height:bb.height
-                                    source: parent.pressed ? "customtheme/exampletheme/images/button_pressed.png":"customtheme/exampletheme/images/button_normal.png"
-                                    border.left: 6; border.top: 6
-                                    border.right: 6; border.bottom: 6
-                                }
-                            }
-                        }
-                        Row {
-                            CheckBox { styling.background: shinyCheckBackground; }
-                            CheckBox { styling.background: shinyCheckBackground;  checked: true}
-                            RadioButton { styling.background: shinyCheckBackground; }
-                            RadioButton { styling.background: shinyCheckBackground; checked: true}
-                            spacing: rowspacing
-                        }
-
-                        ChoiceList{ model: choices; styling.background: shinyButton; styling.popupFrame: shinyButton}
-
-                        ProgressBar {
-                            Timer {
-                                running: true
-                                repeat: true
-                                interval: 25
-                                onTriggered: {
-                                    var next = parent.value + 0.01;
-                                    parent.value = (next > parent.maximumValue) ? parent.minimumValue : next;
-                                }
-                            }
-
-                            styling.progress: shinyBar
-                            styling.background: shinyEdit
-                            styling.indeterminateProgress: shinyBar
-                        }
-
-                        ProgressBar {
-                            indeterminate: true
-                            styling.progress: shinyBar
-                            styling.indeterminateProgress: shinyBar
-                        }
-                        Row{
-                            spacing:rowspacing
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            BusyIndicator { styling.background: shinySpinner; running: true }
-                            BusyIndicator { styling.background: shinySpinner; running: false }
-                        }
-                    }
-                }
-            }
-            Component{
-                id: shinySpinner
-                BorderImage {
-                    width:30; height:30
-                    source: "customtheme/exampletheme/images/button_normal.png"
-                    border.top:4 ; border.left:4 ; border.bottom:4 ; border.right:4
-                    Timer { running: true; repeat: true; interval: 25; onTriggered: opacity}
-                    PropertyAnimation on opacity {
-                        running: parent.running;
-                        easing.type:Easing.OutSine
-                        loops:Animation.Infinite;
-                        from:1; to:0; duration:500}
-                }
-            }
-            Component{
-                id:shinyBar
-                BorderImage {
-                    source: "customtheme/exampletheme/images/button_normal.png"
-                    visible: styledItem.value > 0
-                    border.top:4 ; border.left:4 ; border.bottom:4 ; border.right:4
-                }
-            }
-            Component {
-                id: shinyCheckBackground
-                BorderImage {
-                    width: styledItem.implicitWidth; height: styledItem.implicitHeight
-                    source: "customtheme/exampletheme/images/edit_normal.png"
-                    border.left: 6; border.top: 6
-                    border.right: 6; border.bottom: 6
-                    Image {
-                        anchors.centerIn: parent
-                        visible: styledItem.checked || styledItem.pressed ? 1 : 0
-                        opacity: !enabled || styledItem.pressed ? 0.7 : 1
-                        source: "customtheme/exampletheme/images/checkbox_check.png"                    }
-
-                }
-            }
-            Component{
-                id: shinyButton
-                Item {
-                    clip:true
-                    property string label:text
-                    BorderImage {
-                        x: position == "rightmost" ? -2 : 0
-                        width: parent.width + (position == "leftmost" ? 5 : 0)
-                        height: parent.height
-                        source: styledItem.pressed ? "customtheme/exampletheme/images/button_pressed.png":
-                                "customtheme/exampletheme/images/button_normal.png"
-                        border.left: 6; border.top: 6
-                        border.right: 6; border.bottom: 6
-                        Text{ text: label; anchors.centerIn: parent}
-                    }
-                }
-            }
-            Component {
-                id: shinyEdit
-                BorderImage {
-                    source: "customtheme/exampletheme/images/edit_normal.png"
-                    border.left: 6; border.top: 6
-                    border.right: 6; border.bottom: 6
                 }
             }
         }

@@ -10,9 +10,9 @@ Item {
     property alias pressed: behavior.pressed
     property alias checked: behavior.checked
     property alias containsMouse: behavior.containsMouse
+    default property alias data: content.data
 
     property CheckBoxStylingProperties styling: CheckBoxStylingProperties {
-        background: defaultStyle.background
         width: defaultStyle.width
         height: defaultStyle.height
     }
@@ -21,11 +21,9 @@ Item {
     implicitWidth: styling.width
     implicitHeight: styling.height
 
-    Loader {
-        id: backgroundLoader
+    Item {
+        id: content
         anchors.fill: parent
-        property alias styledItem: checkBox
-        sourceComponent: styling.background
     }
 
     ButtonBehavior {

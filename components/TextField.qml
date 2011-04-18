@@ -28,6 +28,7 @@ FocusScope {
     property alias horizontalAlignment: textInput.horizontalAlignment
     property alias inputMethodHints: textInput.inputMethodHints
     property alias containsMouse: mouseArea.containsMouse
+    default property alias data: content.data
 
     function forceActiveFocus() { textInput.forceActiveFocus() }
     function cut() { textInput.cut() }
@@ -52,7 +53,6 @@ FocusScope {
     property TextFieldStylingProperties styling: TextFieldStylingProperties {
         textColor: syspal.text
 
-        background: defaultStyle.background
         hints: defaultStyle.hints
 
         leftMargin: defaultStyle.leftMargin
@@ -73,10 +73,9 @@ FocusScope {
     clip: true
 
     Loader { id: hintsLoader; sourceComponent: styling.hints }
-    Loader {
+    Item {
+        id: content
         anchors.fill: parent
-        property alias styledItem: textField
-        sourceComponent: styling.background
     }
 
     MouseArea {
@@ -87,6 +86,7 @@ FocusScope {
 
     TextInput { // see QTBUG-14936
         id: textInput
+        focus: true
         font.pixelSize: _hints.fontPixelSize
         font.bold: _hints.fontBold
 
@@ -99,7 +99,6 @@ FocusScope {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
-        opacity: activeFocus ? 1 : 0
         color: enabled ? styling.textColor : Qt.tint(styling.textColor, "#80ffffff")
         echoMode: passwordMode ? _hints.passwordEchoMode : TextInput.Normal
 
