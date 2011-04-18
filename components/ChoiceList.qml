@@ -18,10 +18,11 @@ Item {
     property alias containsMouse: mouseArea.containsMouse   //mm needed?
     property bool pressed: false    //mm needed?
 
+    default property alias data: content.data
+
     property ChoiceListStylingProperties styling: ChoiceListStylingProperties {
         textColor: syspal.text
 
-        background: defaultStyle.background
         label: defaultStyle.label
         listItem: defaultStyle.listItem
         popupFrame: defaultStyle.popupFrame
@@ -42,10 +43,9 @@ Item {
     implicitHeight: Math.max(styling.minimumHeight,
                      labelLoader.item.implicitHeight + styling.verticalMargins())
 
-    Loader {
+    Item {
+        id: content
         anchors.fill: parent
-        property alias styledItem: choiceList
-        sourceComponent: styling.background
     }
 
     Loader {

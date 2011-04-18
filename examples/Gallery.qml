@@ -130,7 +130,7 @@ Rectangle {
                                 }
                             }
                         }
-                        Row{
+                        Row {
                             spacing:rowspacing
                             anchors.horizontalCenter:parent.horizontalCenter
                             Switch {
@@ -245,7 +245,18 @@ Rectangle {
                             }
                             spacing: rowspacing
                         }
-                        ChoiceList{ model: choices}
+                        ChoiceList{
+                            model: choices
+                            Rectangle{
+                                anchors.fill: parent
+                                radius:2
+                                border.color:"black"
+                                color:"white"
+                                anchors.bottomMargin:1
+                                anchors.rightMargin:1
+                            }
+
+                        }
                         ProgressBar {
                             id: progress
                             Timer {

@@ -11,22 +11,15 @@ Item {
     property alias containsMouse: behavior.containsMouse
     property alias checkable: behavior.checkable  // button toggles between checked and !checked
     property alias checked: behavior.checked
-
-    property BasicButtonStylingProperties styling: BasicButtonStylingProperties {
-        textColor: "black"
-        background: defaultStyle.background
-    }
+    default property alias data: content.data
 
     // implementation
 
     property string __position: "only"
 
-    Loader {
-        id: backgroundLoader
+    Item {
+        id: content
         anchors.fill: parent
-        sourceComponent: styling.background
-        property alias styledItem: button
-        property alias position: button.__position
     }
 
     ButtonBehavior {
