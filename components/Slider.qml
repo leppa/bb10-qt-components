@@ -226,22 +226,6 @@ Item {
         __ready = true;
     }
 
-    // We need Binding elements that will not be broken
-    // when we assign to the "value" property
-    Binding {
-        property: "value"
-        target: rangeModel
-        value: slider.value
-        when: __ready && !mouseArea.pressed
-    }
-
-    Binding {
-        property: "value"
-        target: slider
-        value: rangeModel.value
-        when: __ready && mouseArea.pressed
-    }
-
     // rangeModel position normally follow shadowHandle, except when
     // 'updateValueWhileDragging' is false. In this case it will only follow
     // if the user is not pressing the handle.
