@@ -123,6 +123,26 @@ symbian {
     LIBS += -lhal
 
     BLD_INF_RULES.prj_exports += "qtcomponents.iby $$CORE_MW_LAYER_IBY_EXPORT_PATH(qtcomponents.iby)"
+
+    stubsis = \
+        "START EXTENSION app-services.buildstubsis" \
+        "OPTION SISNAME symbianplugin_stub" \
+        "OPTION SRCDIR ."\
+        "END"
+    BLD_INF_RULES.prj_extensions = stubsis
+
+    vendor_info = \
+            " " \
+            "; Localised Vendor name" \
+            "%{\"Nokia\"}" \
+            " " \
+            "; Unique Vendor name" \
+            ":\"Nokia\"" \
+            " "
+
+    header = "$${LITERAL_HASH}{\"symbianplugin\"},(0x200346DD),1,0,0,TYPE=SA,RU"
+    package.pkg_prerules += vendor_info header
+    DEPLOYMENT += package
 }
 
 include(../../qml.pri)

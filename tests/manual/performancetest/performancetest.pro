@@ -24,6 +24,26 @@ symbian {
     performancetest_js.sources = *.js
     DEPLOYMENT += performancetest_qmls1 performancetest_qmls2 performancetest_qmls3 performancetest_js
     BLD_INF_RULES.prj_exports += "performancetest.iby $$CORE_APP_LAYER_IBY_EXPORT_PATH(performancetest.iby)"
+
+    stubsis = \
+        "START EXTENSION app-services.buildstubsis" \
+        "OPTION SISNAME performancetest_stub" \
+        "OPTION SRCDIR ."\
+        "END"
+    BLD_INF_RULES.prj_extensions = stubsis
+
+    vendor_info = \
+            " " \
+            "; Localised Vendor name" \
+            "%{\"Nokia\"}" \
+            " " \
+            "; Unique Vendor name" \
+            ":\"Nokia\"" \
+            " "
+
+    header = "$${LITERAL_HASH}{\"performancetest\"},(0x200346E6),1,0,0,TYPE=SA,RU"
+    package.pkg_prerules += vendor_info header
+    DEPLOYMENT += package
 }
 
 OTHER_FILES += \
