@@ -24,23 +24,35 @@
 **
 ****************************************************************************/
 
-#include <QtDeclarative>
-#include "sdatetime.h"
+#include "apicheck_datepickerdialog.h"
 
-class SymbianExtrasPlugin : public QDeclarativeExtensionPlugin
+
+void ApiCheckDatePickerDialog::initTestCase()
 {
-    Q_OBJECT
-public:
-    void initializeEngine(QDeclarativeEngine *engine, const char *uri) {
-        QDeclarativeExtensionPlugin::initializeEngine(engine, uri);
-        engine->rootContext()->setContextProperty("dateTime", new SDateTime(engine->rootContext()));
-    }
+    init("DatePickerDialog");
+}
 
-    void registerTypes(const char *uri) {
-        qmlRegisterUncreatableType<SDateTime>(uri, 1, 0, "DateTime", "");
-    }
-};
+void ApiCheckDatePickerDialog::year()
+{
+    validateProperty("year", QVariant::Int);
+}
 
-#include "plugin.moc"
+void ApiCheckDatePickerDialog::month()
+{
+    validateProperty("month", QVariant::Int);
+}
 
-Q_EXPORT_PLUGIN2(sybmianextrasplugin, SymbianExtrasPlugin);
+void ApiCheckDatePickerDialog::day()
+{
+    validateProperty("day", QVariant::Int);
+}
+
+void ApiCheckDatePickerDialog::minimumYear()
+{
+    validateProperty("minimumYear", QVariant::Int);
+}
+
+void ApiCheckDatePickerDialog::maximumYear()
+{
+    validateProperty("maximumYear", QVariant::Int);
+}
