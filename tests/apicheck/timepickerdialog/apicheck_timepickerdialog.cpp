@@ -24,43 +24,35 @@
 **
 ****************************************************************************/
 
-#ifndef SDATETIME_H
-#define SDATETIME_H
+#include "apicheck_timepickerdialog.h"
 
-#include <QtCore/QObject>
-#include <QtDeclarative/qdeclarativeitem.h>
 
-class SDateTime : public QObject
+void ApiCheckTimePickerDialog::initTestCase()
 {
-    Q_OBJECT
-    Q_ENUMS(TimeUnit HourMode)
+    init("TimePickerDialog");
+}
 
-public:
-    explicit SDateTime(QObject *parent = 0);
-    virtual ~SDateTime();
+void ApiCheckTimePickerDialog::hour()
+{
+    validateProperty("hour", QVariant::Int);
+}
 
-    Q_INVOKABLE static QString shortMonthName(int month);
-    Q_INVOKABLE static bool isLeapYear(int year);
-    Q_INVOKABLE static int daysInMonth(int year, int month);
-    Q_INVOKABLE static QString amText();
-    Q_INVOKABLE static QString pmText();
-    Q_INVOKABLE static int hourMode();
+void ApiCheckTimePickerDialog::minute()
+{
+    validateProperty("minute", QVariant::Int);
+}
 
-    enum TimeUnit {
-        Hours = 1,
-        Minutes = 2,
-        Seconds = 4,
-        All = 7
-    };
+void ApiCheckTimePickerDialog::second()
+{
+    validateProperty("second", QVariant::Int);
+}
 
-    enum HourMode {
-        TwelveHours = 1,
-        TwentyFourHours = 2
-    };
+void ApiCheckTimePickerDialog::hourMode()
+{
+    validateProperty("hourMode", QVariant::Int);
+}
 
-private:
-    Q_DISABLE_COPY(SDateTime)
-};
-
-QML_DECLARE_TYPE(SDateTime)
-#endif // SDATETIME_H
+void ApiCheckTimePickerDialog::fields()
+{
+    validateProperty("fields", QVariant::Int);
+}
