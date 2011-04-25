@@ -24,6 +24,8 @@
 **
 ****************************************************************************/
 
+Qt.include("JSUtils.js")
+
 function RangeModel()
 {
     this.value = 0;
@@ -40,7 +42,7 @@ function RangeModel()
     this.recursionBlocked = false;
 }
 
-RangeModel.prototype = {
+RangeModel.addMethods({
 
 setRange: function(newMin, newMax)
 {
@@ -233,7 +235,6 @@ equivalentPosition: function(v)
     var scale = (this.effectivePosAtMax() - ePAM) / valueRange;
     return (v - this.min) * scale + ePAM;
 }
-
-} // RangeModel.prototype
+}); // RangeModel
 
 var ate = new RangeModel();
