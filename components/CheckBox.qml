@@ -1,7 +1,6 @@
 import QtQuick 1.1
 import "./behaviors"
 import "./styles"      // CheckBoxStylingProperties
-import "./styles/default" as DefaultStyles
 
 Item {
     id: checkBox
@@ -12,14 +11,8 @@ Item {
     property alias containsMouse: behavior.containsMouse
     default property alias data: content.data
 
-    property CheckBoxStylingProperties styling: CheckBoxStylingProperties {
-        width: defaultStyle.width
-        height: defaultStyle.height
-    }
-
-    // implementation
-    implicitWidth: styling.width
-    implicitHeight: styling.height
+    implicitWidth: 32
+    implicitHeight: 32
 
     Item {
         id: content
@@ -32,6 +25,4 @@ Item {
         checkable: true
         onClicked: checkBox.clicked()
     }
-
-    DefaultStyles.CheckBoxStyle { id: defaultStyle }
 }
