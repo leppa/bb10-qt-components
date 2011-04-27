@@ -28,12 +28,12 @@ QtObject {
                     anchors.fill: parent
                     anchors.margins: 1
                     radius: 5
-                    color: styling.backgroundColor
+                    color: styledItem.styling.backgroundColor
                 }
                 BorderImage {
                     anchors.fill: parent
                     smooth: true
-                    source: pressed || checked ? "images/button_pressed.png" : "images/button_normal.png";
+                    source: styledItem.pressed || styledItem.checked ? "images/button_pressed.png" : "images/button_normal.png";
                     border.left: 6; border.top: 6
                     border.right: 6; border.bottom: 6
                 }
@@ -42,7 +42,7 @@ QtObject {
             // Draw straight border lines between connected buttons
             Rectangle {
                 width: 1
-                visible: isPositioned && !checked && !pressed && (position == "rightmost" || position == "h_middle")
+                visible: isPositioned && !styledItem.checked && !styledItem.pressed && (position == "rightmost" || position == "h_middle")
                 anchors.top: parent.top
                 anchors.topMargin: 2
                 anchors.bottomMargin: 2
@@ -54,7 +54,7 @@ QtObject {
             Rectangle {
                 width: 1
                 opacity: 0.4
-                visible: isPositioned && !checked && !pressed && (position == "leftmost" || position == "h_middle")
+                visible: isPositioned && !styledItem.checked && !styledItem.pressed && (position == "leftmost" || position == "h_middle")
                 anchors.top: parent.top
                 anchors.topMargin: 2
                 anchors.bottomMargin: 2
@@ -72,8 +72,8 @@ QtObject {
 
             opacity: enabled ? 1 : 0.5
             transform: Translate {
-                x: pressed || checked ? 1 : 0
-                y: pressed || checked ? 1 : 0
+                x: styledItem.pressed || styledItem.checked ? 1 : 0
+                y: styledItem.pressed || styledItem.checked ? 1 : 0
             }
 
             Row {
@@ -87,7 +87,7 @@ QtObject {
                 }
 
                 Text {
-                    color: styling.textColor
+                    color: styledItem.styling.textColor
                     anchors.verticalCenter: parent.verticalCenter
                     text: styledItem.text
                     horizontalAlignment: Text.Center
