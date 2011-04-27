@@ -9,11 +9,26 @@ QtObject {
                 anchors.fill: parent
                 anchors.margins: 2
                 clip: true
+
                 Item { // The highlight item is twice the width of there switch, clipped by its parent,
-                       // and sliding back and forth keeping the center under the handle
+                    // and sliding back and forth keeping the center under the handle
                     height: parent.height
                     width: 2*parent.width
                     x: handleCenterX-parent.width-parent.anchors.leftMargin
+
+                    Rectangle { // positive background highlight
+                        color: "steelblue"
+                        opacity: 0.8
+                        anchors.top: parent.top; anchors.bottom: parent.bottom
+                        anchors.left: parent.left; anchors.right: parent.horizontalCenter
+                    }
+                    Rectangle { // negative background highlight
+                        color: "red"
+                        opacity: 0.8
+                        anchors.top: parent.top; anchors.bottom: parent.bottom
+                        anchors.left: parent.horizontalCenter; anchors.right: parent.right
+                    }
+
                 }
             }
 
@@ -33,7 +48,7 @@ QtObject {
                 anchors.fill: parent
                 opacity: enabled ? 1 : 0.7
                 smooth: true
-                source: pressed ? "images/button_pressed.png" : "images/button_normal.png"
+                source: pressed ? "images/switch_pressed.png" : "images/switch_normal.png"
                 border { left: 4; top: 4; right: 4; bottom: 4 }
             }
             Behavior on x { NumberAnimation { easing.type: Easing.OutCubic; duration: 200 } }

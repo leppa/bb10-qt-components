@@ -4,6 +4,9 @@ QtObject {
 
     property Component background: Component {
         Item {
+            implicitWidth: row.implicitWidth + 10
+            implicitHeight: row.implicitHeight + 10
+
             opacity: enabled ? 1 : 0.7
             clip: true  // clip connected buttons, as they overlap to remove the rounded edjes
             property bool isPositioned: position != "only" // only evaluate for rows and columns

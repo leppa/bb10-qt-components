@@ -43,19 +43,10 @@ Rectangle {
                         anchors.topMargin: 6
 
                         Text{ font.bold: true; text: "Default:" ; styleColor: "white" ; color: "#333" ; style: "Raised"}
-
-                        Button {
+                        MySwitch {}
+                        MyButton {
                             id: btn
-                            text: "Push me"
-                            Rectangle {
-                                anchors.fill: parent
-                                border.color: "#222"
-                                color: btn.pressed ? "blue " : "red"
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: btn.text
-                                }
-                            }
+                            text: "long textsas asdf sadf as"
                         }
                         ButtonRow {
                             Button{
@@ -140,6 +131,7 @@ Rectangle {
                             spacing: rowspacing
                             anchors.horizontalCenter: parent.horizontalCenter
                             Switch {
+                                id: sw2
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: 2
@@ -148,16 +140,18 @@ Rectangle {
                                     anchors.bottomMargin: 1
                                     anchors.rightMargin: 1
                                 }
-                                styling.handle: Rectangle {
-                                    width: parent.height
-                                    height: parent.height
+                                handle: Rectangle {
+                                    width: sw2.height
+                                    height: sw2.height
                                     border.color: "black"
                                     color: "red"
                                 }
 
                             }
                             Switch {
+                                id: sw
                                 checked: true
+
                                 Rectangle{
                                     anchors.fill: parent
                                     radius: 2
@@ -166,9 +160,9 @@ Rectangle {
                                     anchors.bottomMargin:1
                                     anchors.rightMargin:1
                                 }
-                                styling.handle: Rectangle{
-                                    width: parent.height
-                                    height: parent.height
+                                handle: Rectangle {
+                                    width: sw.height
+                                    height: sw.height
                                     border.color:"black"
                                     color: "red"
                                 }

@@ -9,12 +9,10 @@ Item {
     property bool pressed: mouseArea.pressed
     property bool checked: false
     property alias containsMouse: mouseArea.containsMouse
-    default property alias data: content.data
+    default property alias _data: content.data
 
-    property SwitchStylingProperties styling: SwitchStylingProperties {
-        groove: defaultStyle.groove
-        handle: defaultStyle.handle
-    }
+    property Item handle: null
+
 
     // implementation
 
@@ -28,14 +26,9 @@ Item {
         anchors.fill: parent
     }
 
-    Loader {
-        id: handleLoader
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        property alias styledItem: toggleSwitch
-        sourceComponent: styling.handle
-
-        Component.onCompleted: item.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
+    Item {
+        children: handle
+        Component.onCompleted: handle.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
     }
 
     MouseArea {
@@ -45,15 +38,15 @@ Item {
 
         drag.axis: Drag.XAxis
         drag.minimumX: 0
-        drag.maximumX: toggleSwitch.width - handleLoader.item.width
-        drag.target: handleLoader.item
+        drag.maximumX: toggleSwitch.width - handle.width
+        drag.target: handle
 
         onPressed: toggleSwitch.pressed = true  // needed when hover is enabled
         onCanceled: { snapHandleIntoPlace(); toggleSwitch.pressed = false; }   // mouse stolen e.g. by Flickable
         onReleased: {
             var wasChecked = checked;
             if (drag.active) {
-                checked =  (handleLoader.item.x > (drag.maximumX - drag.minimumX)/2)
+                checked =  (handle.x > (drag.maximumX - drag.minimumX)/2)
             } else if (toggleSwitch.pressed && enabled) { // No click if release outside area
                 checked = !checked;
             }
@@ -68,9 +61,7 @@ Item {
 
     onWidthChanged: snapHandleIntoPlace()
     function snapHandleIntoPlace() {
-        if(handleLoader.item)
-            handleLoader.item.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX;
+        if(handle)
+            handle.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX;
     }
-
-    DefaultStyles.SwitchStyle { id: defaultStyle }
 }
