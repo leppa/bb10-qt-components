@@ -28,7 +28,7 @@ Item {
 
     Item {
         children: handle
-        Component.onCompleted: handle.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
+        Component.onCompleted: snapHandleIntoPlace()
     }
 
     MouseArea {

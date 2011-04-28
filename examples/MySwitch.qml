@@ -22,5 +22,7 @@ Switch {
         height: sw.height
         property alias styledItem: sw
         sourceComponent: style.handle
+
+        Behavior on x { NumberAnimation { easing.type: Easing.OutCubic; duration: 200 } }
     }
 }
