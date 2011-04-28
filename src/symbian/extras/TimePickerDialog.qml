@@ -55,14 +55,16 @@ Dialog {
     }
     content: Item {
         id: content
-        height: tumbler.height
+        height: tumbler.height + platformStyle.paddingLarge * 2
         width: parent.width
 
         Tumbler {
             id: tumbler
 
             columns: [hourColumn, minuteColumn, secondColumn, meridiemColumn]
+            anchors.centerIn: parent
             height: privateStyle.menuItemHeight * 4
+            width: parent.width - platformStyle.paddingMedium * 4
             privateDelayInit: true
             states: State {
                 when: screen.currentOrientation == Screen.Landscape || screen.currentOrientation == Screen.LandscapeInverted
@@ -103,7 +105,7 @@ Dialog {
                 items: ListModel {
                     id: meridiemList
                 }
-                selectedIndex: (root.hourMode == DateTime.TwelveHours && root.hour > 11) ? 1: 0
+                selectedIndex: root.hour > 11 ? 1: 0
                 visible: root.hourMode == DateTime.TwelveHours
             }
         }
@@ -167,7 +169,7 @@ Dialog {
     onHourChanged: {
         internal.validateTime()
         hourColumn.selectedIndex = root.hour - ((root.hourMode == DateTime.TwelveHours && root.hour > 11) ? 12 : 0)
-        meridiemColumn.selectedIndex = (root.hourMode == DateTime.TwelveHours && root.hour > 11) ? 1: 0
+        meridiemColumn.selectedIndex = root.hour > 11 ? 1: 0
     }
     onMinuteChanged: {
         internal.validateTime()
