@@ -4,7 +4,9 @@ MouseArea {
     id: popup
     // There is no global toplevel so we have to make one
     // We essentially reparent this item to the root item
+    property Item originalParent: parent
     Component.onCompleted: {
+        originalParent = parent; // break the binding
         var p = parent;
         while (p.parent != undefined)
             p = p.parent
@@ -78,7 +80,7 @@ MouseArea {
 
     Loader {
         id: popupFrameLoader
-        property alias styledItem: popup.parent
+        property alias styledItem: popup.originalParent
         anchors.fill: listView
         anchors.leftMargin: -item.anchors.leftMargin
         anchors.rightMargin: -item.anchors.rightMargin

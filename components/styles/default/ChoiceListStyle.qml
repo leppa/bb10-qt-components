@@ -15,7 +15,7 @@ QtObject {
             Rectangle { // Background center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: styling.backgroundColor
+                color: styledItem.styling.backgroundColor
                 radius: 5
             }
             BorderImage {
@@ -40,8 +40,8 @@ QtObject {
     property Component label: Component {
         Text {
             id:t
-            color: styling.textColor
-            text: model && currentIndex >= 0 ? model.get(currentIndex).text : ""
+            color: styledItem.styling.textColor
+            text: styledItem.model && styledItem.currentIndex >= 0 ? styledItem.model.get(styledItem.currentIndex).text : ""
             opacity: enabled ? 1 : 0.5
         }
     }
@@ -60,7 +60,7 @@ QtObject {
             Rectangle { // Background center fill
                 anchors.fill: parent
                 anchors.margins: 1
-                color: styling.backgroundColor
+                color: styledItem.styling.backgroundColor
                 radius: 5
             }
             BorderImage {
@@ -90,10 +90,10 @@ QtObject {
                 anchors.left: parent.left
                 anchors.leftMargin: 6
 
-                font.bold: index == currentIndex
-                color: highlighted ? "white" : styling.textColor
+                font.bold: index == styledItem.currentIndex
+                color: highlighted ? "white" : styledItem.styling.textColor
                 anchors.margins: 10
-                text: model ? model.get(index).text : ""  // list properties can't be automatically be added to the scope, so use get()
+                text: styledItem.model ? styledItem.model.get(index).text : ""  // list properties can't be automatically be added to the scope, so use get()
             }
         }
     }
