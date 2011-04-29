@@ -1,7 +1,7 @@
 import QtQuick 1.1
-import Qt.labs.components 1.0 // RangeModel
-import "./styles"       // ProgressBarStylingProperties
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
+
 Item {
     id: progressBar
 
@@ -10,67 +10,27 @@ Item {
     property alias maximumValue: rangeModel.maximumValue
     property bool indeterminate: false
 
-    property ProgressBarStylingProperties styling: ProgressBarStylingProperties {
-        backgroundColor: syspal.base
-        progressColor: syspal.highlight
+    property alias delegate: loader.delegate
+    property ProgressBarStyle style: ProgressBarStyle { }
 
-        background: defaultStyle.background
-        progress: defaultStyle.progress
-        indeterminateProgress: defaultStyle.indeterminateProgress
-
-        leftMargin: defaultStyle.leftMargin
-        topMargin: defaultStyle.topMargin
-        rightMargin: defaultStyle.rightMargin
-        bottomMargin: defaultStyle.bottomMargin
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
+    DualLoader {
+        id: loader
+        anchors.fill: parent
+        property alias widget: progressBar
+        property alias userStyle: progressBar.style
+        property real complete: (value - minimumValue) / (maximumValue - minimumValue)
+        filepath: Qt.resolvedUrl(theme.path + "ProgressBar.qml")
     }
-
-    // implementation
-
-    implicitWidth: Math.max(styling.minimumWidth, grooveLoader.item.implicitWidth) + styling.horizontalMargins()
-    implicitHeight: Math.max(styling.minimumHeight, grooveLoader.item.implicitHeight) + styling.verticalMargins()
 
     RangeModel {
         id: rangeModel
-        minimumValue: 0.0
-        maximumValue: 1.0
         value: 0
         stepSize: 0
         inverted: false
+        minimumValue: 0.0
+        maximumValue: 1.0
     }
 
-    Loader { // groove background
-        id: grooveLoader
-        property alias styledItem: progressBar
-        sourceComponent: styling.background
-        anchors.fill: parent
-    }
-
-    Item {
-        anchors {
-            fill: parent
-            leftMargin: styling.leftMargin; rightMargin: styling.rightMargin;
-            topMargin: styling.topMargin; bottomMargin: styling.bottomMargin
-        }
-
-        Loader { // regular progress bar
-            anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
-            width: Math.round((progressBar.width-styling.horizontalMargins()) * complete)
-
-            property alias styledItem: progressBar
-            property real complete: (value-minimumValue)/(maximumValue-minimumValue)
-            sourceComponent: !indeterminate ? styling.progress : undefined
-        }
-
-        Loader { // bar for indeterminate progress
-            anchors.fill: parent
-            property alias styledItem: progressBar
-            sourceComponent: indeterminate ? styling.indeterminateProgress : undefined
-        }
-    }
-
-    DefaultStyles.ProgressBarStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 }

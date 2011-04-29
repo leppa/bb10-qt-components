@@ -25,9 +25,8 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import Qt.labs.components 1.0   // RangeModel
-import "./styles"       // SliderStylingProperties
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
 
 Item {
     id: slider
@@ -42,206 +41,87 @@ Item {
     property bool updateValueWhileDragging: true
     property alias pressed: mouseArea.pressed
 
-    property bool animateHandle: true
-    property string showValueIndicator: "above" // one of "above", "below", "left", "right", or "none"
-    property int valueIndicatorMargin: 10
-
-    function formatValue(v) {
-        if (parseInt(v) != v)
-            useDecimals = true;
-
-        return useDecimals ? (v.toFixed(2)) : v;
-    }
-
-    property SliderStylingProperties styling: SliderStylingProperties {
-        progressColor: palette.highlight
-        backgroundColor: palette.alternateBase
-
-        groove: defaultStyle.groove
-        handle: defaultStyle.handle
-        valueIndicator: defaultStyle.valueIndicator
-        pinWidth: handleLoader.width/2
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
-    }
+    property alias delegate: loader.delegate
+    property SliderStyle style: SliderStyle {}
 
     // implementation
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 
-    // The default implementation for label hides decimals until it hits a
-    // floating point value at which point it keeps decimals
-    property bool useDecimals: false
+    DualLoader {
+        id: loader
+        anchors.fill: parent
+        property alias widget: slider
+        property alias userStyle: slider.style
+        property alias mouseArea: mouseArea
+        property alias rangeModel: rangeModel
+        filepath: Qt.resolvedUrl(theme.path + "Slider.qml");
+    }
 
-    implicitWidth: contents.isVertical ? Math.max(styling.minimumHeight, handleLoader.item.implicitHeight) : styling.minimumWidth
-    implicitHeight: contents.isVertical ? styling.minimumWidth : Math.max(styling.minimumHeight, handleLoader.item.implicitHeight)
+    RangeModel {
+        id: rangeModel
+        value: 0
+        stepSize: 0
+        inverted: false
+        minimumValue: 0.0
+        maximumValue: 1.0
+        positionAtMinimum: mouseArea.halfPinWidth // relative to *center* of handle
+        positionAtMaximum: loader.item.contentWidth - mouseArea.halfPinWidth
+    }
 
-    DefaultStyles.SliderStyle { id: defaultStyle }
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
 
-    Item {
-        id: contents
-
-        width: isVertical ? slider.height : slider.width
-        height: isVertical ? slider.width : slider.height
-        rotation: isVertical ? -90 : 0
-
-        anchors.centerIn: slider
-        property bool isVertical: orientation == Qt.Vertical
-        property real halfHandleWidth: handleLoader.width/2
-
+        property Item handle: loader.item.handleItem
         // The width of the "pin" that the handle is attached to, defines
         // how much outside the groove the head of the handle extends
-        property real halfPinWidth: styling.pinWidth/2
+        property real halfPinWidth: loader.item.style.pinWidth / 2
+        property real halfHandleWidth: mouseArea.handle.width / 2
 
-        RangeModel {
-            id: rangeModel
-            minimumValue: 0.0
-            maximumValue: 1.0
-            value: 0
-            stepSize: 0
-            inverted: false
+        anchors.leftMargin: -halfHandleWidth
+        anchors.rightMargin: -halfHandleWidth
 
-            positionAtMinimum: contents.halfPinWidth // relative to *center* of handle
-            positionAtMaximum: contents.width - contents.halfPinWidth
+        drag.target: mouseArea.handle
+        drag.axis: Drag.XAxis
+        drag.minimumX: rangeModel.positionAtMinimum
+        drag.maximumX: rangeModel.positionAtMaximum
 
-            onMaximumChanged: useDecimals = false;
-            onMinimumChanged: useDecimals = false;
-            onStepSizeChanged: useDecimals = false;
+        onPressed: {
+            // Compensate for mouse area being wider than the slider itself
+            var newX = mouse.x - halfHandleWidth;
+
+            // Debounce the press: a press event inside the handler should not
+            // change its position, the user needs to drag it.
+            if (Math.abs(newX - mouseArea.handle.x) > halfHandleWidth)
+                rangeModel.position = newX;
         }
 
-        Loader {
-            id: grooveLoader
-            anchors.fill: parent
-            sourceComponent: styling.groove
-
-            property alias styledItem: slider
-            property real handlePosition: handleLoader.x
-            function positionForValue(value) {
-                return rangeModel.positionForValue(value);
-            }
-        }
-
-        Loader {
-            id: handleLoader
-            transform: Translate { x: -contents.halfHandleWidth }
-            anchors.verticalCenter: grooveLoader.verticalCenter
-
-            property alias styledItem: slider
-            sourceComponent: styling.handle
-
-            x: shadowHandle.x
-            Behavior on x {
-                id: behavior
-                enabled: !mouseArea.drag.active && slider.animateHandle
-
-                PropertyAnimation {
-                    duration: behavior.enabled ? 150 : 0
-                    easing.type: Easing.OutSine
-                }
-            }
-        }
-
-        Item {
-            id: shadowHandle
-            width: handleLoader.width
-            height: handleLoader.height
-            transform: Translate { x: -contents.halfHandleWidth }
-            onXChanged: valueIndicatorLoader.indicatorText = slider.formatValue(rangeModel.valueForPosition(shadowHandle.x));
-        }
-
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            anchors.leftMargin: -contents.halfHandleWidth
-            anchors.rightMargin: -contents.halfHandleWidth
-
-            drag.target: shadowHandle
-            drag.axis: Drag.XAxis
-            drag.minimumX: rangeModel.positionAtMinimum
-            drag.maximumX: rangeModel.positionAtMaximum
-
-            onPressed: {
-                // Compensate for mouse area being wider than the slider itself
-                var newX = mouse.x - contents.halfHandleWidth;
-
-                // Debounce the press: a press event inside the handler should not
-                // change its position, the user needs to drag it.
-                if (Math.abs(newX - shadowHandle.x) > contents.halfHandleWidth)
-                    rangeModel.position = newX;
-            }
-
-            onReleased: {
-                // If we don't update while dragging, this is the only
-                // moment that the rangeModel is updated.
-                if (!slider.updateValueWhileDragging)
-                    rangeModel.position = shadowHandle.x;
-            }
-        }
-
-        Loader {
-            id: valueIndicatorLoader
-
-            anchors.margins: valueIndicatorMargin
-            transform: Translate { x: -contents.halfHandleWidth }
-            rotation: contents.isVertical ? 90 : 0
-            visible: (actualPosition != undefined)
-
-            property string indicatorText
-            property alias styledItem: slider
-            sourceComponent: styling.valueIndicator //mm Only load while handle is pressed?
-
-            property variant actualPosition
-            actualPosition: {
-                switch(showValueIndicator.toLowerCase()) {
-                case "above": return (orientation == Qt.Horizontal ? Qt.AlignTop : Qt.AlignRight);
-                case "below": return (orientation == Qt.Horizontal ? Qt.AlignBottom : Qt.AlignLeft);
-                case "left": return (orientation == Qt.Horizontal ? Qt.AlignLeft : Qt.AlignTop);
-                case "right": return (orientation == Qt.Horizontal ? Qt.AlignRight : Qt.AlignBottom);
-                default: return undefined;
-                }
-            }
-            Component.onCompleted: positionValueIndicator()
-            onActualPositionChanged: positionValueIndicator()
-
-            function positionValueIndicator() {
-                anchors.top = undefined; anchors.bottom = undefined;
-                anchors.left = undefined; anchors.right = undefined;
-                anchors.horizontalCenter =
-                        (actualPosition == Qt.AlignTop || actualPosition == Qt.AlignBottom) ?
-                            handleLoader.horizontalCenter : undefined;
-
-                anchors.verticalCenter =
-                        (actualPosition == Qt.AlignLeft || actualPosition == Qt.AlignRight) ?
-                            handleLoader.verticalCenter : undefined;
-
-                switch(actualPosition) {
-                case Qt.AlignTop: anchors.bottom = handleLoader.top; break;
-                case Qt.AlignBottom: anchors.top = handleLoader.bottom; break;
-                case Qt.AlignLeft: anchors.right = handleLoader.left; break;
-                case Qt.AlignRight: anchors.left = handleLoader.right; break;
-                }
-            }
+        onReleased: {
+            // If we don't update while dragging, this is the only
+            // moment that the rangeModel is updated.
+            if (!slider.updateValueWhileDragging)
+                rangeModel.position = mouseArea.handle.x;
         }
     }
 
-    // rangeModel position normally follow shadowHandle, except when
+    // rangeModel position normally follow handleItem, except when
     // 'updateValueWhileDragging' is false. In this case it will only follow
     // if the user is not pressing the handle.
     Binding {
-        when: updateValueWhileDragging || !mouseArea.pressed
         target: rangeModel
         property: "position"
-        value: shadowHandle.x
+        value: mouseArea.handle.x
+        when: updateValueWhileDragging || !mouseArea.pressed
     }
 
     // During the drag, we simply ignore position set from the rangeModel, this
     // means that setting a value while dragging will not "interrupt" the
     // dragging activity.
     Binding {
-        when: !mouseArea.drag.active
-        target: shadowHandle
+        target: mouseArea.handle
         property: "x"
         value: rangeModel.position
+        when: !mouseArea.drag.active
     }
-
-    SystemPalette { id: palette }
 }

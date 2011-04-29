@@ -1,6 +1,6 @@
 import QtQuick 1.1
-import "./styles"     // ButtonStylingProperties
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
 
 BasicButton {
     id: button
@@ -8,38 +8,17 @@ BasicButton {
     property string text
     property url iconSource
 
-    property ButtonStylingProperties styling: ButtonStylingProperties {
-        backgroundColor: syspal.button
-        textColor: syspal.text;
+    property alias delegate: loader.delegate
+    property ButtonStyle style: ButtonStyle { }
 
-        background: defaultStyle.background
-        label: defaultStyle.label
-
-        leftMargin: defaultStyle.leftMargin
-        topMargin: defaultStyle.topMargin
-        rightMargin: defaultStyle.rightMargin
-        bottomMargin: defaultStyle.bottomMargin
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
-    }
-
-    // implementation
-
-    implicitWidth: Math.max(styling.minimumWidth, labelLoader.item.implicitWidth + styling.horizontalMargins())
-    implicitHeight: Math.max(styling.minimumHeight, labelLoader.item.implicitHeight + styling.verticalMargins())
-
-    Loader {
-        id: labelLoader
+    DualLoader {
+        id: loader
         anchors.fill: parent
-        anchors.leftMargin: styling.leftMargin
-        anchors.rightMargin: styling.rightMargin
-        anchors.topMargin: styling.topMargin
-        anchors.bottomMargin: styling.bottomMargin
-        property alias styledItem: button
-        sourceComponent: styling.label
+        property alias widget: button
+        property alias userStyle: button.style
+        filepath: Qt.resolvedUrl(theme.path + "Button.qml")
     }
 
-    DefaultStyles.ButtonStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 }

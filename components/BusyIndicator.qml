@@ -1,29 +1,23 @@
 import QtQuick 1.1
-import "./styles"       // BusyIndicatorStylingProperties
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
 
 Item {
     id: busyIndicator
 
     property bool running: false
 
-    property BusyIndicatorStylingProperties styling: BusyIndicatorStylingProperties {
-        background: defaultStyle.background
-    }
+    property alias delegate: loader.delegate
+    property BusyIndicatorStyle style: BusyIndicatorStyle {}
 
-    // implementation
-
-    implicitWidth: backgroundComponent.item.implicitWidth;
-    implicitHeight: backgroundComponent.item.implicitHeight;
-
-    Loader {
-        id: backgroundComponent
-        property bool running: busyIndicator.opacity > 0 &&
-                               busyIndicator.visible &&
-                               busyIndicator.running
+    DualLoader {
+        id: loader
         anchors.fill: parent
-        sourceComponent: styling.background
+        property alias widget: busyIndicator
+        property alias userStyle: busyIndicator.style
+        filepath: Qt.resolvedUrl(theme.path + "BusyIndicator.qml")
     }
 
-    DefaultStyles.BusyIndicatorStyle { id: defaultStyle }
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 }

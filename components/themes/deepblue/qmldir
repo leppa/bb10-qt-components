@@ -1,0 +1,10 @@
+Button 1.0 Button.qml
+CheckBox 1.0 CheckBox.qml
+RadioButton 1.0 RadioButton.qml
+ScrollDecorator 1.0 ScrollDecorator.qml
+BusyIndicator 1.0 BusyIndicator.qml
+ProgressBar 1.0 ProgressBar.qml
+Switch 1.0 Switch.qml
+Slider 1.0 Slider.qml
+TextField 1.0 TextField.qml
+TextArea 1.0 TextArea.qml

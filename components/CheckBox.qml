@@ -1,7 +1,7 @@
 import QtQuick 1.1
-import "./behaviors"
-import "./styles"      // CheckBoxStylingProperties
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
+import "./behaviors" 1.0
 
 Item {
     id: checkBox
@@ -11,33 +11,15 @@ Item {
     property alias checked: behavior.checked
     property alias containsMouse: behavior.containsMouse
 
-    property CheckBoxStylingProperties styling: CheckBoxStylingProperties {
-        backgroundColor: syspal.base
+    property alias delegate: loader.delegate
+    property CheckBoxStyle style: CheckBoxStyle {}
 
-        background: defaultStyle.background
-        checkmark: defaultStyle.checkmark
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
-    }
-
-    // implementation
-
-    implicitWidth: styling.minimumWidth
-    implicitHeight: styling.minimumHeight
-
-    Loader {
-        id: backgroundLoader
+    DualLoader {
+        id: loader
         anchors.fill: parent
-        property alias styledItem: checkBox
-        sourceComponent: styling.background
-    }
-
-    Loader {
-        id: checkmarkLoader
-        anchors.centerIn: parent
-        property alias styledItem: checkBox
-        sourceComponent: styling.checkmark
+        property alias widget: checkBox
+        property alias userStyle: checkBox.style
+        filepath: Qt.resolvedUrl(theme.path + "CheckBox.qml")
     }
 
     ButtonBehavior {
@@ -47,6 +29,6 @@ Item {
         onClicked: checkBox.clicked()
     }
 
-    DefaultStyles.CheckBoxStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 }

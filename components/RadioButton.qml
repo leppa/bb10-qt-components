@@ -1,13 +1,34 @@
 import QtQuick 1.1
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
+import "./behaviors" 1.0
 
-CheckBox {
+Item {
     id: radioButton
 
-    // implementation
+    signal clicked
+    property alias pressed: behavior.pressed
+    property alias checked: behavior.checked
+    property alias containsMouse: behavior.containsMouse
 
-    styling.checkmark: defaultStyle.checkmark
-    styling.background: defaultStyle.background
+    property alias delegate: loader.delegate
+    property RadioButtonStyle style: RadioButtonStyle {}
 
-    DefaultStyles.RadioButtonStyle { id: defaultStyle}
+    DualLoader {
+        id: loader
+        anchors.fill: parent
+        property alias widget: radioButton
+        property alias userStyle: radioButton.style
+        filepath: Qt.resolvedUrl(theme.path + "RadioButton.qml")
+    }
+
+    ButtonBehavior {
+        id: behavior
+        anchors.fill: parent
+        checkable: true
+        onClicked: radioButton.clicked()
+    }
+
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 }

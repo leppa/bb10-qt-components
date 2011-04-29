@@ -1,12 +1,12 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "../../../components" as Components
 
 Components.Button {
-    styling.leftMargin:12
-    styling.rightMargin:1
-    styling.minimumWidth:100
+    style.leftMargin:12
+    style.rightMargin:1
+    style.minimumWidth:100
 
-    styling.background: BorderImage {
+    style.background: BorderImage {
         source: pressed ? "images/button_pressed.png" :
                 "images/button_normal.png"
         border.top:8

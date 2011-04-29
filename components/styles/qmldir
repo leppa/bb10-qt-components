@@ -1,0 +1,12 @@
+BasicButtonStyle 1.0 BasicButtonStyle.qml
+BusyIndicatorStyle 1.0 BusyIndicatorStyle.qml
+ButtonStyle 1.0 ButtonStyle.qml
+CheckBoxStyle 1.0 CheckBoxStyle.qml
+ProgressBarStyle 1.0 ProgressBarStyle.qml
+RadioButtonStyle 1.0 RadioButtonStyle.qml
+ScrollDecoratorStyle 1.0 ScrollDecoratorStyle.qml
+ScrollIndicatorStyle 1.0 ScrollIndicatorStyle.qml
+SliderStyle 1.0 SliderStyle.qml
+SwitchStyle 1.0 SwitchStyle.qml
+TextAreaStyle 1.0 TextAreaStyle.qml
+TextFieldStyle 1.0 TextFieldStyle.qml

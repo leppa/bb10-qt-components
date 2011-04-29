@@ -25,5 +25,19 @@ Item {
         anchors.leftMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         onClicked: back();
+        style.backgroundColor: "red"
+    }
+
+    Button {
+        id: themeButton
+        text: "change theme"
+        anchors.right: parent.right
+        anchors.rightMargin: 10
+        anchors.verticalCenter: parent.verticalCenter
+        style.backgroundColor: "yellow"
+
+        onClicked: {
+            theme.name = theme.name == "custom" ? "deepblue" : theme.name == "blocks" ? "custom" : "blocks";
+        }
     }
 }

@@ -27,17 +27,18 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
 
         Button {
-            styling: ImageButtonStyle {
+            text: "bla"
+            delegate: Image {
                 source: "../images/dialer/bt_dialer.png"
             }
         }
         Button {
-            styling: ImageButtonStyle {
+            delegate: Image {
                 source: "../images/dialer/bt_mute.png"
             }
         }
         Button {
-            styling: ImageButtonStyle {
+            delegate: Image {
                 source: "../images/dialer/bt_mute.png"
             }
         }
@@ -45,7 +46,26 @@ Rectangle {
 
     Button {
         text: "END CALL"
-        styling: BigButtonStyle { }
+
+        delegate: BorderImage {
+            source: widget.pressed ?
+                "../images/dialer/bt_endcall_over.png"
+                : "../images/dialer/bt_endcall.png"
+            border.left: 20
+            border.top: 20
+            border.right: 20
+            border.bottom: 20
+
+            Text {
+                anchors.fill: parent
+                text: widget.text
+                color: "white"
+                font.bold: true
+                font.pixelSize: 26
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
 
         anchors.left: parent.left
         anchors.right: parent.right

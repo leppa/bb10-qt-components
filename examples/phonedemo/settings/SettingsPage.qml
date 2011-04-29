@@ -79,6 +79,20 @@ Page {
                         anchors.right: parent.right
                     }
                 }
+                SectionItem {
+                    Text {
+                        text: "Downloaded"
+                        color: "#7a7f80"
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 17
+                    }
+                    ProgressBar {
+                        value: 0.7
+                        //indeterminate: true
+                        anchors.right: parent.right
+                    }
+                }
+
             }
 
             Section {
@@ -112,6 +126,18 @@ Page {
             Section {
                 title: "Email backup"
 
+                SectionItem {
+                    Text {
+                        text: "Online"
+                        color: "#7a7f80"
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 17
+                    }
+                    RadioButton {
+                        checked: true
+                        anchors.right: parent.right
+                    }
+                }
                 SectionItem {
                     Text {
                         text: "Backup emails each day"

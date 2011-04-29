@@ -101,7 +101,7 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
 
             Button {
-                styling: ImageButtonStyle {
+                delegate: Image {
                     source: "../images/contact/athila_small.png"
                 }
                 onClicked: {
@@ -110,7 +110,7 @@ Page {
                 }
             }
             Button {
-                styling: ImageButtonStyle {
+                delegate: Image {
                     source: "../images/contact/dani_small.png"
                 }
                 onClicked: {
@@ -119,7 +119,7 @@ Page {
                 }
             }
             Button {
-                styling: ImageButtonStyle {
+                delegate: Image {
                     source: "../images/contact/marcia_small.png"
                 }
                 onClicked: {

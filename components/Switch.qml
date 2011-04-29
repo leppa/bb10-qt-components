@@ -1,52 +1,32 @@
 import QtQuick 1.1
-import "./styles"   // SwitchStylingProperties
-import "./styles/default" as DefaultStyles
+import "./private"
+import "./styles" 1.0
 
 Item {
-    id: toggleSwitch    // "switch" is a reserved word
+    id: toggleSwitch
 
     signal clicked
     property bool pressed: mouseArea.pressed
     property bool checked: false
     property alias containsMouse: mouseArea.containsMouse
 
-    property SwitchStylingProperties styling: SwitchStylingProperties {
-        switchColor: syspal.button
-        backgroundColor: syspal.alternateBase
-        positiveHighlightColor: syspal.highlight
-        negativeHighlightColor: "transparent"
-        textColor: syspal.text
+    property alias delegate: loader.delegate
+    property SwitchStyle style: SwitchStyle {}
 
-        groove: defaultStyle.groove
-        handle: defaultStyle.handle
+    // Implementation
 
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
-    }
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 
-    // implementation
-
-    implicitWidth: Math.max(styling.minimumWidth, grooveLoader.item.implicitWidth)
-    implicitHeight: Math.max(styling.minimumHeight, grooveLoader.item.implicitHeight)
-
-    onCheckedChanged: snapHandleIntoPlace();
-
-    Loader {
-        id: grooveLoader
+    DualLoader {
+        id: loader
         anchors.fill: parent
-        property alias styledItem: toggleSwitch
-        property real handleCenterX: handleLoader.item.x + (handleLoader.item.width/2)
-        sourceComponent: styling.groove
-    }
+        property alias widget: toggleSwitch
+        property alias userStyle: toggleSwitch.style
+        property real handleCenterX: item.handle.x + (item.handle.width / 2.0)
 
-    Loader {
-        id: handleLoader
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        property alias styledItem: toggleSwitch
-        sourceComponent: styling.handle
-
-        Component.onCompleted: item.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
+        filepath: Qt.resolvedUrl(theme.path + "Switch.qml");
+        Component.onCompleted: item.handle.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
     }
 
     MouseArea {
@@ -54,17 +34,25 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
 
+        property Item handle: loader.item.handle
+
         drag.axis: Drag.XAxis
         drag.minimumX: 0
-        drag.maximumX: toggleSwitch.width - handleLoader.item.width
-        drag.target: handleLoader.item
+        drag.maximumX: toggleSwitch.width - handle.width
+        drag.target: handle
 
-        onPressed: toggleSwitch.pressed = true  // needed when hover is enabled
-        onCanceled: { snapHandleIntoPlace(); toggleSwitch.pressed = false; }   // mouse stolen e.g. by Flickable
+        onPressed: {
+            toggleSwitch.pressed = true  // needed when hover is enabled
+        }
+        onCanceled: {
+            snapHandleIntoPlace();
+            // mouse stolen e.g. by Flickable
+            toggleSwitch.pressed = false;
+        }
         onReleased: {
             var wasChecked = checked;
             if (drag.active) {
-                checked =  (handleLoader.item.x > (drag.maximumX - drag.minimumX)/2)
+                checked =  (handle.x > (drag.maximumX - drag.minimumX)/2)
             } else if (toggleSwitch.pressed && enabled) { // No click if release outside area
                 checked = !checked;
             }
@@ -78,11 +66,10 @@ Item {
     }
 
     onWidthChanged: snapHandleIntoPlace()
-    function snapHandleIntoPlace() {
-        if(handleLoader.item)
-            handleLoader.item.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX;
-    }
+    onCheckedChanged: snapHandleIntoPlace()
 
-    DefaultStyles.SwitchStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
+    function snapHandleIntoPlace() {
+        if (mouseArea.handle)
+            mouseArea.handle.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX;
+    }
 }

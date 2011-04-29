@@ -1,7 +1,7 @@
 import QtQuick 1.1
-import "./styles"       // TextAreaStylingProperties
-import "./styles/default" as DefaultStyles
-import "./behaviors"    // TextEditMouseBehavior
+import "./private"
+import "./styles" 1.0
+import "./behaviors" 1.0    // TextEditMouseBehavior
 
 // KNOWN ISSUES
 // 1) TextArea does not loose focus when !enabled if it is a FocusScope (see QTBUG-16161)
@@ -13,9 +13,9 @@ FocusScope {
     property alias text: textEdit.text
     property alias font: textEdit.font
 
+    property string placeholderText
     property alias activeFocus: textEdit.activeFocus
     property alias readOnly: textEdit.readOnly
-    property alias placeholderText: placeholderTextComponent.text
     property alias cursorPosition: textEdit.cursorPosition
     property alias selectedText: textEdit.selectedText
     property alias selectionEnd: textEdit.selectionEnd
@@ -51,54 +51,40 @@ FocusScope {
         return rect;
     }
 
-    property TextAreaStylingProperties styling: TextAreaStylingProperties {
-        textColor: syspal.text
-        backgroundColor: syspal.base
-
-        background: defaultStyle.background
-        hints: defaultStyle.hints
-
-        leftMargin: defaultStyle.leftMargin
-        topMargin: defaultStyle.topMargin
-        rightMargin: defaultStyle.rightMargin
-        bottomMargin: defaultStyle.bottomMargin
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
-    }
+    property alias delegate: loader.delegate
+    property TextAreaStyle style: TextAreaStyle { }
 
     property Flickable flickHandler: flickable
 
     // Implementation
 
-    implicitWidth: textEdit.scale * Math.max(styling.minimumWidth,
-                    Math.max(textEdit.implicitWidth,
-                             placeholderTextComponent.implicitWidth) + styling.horizontalMargins())
-    implicitHeight: textEdit.scale * Math.max(styling.minimumHeight,
-                     Math.max(textEdit.implicitHeight,
-                              placeholderTextComponent.implicitHeight) + styling.verticalMargins())
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 
-    property alias desktopBehavior: mouseEditBehavior.desktopBehavior
-    property alias _hints: hintsLoader.item
     clip: true
+    property alias desktopBehavior: mouseEditBehavior.desktopBehavior
 
-    Loader { id: hintsLoader; sourceComponent: styling.hints }
-    Loader {
+    DualLoader {
+        id: loader
         anchors.fill: parent
-        property alias styledItem: textArea
-        sourceComponent: styling.background
+        property alias widget: textArea
+        property alias textEdit: textEdit
+        property alias userStyle: textArea.style
+        filepath: Qt.resolvedUrl(theme.path + "TextArea.qml")
     }
-
 
     Flickable { //mm is FocusScope, so TextArea's root doesn't need to be, no?
         id: flickable
         clip: true
-        anchors.fill: parent
-        anchors.leftMargin: styling.leftMargin
-        anchors.topMargin: styling.topMargin
-        anchors.rightMargin: styling.rightMargin
-        anchors.bottomMargin: styling.bottomMargin
+        property QtObject innerStyle: loader.item.style
 
+        anchors {
+            fill: parent
+            leftMargin: innerStyle.leftMargin
+            topMargin: innerStyle.topMargin
+            rightMargin: innerStyle.rightMargin
+            bottomMargin: innerStyle.bottomMargin
+        }
         contentHeight: textEdit.implicitHeight
         interactive: (flickable == flickHandler)
 
@@ -124,29 +110,36 @@ FocusScope {
         TextEdit { // see QTBUG-14936
             id: textEdit
 
-            font.pixelSize: _hints.fontPixelSize
-            font.bold: _hints.fontBold
             width: flickable.width / scale
+            color: enabled ? flickable.innerStyle.textColor :
+                Qt.tint(flickable.innerStyle.textColor, "#80ffffff")
+
+            font.pixelSize: flickable.innerStyle.fontPixelSize
+            font.bold: flickable.innerStyle.fontBold
 
             persistentSelection: false
-            color: enabled ? styling.textColor: Qt.tint(styling.textColor, "#80ffffff")
             wrapMode: desktopBehavior ? TextEdit.NoWrap : TextEdit.Wrap
             onCursorRectangleChanged: flickable.ensureVisible(textEdit, cursorRectangle)
-
-            onActiveFocusChanged: activeFocus ? openSoftwareInputPanel() : closeSoftwareInputPanel()
 
             transformOrigin: Item.TopLeft
             scale: mouseEditBehavior.zoomFactor
             Behavior on scale { NumberAnimation { duration: 100 } }
+
+            onActiveFocusChanged: {
+                if (textEdit.activeFocus)
+                    textEdit.openSoftwareInputPanel();
+                else
+                    textEdit.closeSoftwareInputPanel();
+            }
         }
 
         TextEditMouseBehavior { // Has to be inside the Flickable to work correctly with it
             id: mouseEditBehavior
-            width: textEdit.width*textEdit.scale
-            height: textEdit.height*textEdit.scale
             textEdit: textEdit
             desktopBehavior: false
             flickable: flickHandler
+            width: textEdit.width * textEdit.scale
+            height: textEdit.height * textEdit.scale
         }
     }
 
@@ -157,19 +150,4 @@ FocusScope {
             mouse.accepted = false;
         }
     }
-
-    Text {
-        id: placeholderTextComponent
-        x: styling.leftMargin; y: styling.topMargin
-        font: textEdit.font
-        opacity: !textEdit.text.length && !textEdit.activeFocus ? 1 : 0
-        color: "gray"
-        clip: true
-        text: "Enter text"  //mm Needs localization
-        Behavior on opacity { NumberAnimation { duration: 90 } }
-    }
-
-    DefaultStyles.TextFieldStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }
-

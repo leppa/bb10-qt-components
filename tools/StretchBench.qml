@@ -21,7 +21,6 @@ Item {
             anchors.fill: parent
 
             model: ListModel {
-                ListElement { component: "ChoiceList" }
                 ListElement { component: "ButtonRow" }
                 ListElement { component: "ButtonColumn" }
                 ListElement { component: "Switch" }
@@ -33,7 +32,6 @@ Item {
                 ListElement { component: "BusyIndicator" }
                 ListElement { component: "TextField" }
                 ListElement { component: "TextArea" }
-                ListElement { component: "SpinBox" }
             }
 
             highlight: Rectangle { color: "blue" }
@@ -145,10 +143,8 @@ Item {
                     case "Slider": return sliderComponent;
                     case "ProgressBar": return progressBarComponent;
                     case "BusyIndicator": return busyIndicatorComponent;
-                    case "ChoiceList": return choiceListComponent;
                     case "TextField": return textFieldComponent;
                     case "TextArea": return textAreaComponent;
-                    case "SpinBox": return spinBoxComponent;
                     }
                     return null;
                 }
@@ -156,18 +152,18 @@ Item {
                 Rectangle {
                     id: marginsRect
                     color: "transparent"
-                    opacity: container.pressed && loader.item.styling && loader.item.styling.topMargin != undefined ? 1 : 0
+                    opacity: container.pressed && loader.item.style && loader.item.style.topMargin != undefined ? 1 : 0
                     border.color: "yellow"
                     anchors.fill: parent
                     z: 2
                     Connections {
                         target: loader
                         onItemChanged: {
-                            if(!loader.item || !loader.item.styling) return;
-                            marginsRect.anchors.leftMargin = Math.max(loader.item.styling.leftMargin, 0);
-                            marginsRect.anchors.rightMargin = Math.max(loader.item.styling.rightMargin, 0);
-                            marginsRect.anchors.topMargin = Math.max(loader.item.styling.topMargin, 0);
-                            marginsRect.anchors.bottomMargin = Math.max(loader.item.styling.bottomMargin, 0);
+                            if(!loader.item || !loader.item.style) return;
+                            marginsRect.anchors.leftMargin = Math.max(loader.item.style.leftMargin, 0);
+                            marginsRect.anchors.rightMargin = Math.max(loader.item.style.rightMargin, 0);
+                            marginsRect.anchors.topMargin = Math.max(loader.item.style.topMargin, 0);
+                            marginsRect.anchors.bottomMargin = Math.max(loader.item.style.bottomMargin, 0);
                         }
                     }
                 }
@@ -242,13 +238,6 @@ Item {
 
         Column {
             anchors.fill: parent; anchors.margins: 10; spacing: 5
-            opacity: currentComponentName == "ChoiceList" ? 1 : 0
-            StretchBenchBoolOption { text: "Dimmed:"; id: choiceListOptionDimmed }
-            StretchBenchBoolOption { text: "Has model:"; id: choiceListOptionHasModel }
-        }
-
-        Column {
-            anchors.fill: parent; anchors.margins: 10; spacing: 5
             opacity: currentComponentName == "CheckBox" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: checkBoxOptionDimmed }
             StretchBenchBoolOption { text: "Green background:"; id: checkBoxOptionGreenBackground }
@@ -287,16 +276,6 @@ Item {
             opacity: currentComponentName == "BusyIndicator" ? 1 : 0
             StretchBenchBoolOption { text: "Dimmed:"; id: busyIndicatorOptionDimmed }
             StretchBenchBoolOption { text: "Paused (i.e. !running):"; id: busyIndicatorOptionPaused }
-        }
-
-        Column {
-            anchors.fill: parent; anchors.margins: 10; spacing: 5
-            opacity: currentComponentName == "SpinBox" ? 1 : 0
-            StretchBenchBoolOption { text: "Dimmed:"; id: spinBoxOptionDimmed }
-            StretchBenchBoolOption { text: "Set value to 50:"; id: spinBoxOptionValueSetTo50 }
-            StretchBenchBoolOption { text: "Green background:"; id: spinBoxOptionGreenBackground }
-            StretchBenchBoolOption { text: "White text:"; id: spinBoxOptionWhiteText }
-            StretchBenchBoolOption { text: "One decimal step size:"; id: spinBoxOptionOneDecimalStepSize }
         }
 
         Column {
@@ -356,8 +335,8 @@ Item {
             checkable: buttonOptionLatching.checked
             text: buttonOptionTwoLineText.checked ? "Button\nwith two lines" : "Button"
             iconSource: buttonOptionHasIcon.checked ? "stretchbench/images/testIcon.png" : ""
-            styling.backgroundColor: buttonOptionGreenBackground.checked ? "green" : "#fff"
-            styling.textColor: buttonOptionWhiteText.checked ? "white" : "black"
+            style.backgroundColor: buttonOptionGreenBackground.checked ? "green" : "#fff"
+            style.textColor: buttonOptionWhiteText.checked ? "white" : "black"
         }
     }
 
@@ -398,7 +377,7 @@ Item {
         id: checkBoxComponent
         CheckBox {
             enabled: !checkBoxOptionDimmed.checked
-            styling.backgroundColor: checkBoxOptionGreenBackground.checked ? "green" : "#fff"
+            style.backgroundColor: checkBoxOptionGreenBackground.checked ? "green" : "#fff"
         }
     }
 
@@ -406,7 +385,7 @@ Item {
         id: radioButtonComponent
         RadioButton {
             enabled: !radioButtonOptionDimmed.checked
-            styling.backgroundColor: radioButtonOptionGreenBackground.checked ? "green" : "#fff"
+            style.backgroundColor: radioButtonOptionGreenBackground.checked ? "green" : "#fff"
         }
     }
 
@@ -467,7 +446,7 @@ Item {
         id: textFieldComponent
         TextField {
             enabled: !textFieldOptionDimmed.checked
-            styling.textColor: textFieldOptionRedText.checked ? "red" : "black"
+            style.textColor: textFieldOptionRedText.checked ? "red" : "black"
             font.italic: textFieldOptionItalicText.checked
             passwordMode: textFieldOptionPasswordMode.checked
             focus: textFieldOptionFocused.checked
@@ -479,7 +458,7 @@ Item {
         id: textAreaComponent
         TextArea {
             enabled: !textAreaOptionDimmed.checked
-            styling.textColor: textAreaOptionRedText.checked ? "red" : "black"
+            style.textColor: textAreaOptionRedText.checked ? "red" : "black"
             font.italic: textAreaOptionItalicText.checked
             focus: textAreaOptionFocused.checked
             readOnly: textAreaOptionReadOnly.checked
@@ -490,67 +469,9 @@ Item {
         id: switchComponent
         Switch {
             enabled: !switchOptionDimmed.checked
-            styling.positiveHighlightColor: switchOptionGreenPositiveHighlight.checked ? "green" : syspal.highlight
-            styling.negativeHighlightColor: switchOptionRedNegativeHighlight.checked ? "red" : "transparent"
-            styling.switchColor: switchOptionBlueSwitchColor.checked ? "blue" : syspal.button
-        }
-    }
-
-    Component {
-        id: choiceListComponent
-        ChoiceList {
-            enabled: !choiceListOptionDimmed.checked
-            model: choiceListOptionHasModel.checked ? testDataModel : null
-
-            ListModel {
-                id: testDataModel
-                ListElement { text: "1) Apple" }
-                ListElement { text: "2) Banana" }
-                ListElement { text: "3) Coconut" }
-                ListElement { text: "4) Orange" }
-                ListElement { text: "5) Kiwi" }
-                ListElement { text: "6) Apple" }
-                ListElement { text: "7) Banana" }
-                ListElement { text: "8) Coconut" }
-                ListElement { text: "9) Orange" }
-                ListElement { text: "10) Kiwi" }
-                ListElement { text: "11) Apple" }
-                ListElement { text: "12) Banana" }
-                ListElement { text: "13) Coconut" }
-                ListElement { text: "14) Orange" }
-                ListElement { text: "15) Kiwi" }
-                ListElement { text: "16) Apple" }
-                ListElement { text: "17) Banana" }
-                ListElement { text: "18) Coconut" }
-                ListElement { text: "19) Orange" }
-                ListElement { text: "20) Kiwi" }
-                ListElement { text: "21) Apple" }
-                ListElement { text: "22) Banana" }
-                ListElement { text: "23) Coconut" }
-                ListElement { text: "24) Orange" }
-                ListElement { text: "25) Kiwi" }
-                ListElement { text: "26) Apple" }
-                ListElement { text: "27) Banana" }
-                ListElement { text: "28) Coconut" }
-                ListElement { text: "29) Orange" }
-                ListElement { text: "30) Kiwi" }
-            }
-        }
-    }
-
-    Component {
-        id: spinBoxComponent
-        SpinBox {
-            id: spinBox
-            enabled: !spinBoxOptionDimmed.checked
-            styling.backgroundColor: spinBoxOptionGreenBackground.checked ? "green" : syspal.base
-            styling.textColor: spinBoxOptionWhiteText.checked ? "white" : syspal.text
-            stepSize: spinBoxOptionOneDecimalStepSize.checked ? 0.1 : 1
-
-            Connections {
-                target: spinBoxOptionValueSetTo50
-                onCheckedChanged: spinBox.setValue(spinBoxOptionValueSetTo50.checked ? 50 : 0)
-            }
+            style.positiveHighlightColor: switchOptionGreenPositiveHighlight.checked ? "green" : syspal.highlight
+            style.negativeHighlightColor: switchOptionRedNegativeHighlight.checked ? "red" : "transparent"
+            style.switchColor: switchOptionBlueSwitchColor.checked ? "blue" : syspal.button
         }
     }
 }

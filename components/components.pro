@@ -1,5 +1,9 @@
-TEMPLATE = subdirs # XXX: Avoid call the linker
-TARGETPATH = Qt/labs/components/custom
+TEMPLATE = lib
+TARGET = $$qtLibraryTarget(componentsplugin)
+TARGETPATH = QtLabs/components
+INCLUDEPATH += $$PWD
+
+QT += declarative
 
 symbian {
     INSTALL_IMPORTS = /resource/qt/imports
@@ -22,16 +26,22 @@ QML_FILES = \
         RadioButton.qml \
         ScrollDecorator.qml \
         Slider.qml \
-        SpinBox.qml \
         Switch.qml \
         TextArea.qml \
+        DualLoader.qml \
         TextField.qml
 
 QML_DIRS = \
         behaviors \
         private \
         styles \
-        visuals
+        visuals \
+        themes
+
+SOURCES += plugin.cpp
+
+include("kernel/kernel.pri")
+include("models/models.pri")
 
 qmlfiles.files = $$QML_FILES
 qmlfiles.sources = $$QML_FILES
@@ -41,7 +51,9 @@ qmldirs.files = $$QML_DIRS
 qmldirs.sources = $$QML_DIRS
 qmldirs.path = $$INSTALL_IMPORTS/$$TARGETPATH
 
-INSTALLS += qmlfiles qmldirs
+target.path = $$INSTALL_IMPORTS/$$TARGETPATH
+
+INSTALLS += target qmlfiles qmldirs
 
 symbian {
     DEPLOYMENT += qmlfiles qmldirs

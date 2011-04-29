@@ -1,12 +1,12 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "../../../components" as Components
 
 Components.RadioButton{
-    styling.background: Image{
+    style.background: Image{
         source: "images/radiobutton_normal.png"
     }
 
-	styling.checkmark:Image {
+	style.checkmark:Image {
 	visible: checked
         anchors.centerIn:parent
         source: "images/radiobutton_check.png"

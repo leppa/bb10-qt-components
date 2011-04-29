@@ -1,7 +1,7 @@
 import QtQuick 1.1
-import "./styles"       // TextFieldStylingProperties
-import "./styles/default" as DefaultStyles
-import "./behaviors"    // TextEditMouseBehavior
+import "./private"
+import "./styles" 1.0
+import "./behaviors" 1.0 // TextEditMouseBehavior
 
 // KNOWN ISSUES
 // 1) TextField does not loose focus when !enabled if it is a FocusScope (see QTBUG-16161)
@@ -14,7 +14,7 @@ FocusScope {
 
     property alias activeFocus: textInput.activeFocus
     property alias readOnly: textInput.readOnly
-    property alias placeholderText: placeholderTextComponent.text
+    property string placeholderText
     property bool  passwordMode: false
     property alias cursorPosition: textInput.cursorPosition
     property alias selectedText: textInput.selectedText
@@ -49,109 +49,50 @@ FocusScope {
         return rect;
     }
 
-    property TextFieldStylingProperties styling: TextFieldStylingProperties {
-        textColor: syspal.text
-        backgroundColor: syspal.base
-
-        background: defaultStyle.background
-        hints: defaultStyle.hints
-
-        leftMargin: defaultStyle.leftMargin
-        topMargin: defaultStyle.topMargin
-        rightMargin: defaultStyle.rightMargin
-        bottomMargin: defaultStyle.bottomMargin
-
-        minimumWidth: defaultStyle.minimumWidth
-        minimumHeight: defaultStyle.minimumHeight
-    }
+    property alias delegate: loader.delegate
+    property TextFieldStyle style: TextFieldStyle {}
 
     // Implementation
 
-    implicitWidth: Math.max(styling.minimumWidth, textInput.implicitWidth + styling.horizontalMargins())
-    implicitHeight: Math.max(styling.minimumHeight, textInput.implicitHeight + styling.verticalMargins())
+    implicitWidth: loader.item.implicitWidth
+    implicitHeight: loader.item.implicitHeight
 
-    property alias desktopBehavior: mouseEditBehavior.desktopBehavior
-    property alias _hints: hintsLoader.item
     clip: true
+    property alias desktopBehavior: mouseEditBehavior.desktopBehavior
 
-    Loader { id: hintsLoader; sourceComponent: styling.hints }
-    Loader {
+    DualLoader {
+        id: loader
         anchors.fill: parent
-        property alias styledItem: textField
-        sourceComponent: styling.background
+        property alias widget: textField
+        property alias textInput: textInput
+        property alias userStyle: textField.style
+        filepath: Qt.resolvedUrl(theme.path + "TextField.qml")
     }
 
     TextInput { // see QTBUG-14936
         id: textInput
-        font.pixelSize: _hints.fontPixelSize
-        font.bold: _hints.fontBold
+        property QtObject innerStyle: loader.item.style
 
-        anchors.leftMargin: styling.leftMargin
-        anchors.topMargin: styling.topMargin
-        anchors.rightMargin: styling.rightMargin
-        anchors.bottomMargin: styling.bottomMargin
-
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-
-        opacity: desktopBehavior || activeFocus ? 1 : 0
-        color: enabled ? styling.textColor : Qt.tint(styling.textColor, "#80ffffff")
-        echoMode: passwordMode ? _hints.passwordEchoMode : TextInput.Normal
+        anchors {
+            fill: parent
+            leftMargin: innerStyle.leftMargin
+            topMargin: innerStyle.topMargin
+            rightMargin: innerStyle.rightMargin
+            bottomMargin: innerStyle.bottomMargin
+        }
+        font {
+            pixelSize: innerStyle.fontPixelSize
+            bold: innerStyle.fontBold
+        }
+        //echoMode: passwordMode ? _hints.passwordEchoMode : TextInput.Normal
 
         onActiveFocusChanged: {
-            if (!desktopBehavior)
-                state = (activeFocus ? "focused" : "");
-
-            if (activeFocus)
-                openSoftwareInputPanel();
+            if (textInput.activeFocus)
+                textInput.openSoftwareInputPanel();
             else
-                closeSoftwareInputPanel();
-        }
-
-        states: [
-            State {
-                name: ""
-                PropertyChanges { target: textInput; cursorPosition: 0 }
-            },
-            State {
-                name: "focused"
-                PropertyChanges { target: textInput; cursorPosition: textInput.text.length }
-            }
-        ]
-
-        transitions: Transition {
-            to: "focused"
-            SequentialAnimation {
-                ScriptAction { script: textInput.cursorVisible = false; }
-                ScriptAction { script: textInput.cursorPosition = textInput.positionAt(textInput.width); }
-                NumberAnimation { target: textInput; property: "cursorPosition"; duration: 150 }
-                ScriptAction { script: textInput.cursorVisible = true; }
-            }
+                textInput.closeSoftwareInputPanel();
         }
     }
-
-    Text {
-        id: placeholderTextComponent
-        anchors.fill: textInput
-        font: textInput.font
-        opacity: !textInput.text.length && !textInput.activeFocus ? 1 : 0
-        color: "gray"
-        text: ""
-        Behavior on opacity { NumberAnimation { duration: 90 } }
-    }
-
-    Text {
-        id: unfocusedText
-        anchors.fill: textInput
-        clip: true
-        font: textInput.font
-        opacity: !desktopBehavior && !passwordMode && textInput.text.length && !textInput.activeFocus ? 1 : 0
-        color: textInput.color
-        elide: Text.ElideRight
-        text: textInput.text
-    }
-
 
     TextEditMouseBehavior {
         id: mouseEditBehavior
@@ -159,22 +100,4 @@ FocusScope {
         textInput: textInput
         desktopBehavior: false
     }
-
-    DefaultStyles.TextFieldStyle { id: defaultStyle }
-    SystemPalette { id: syspal }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

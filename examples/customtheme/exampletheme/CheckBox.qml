@@ -1,15 +1,15 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "../../../components" as Components
 
 Components.CheckBox{
-    styling.background: BorderImage {
+    style.background: BorderImage {
         source: "images/edit_normal.png"
         border.top:6
         border.bottom:6
         border.left:6
         border.right:8
     }
-    styling.checkmark:Image {
+    style.checkmark:Image {
 	visible: checked
         anchors.centerIn:parent
         source: "images/checkbox_check.png"

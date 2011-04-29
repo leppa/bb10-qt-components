@@ -1,12 +1,12 @@
-import QtQuick 1.0
+import QtQuick 1.1
 import "../../../components" as Components
 
 Components.Slider{
 
-    styling.minimumWidth:160
-    styling.minimumHeight:32
+    style.minimumWidth:160
+    style.minimumHeight:32
 
-    styling.handle: BorderImage {
+    style.handle: BorderImage {
         width:20
         source: pressed ? "images/button_pressed.png" :
                 "images/button_normal.png"
@@ -14,7 +14,7 @@ Components.Slider{
         border.left:6 ; border.right:6
     }
 
-    styling.valueIndicator:
+    style.valueIndicator:
         BorderImage {
             id: name
             source: "images/label.png"
@@ -32,7 +32,7 @@ Components.Slider{
         }
 
 
-    styling.groove: Item {
+    style.groove: Item {
         BorderImage {
             height:12
             width:parent.width

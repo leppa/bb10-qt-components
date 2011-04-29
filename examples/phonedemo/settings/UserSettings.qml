@@ -31,6 +31,7 @@ Page {
                     }
                     TextField {
                         anchors.right: parent.right
+                        placeholderText: "Enter your username"
                     }
                 }
                 SectionItem {
@@ -65,6 +66,7 @@ Page {
 
                     TextArea {
                         anchors.fill: parent
+                        placeholderText: "Enter a description"
                     }
                 }
             }
