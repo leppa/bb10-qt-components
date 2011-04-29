@@ -81,7 +81,7 @@ QtObject {
                 anchors.centerIn: parent
                 spacing: 4
                 Image {
-                    source: iconSource
+                    source: styledItem.iconSource
                     anchors.verticalCenter: parent.verticalCenter
                     fillMode: Image.Stretch //mm Image should shrink if button is too small, depends on QTBUG-14957
                 }
