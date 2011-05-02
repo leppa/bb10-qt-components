@@ -316,6 +316,13 @@ Rectangle {
                             Custom.Button { text: "B" }
                         }
                         Custom.Switch {}
+                        Row {
+                            spacing: rowspacing
+                            Custom.CheckBox { }
+                            Custom.CheckBox { checked: true }
+                            Custom.RadioButton { }
+                            Custom.RadioButton { checked: true }
+                        }
                     }
                 }
             }
