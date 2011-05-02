@@ -9,7 +9,6 @@ Item {
     property alias containsMouse: behavior.containsMouse
     property alias checkable: behavior.checkable  // button toggles between checked and !checked
     property alias checked: behavior.checked
-
     default property alias data: contentItem.data
 
     property string text
@@ -17,8 +16,6 @@ Item {
 
     implicitWidth: 100
     implicitHeight: 30
-
-    // implementation
 
     property string __position: "only"
 
