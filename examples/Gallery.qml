@@ -107,25 +107,8 @@ Rectangle {
                             }
 
                         }
-                        Slider {
+                        MySlider {
                             value: 0.5
-
-                            Rectangle {
-                                radius: 2
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                height: 8
-                                border.color: "black"
-                                color: "white"
-                                Rectangle {
-                                    anchors.top: parent.top
-                                    anchors.bottom: parent.bottom
-                                    anchors.left: parent.left
-                                    width: parent.parent.handlePosition
-                                    color: "blue"
-                                }
-                            }
                         }
                         Row {
                             spacing: rowspacing
