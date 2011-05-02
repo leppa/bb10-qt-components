@@ -45,7 +45,7 @@ Item {
         Tumbler {
             id: tumbler
             anchors { top: parent.top; topMargin: 32; horizontalCenter: parent.horizontalCenter }
-            columns: [dayColumn, monthColumn, yearColumn]
+            columns: [monthColumn, dayColumn, yearColumn]
         }
     }
 
@@ -101,34 +101,6 @@ Item {
             }
 
             Button {
-                text: "Set label"
-                width: parent.buttonWidth
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        dayColumn.label = "JOUR";
-                        monthColumn.label = "MOIS";
-                        yearColumn.label = "ANNEE";
-                        extraColumn.label = "DATTE";
-                    }
-                }
-            }
-
-            Button {
-                text: "Clear label"
-                width: parent.buttonWidth
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        dayColumn.label = "";
-                        monthColumn.label = "";
-                        yearColumn.label = "";
-                        extraColumn.label = "";
-                    }
-                }
-            }
-
-            Button {
                 text: "Set model"
                 width: parent.buttonWidth
                 MouseArea {
@@ -170,7 +142,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        tumbler.columns = [dayColumn, monthColumn, yearColumn, extraColumn]
+                        tumbler.columns = [monthColumn, dayColumn, yearColumn, extraColumn]
                     }
                 }
             }
@@ -241,7 +213,6 @@ Item {
         id: dayColumn
 
         width: 100
-        label: "DAY"
         selectedIndex: 9
         items: daysList
         visible: dayButton.checked
@@ -254,7 +225,6 @@ Item {
     TumblerColumn {
         id: monthColumn
 
-        label: "MONTH"
         selectedIndex: 4
         items: monthsList
         visible: monthButton.checked
@@ -267,7 +237,6 @@ Item {
     TumblerColumn {
         id: yearColumn
 
-        label: "YEAR"
         selectedIndex: 10
         items: yearsList
         visible: yearButton.checked
@@ -280,7 +249,6 @@ Item {
     TumblerColumn {
         id: extraColumn
 
-        label: "DATE"
         selectedIndex: 2
         items: ListModel {
             ListElement { value: "Sun" }
