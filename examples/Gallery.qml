@@ -1,15 +1,16 @@
 import QtQuick 1.0
-import "../components"
+import "../templates"
+import "../components" as Custom
 
 Rectangle {
     SystemPalette{id:syspal}
     width: 4*256
     height: 620
-    property string position // jbw: hack for shinybuttonstyle
     property int rowspacing: 24
     property int columnspacing: 14
 
-    gradient: Gradient{ GradientStop{ position:1 ; color:syspal.window}
+    gradient: Gradient{
+        GradientStop{ position:1 ; color:syspal.window}
         GradientStop{ position:0 ; color:Qt.darker(syspal.window, 1.2)}
     }
 
@@ -23,13 +24,6 @@ Rectangle {
             anchors.leftMargin:20
             anchors.rightMargin:20
 
-            ListModel {
-                id: choices
-                ListElement { text: "Banana" }
-                ListElement { text: "Orange" }
-                ListElement { text: "Apple" }
-                ListElement { text: "Coconut" }
-            }
             Row {
                 anchors.fill: parent
                 Item {
@@ -43,13 +37,22 @@ Rectangle {
                         anchors.topMargin: 6
 
                         Text{ font.bold: true; text: "Default:" ; styleColor: "white" ; color: "#333" ; style: "Raised"}
-                        MySwitch {}
-                        MyButton {
+                        Button {
                             id: btn
-                            text: "long textsas asdf sadf as"
+                            text: "Push Me"
+                            Rectangle {
+                                anchors.fill: parent
+                                border.color: "#222"
+                                color: parent.parent.pressed ? "blue " : "red"
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: btn.text
+                                }
+                            }
                         }
                         ButtonRow {
                             Button{
+                                id: btn2
                                 text: "A"
                                 Rectangle {
                                     anchors.fill: parent
@@ -57,7 +60,7 @@ Rectangle {
                                     color: parent.parent.pressed ? "blue " : "red"
                                     Text {
                                         anchors.centerIn: parent
-                                        text: btn.text
+                                        text: btn2.text
                                     }
                                 }
                             }
@@ -69,11 +72,11 @@ Rectangle {
                                     border.color: "#222"
                                     Text {
                                         anchors.centerIn: parent
-                                        text: btn.text
+                                        text: btn2.text
                                     }
                                 }
                             }
-                        }
+                        }/*
                         TextField {
                             Rectangle{
                                 anchors.fill:parent
@@ -126,7 +129,7 @@ Rectangle {
                                     color: "blue"
                                 }
                             }
-                        }
+                        }*/
                         Row {
                             spacing: rowspacing
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -248,19 +251,7 @@ Rectangle {
                                 }
                             }
                             spacing: rowspacing
-                        }
-                        ChoiceList {
-                            model: choices
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: 2
-                                border.color: "black"
-                                color: "white"
-                                anchors.bottomMargin: 1
-                                anchors.rightMargin: 1
-                            }
-
-                        }
+                        }/*
                         ProgressBar {
                             id: progress
                             Timer {
@@ -316,13 +307,33 @@ Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
                             BusyIndicator { running: true }
                             BusyIndicator { running: false }
+                        }*/
+                    }
+               }
+               Item {
+                    width:column2.width+2*rowspacing
+                    height:column2.height+2*rowspacing
+                    Column {
+                        x: rowspacing
+                        id: column2
+                        spacing: columnspacing
+                        anchors.top: parent.top
+                        anchors.topMargin: 6
+
+                        Text{ font.bold: true; text: "Custom:" ; styleColor: "white" ; color: "#333" ; style: "Raised"}
+                        Custom.Button { text: "Push Me" }
+                        Custom.ButtonRow {
+                            Custom.Button { text: "A" }
+                            Custom.Button { text: "B" }
                         }
+                        Custom.Switch {}
                     }
                 }
             }
         }
     }
+    /*
     ScrollDecorator {
         flickableItem: flickable
-    }
+    }*/
 }
