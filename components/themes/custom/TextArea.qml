@@ -12,8 +12,8 @@ Template.TextArea {
         topMargin: 10
         rightMargin: 10
         bottomMargin: 10
-        minimumWidth: 100
-        minimumHeight: 200
+        minimumWidth: 200
+        minimumHeight: 80
         fontPixelSize: 16
         fontBold: false
     }

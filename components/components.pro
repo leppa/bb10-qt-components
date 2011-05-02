@@ -36,6 +36,7 @@ QML_DIRS = \
         private \
         styles \
         visuals \
+        experimental \
         themes
 
 SOURCES += plugin.cpp

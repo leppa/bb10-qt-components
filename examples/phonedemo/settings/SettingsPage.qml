@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import "../widgets"
 import "../../../components"
+import "../../../components/experimental"
 
 Page {
     id: settings
@@ -20,14 +21,25 @@ Page {
             anchors.right: parent.right
 
             Section {
-                title: "Offline mode"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Offline mode"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "This will disable all connections"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         checked: true
@@ -37,14 +49,25 @@ Page {
             }
 
             Section {
-                title: "Wi-Fi"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Wi-Fi"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "Turn on to choose a network..."
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         anchors.right: parent.right
@@ -53,14 +76,25 @@ Page {
             }
 
             Section {
-                title: "Sounds"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Sounds"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "Turn off to disable all Sounds"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         checked: true
@@ -70,9 +104,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Ringtone"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Slider {
                         value: 0.8
@@ -82,9 +117,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Downloaded"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     ProgressBar {
                         value: 0.7
@@ -96,14 +132,25 @@ Page {
             }
 
             Section {
-                title: "Display"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Display"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "Brightness"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Slider {
                         value: 0.5
@@ -113,9 +160,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Turn on display when charging"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         anchors.right: parent.right
@@ -124,14 +172,25 @@ Page {
             }
 
             Section {
-                title: "Email backup"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Email backup"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "Online"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     RadioButton {
                         checked: true
@@ -141,9 +200,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Backup emails each day"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     CheckBox {
                         checked: true
@@ -153,16 +213,28 @@ Page {
             }
 
             Section {
-                title: "More Options"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
+                SectionItem {
+                    Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "More Options"
+                        opacity: 0.9
+                    }
+                }
                 SectionItem {
                     id: options1
                     clickable: true
                     Text {
                         text: "User settings"
-                        color: options1.pressed ? "white" : "#7a7f80"
+                        color: options1.pressed ? activePalette.highlightedText
+                            : activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Image {
                         source: "../images/more.png"

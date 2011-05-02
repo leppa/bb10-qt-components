@@ -17,9 +17,12 @@ Page {
             height: model.entry ? 94 : 56
             width: listView.width
 
+            property color textColor: !area.pressed ? activePalette.windowText
+                : activePalette.highlightedText
+
             Rectangle {
                 anchors.fill: parent
-                color: "#CCCCCC"
+                color: activePalette.highlight
                 visible: area.pressed
             }
 
@@ -34,7 +37,7 @@ Page {
 
             Text {
                 text: name[0]
-                color: "#222222"
+                color: textColor
                 font.bold: true
                 font.pixelSize: 28
                 anchors.top: parent.top
@@ -46,7 +49,7 @@ Page {
 
             Text {
                 text: name
-                color: "#444444"
+                color: textColor
                 font.bold: true
                 font.pixelSize: 13
                 anchors.top: icon.top
@@ -57,7 +60,7 @@ Page {
 
             Text {
                 text: phone
-                color: "#444444"
+                color: textColor
                 font.pixelSize: 13
                 anchors.top: icon.top
                 anchors.left: icon.right
@@ -65,9 +68,10 @@ Page {
                 anchors.leftMargin: 4
             }
 
-            Image {
-                fillMode: Image.Tile
-                source: "../images/fulldivisor.png"
+            Rectangle {
+                height: 1
+                color: "gray"
+                opacity: 0.5
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom

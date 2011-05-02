@@ -5,7 +5,7 @@ ScrollDecorator {
     content: Component {
         Rectangle {
             anchors.margins: 3
-            color: "green"
+            color: "yellow"
             border.width: 0
             radius: 2
             opacity: 0.6

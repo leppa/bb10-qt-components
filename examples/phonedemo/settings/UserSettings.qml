@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import "../widgets"
 import "../../../components"
+import "../../../components/experimental"
 
 Page {
     id: settings
@@ -20,14 +21,25 @@ Page {
             anchors.right: parent.right
 
             Section {
-                title: "Basic Information"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Basic Information"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "Username"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     TextField {
                         anchors.right: parent.right
@@ -37,9 +49,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Password"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     TextField {
                         anchors.right: parent.right
@@ -48,9 +61,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Fullname"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     TextField {
                         anchors.right: parent.right
@@ -59,8 +73,18 @@ Page {
             }
 
             Section {
-                title: "Description"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
+                SectionItem {
+                    Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Description"
+                        opacity: 0.9
+                    }
+                }
                 SectionItem {
                     height: 200
 
@@ -72,14 +96,25 @@ Page {
             }
 
             Section {
-                title: "Social Network"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
                 SectionItem {
                     Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Social Network"
+                        opacity: 0.9
+                    }
+                }
+                SectionItem {
+                    Text {
                         text: "Update twitter messages"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         anchors.right: parent.right
@@ -88,9 +123,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Update orkut messages"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         anchors.right: parent.right
@@ -99,9 +135,10 @@ Page {
                 SectionItem {
                     Text {
                         text: "Update facebook messages"
-                        color: "#7a7f80"
+                        color: activePalette.windowText
                         font.family: "Nokia Sans"
                         font.pixelSize: 17
+                        opacity: 0.6
                     }
                     Switch {
                         anchors.right: parent.right
@@ -110,8 +147,18 @@ Page {
             }
 
             Section {
-                title: "Offline message"
+                anchors.left: parent.left
+                anchors.right: parent.right
 
+                SectionItem {
+                    Text {
+                        font.family: "Nokia Sans"
+                        font.pixelSize: 20
+                        color: activePalette.windowText
+                        text: "Offline Message"
+                        opacity: 0.9
+                    }
+                }
                 SectionItem {
                     height: 200
 

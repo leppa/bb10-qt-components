@@ -4,7 +4,7 @@ import QtLabs.components.themes.template 1.0 as Template
 
 Item {
     width: 1000
-    height: 550
+    height: 580
 
     property string position
     property int rowspacing: 22
@@ -13,16 +13,28 @@ Item {
     Flickable {
         id: flickable
         anchors.fill: parent
+        contentWidth: parent.width
         contentHeight: parent.height * 2
 
         Item {
-            anchors.top:parent.top
-            anchors.left:parent.left
-            anchors.leftMargin:20
-            anchors.rightMargin:20
+            anchors.fill: parent
+            anchors.margins: 6
+
+            Button {
+                id: themeButton
+                text: "switch theme"
+                width: 120
+                anchors.horizontalCenter: parent.horizontalCenter
+                style.backgroundColor: "yellow"
+
+                onClicked: {
+                    theme.name = theme.name == "custom" ? "deepblue" : theme.name == "blocks" ? "custom" : "blocks";
+                }
+            }
 
             Row {
                 anchors.fill: parent
+                anchors.topMargin: 40
                 Item {
                     width:column1.width+2*rowspacing
                     height:column1.height+2*rowspacing

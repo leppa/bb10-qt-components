@@ -28,7 +28,7 @@ Page {
         delegate: Rectangle {
             width: listView.width
             height: 52
-            color: mouseArea.pressed ? "#cccccc" : "#ffffff"
+            color: mouseArea.pressed ? activePalette.highlight : "transparent"
 
             Text {
                 anchors.fill: parent
@@ -36,6 +36,7 @@ Page {
                 font.family: "Nokia Sans"
                 font.pixelSize: 22
                 text: title
+                color: mouseArea.pressed ? activePalette.highlightedText : activePalette.windowText
             }
 
             MouseArea {
@@ -44,9 +45,10 @@ Page {
                 onClicked: main.next(Qt.resolvedUrl(source));
             }
 
-            Image {
-                fillMode: Image.Tile
-                source: "images/fulldivisor.png"
+            Rectangle {
+                height: 1
+                color: "gray"
+                opacity: 0.5
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom

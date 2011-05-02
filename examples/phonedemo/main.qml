@@ -1,15 +1,21 @@
 import QtQuick 1.1
 import "widgets"
 import "../../components"
+import "../../components/experimental"
 
-Rectangle {
+Window {
+    id: rootWindow
     width: 360
     height: 640
-    color: "white"
 
     Component {
         id: mainComponent
         MainPage { }
+    }
+
+    ThemePalette {
+        id: activePalette
+        colorGroup: "active"
     }
 
     PageNavigator {

@@ -20,7 +20,7 @@ Item {
     Button {
         id: backButton
         text: "back"
-        width: 60
+        width: 70
         anchors.left: parent.left
         anchors.leftMargin: 10
         anchors.verticalCenter: parent.verticalCenter
@@ -30,7 +30,8 @@ Item {
 
     Button {
         id: themeButton
-        text: "change theme"
+        text: "theme"
+        width: 70
         anchors.right: parent.right
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
