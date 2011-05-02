@@ -99,17 +99,6 @@ Rectangle {
                             }
                             placeholderText: "This is a\n multiline control."
                         }
-                        SpinBox{
-                            Rectangle {
-                                anchors.fill:parent
-                                radius: 2
-                                border.color: "black"
-                                color: "white"
-                                anchors.bottomMargin: 1
-                                anchors.rightMargin: 1
-                            }
-
-                        }
                         Slider {
                             value: 0.5
 

@@ -21,7 +21,6 @@ QML_FILES = \
         RadioButton.qml \
         ScrollDecorator.qml \
         Slider.qml \
-        SpinBox.qml \
         Switch.qml \
         TextArea.qml \
         TextField.qml
