@@ -15,7 +15,7 @@ Item {
     property alias model: popup.model
     property int currentIndex: popup.currentIndex
 
-    property alias containsMouse: mouseArea.containsMouse   //mm needed?
+    property alias containsMouse: popup.containsMouse   //mm needed?
     property bool pressed: false    //mm needed?
 
     property ChoiceListStylingProperties styling: ChoiceListStylingProperties {
@@ -60,20 +60,9 @@ Item {
         sourceComponent: styling.label
     }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        drag.target: Item {}    // disable dragging in case ChoiceList is on a Flickable
-        onPressed: {
-            choiceList.pressed = true;
-            popup.togglePopup();
-        }
-        onReleased: choiceList.pressed = false
-        onCanceled: choiceList.pressed = false    // mouse stolen e.g. by Flickable
-    }
-
     Private.ChoiceListPopup {
+        // NB: This ChoiceListPopup is also the mouse area
+        // for the component (to enable drag'n'release)
         id: popup
         listItem: styling.listItem
         popupFrame: styling.popupFrame
