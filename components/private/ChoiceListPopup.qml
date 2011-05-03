@@ -4,7 +4,7 @@ MouseArea {
     id: popup
 
     // There is no global z-ordering that can stack this popup in front, so we
-    // need to reparent it to the root item to fake it upon showPopup.
+    // need to reparent it to the root item to fake it upon showing the popup.
     // In that case, the popup will also fill the whole window to allow the user to
     // close the popup by clicking anywhere in the window. Letting the popup act as the mouse
     // area for the button that 'owns' it is also nessesary to support drag'n'release behavior.
@@ -13,6 +13,7 @@ MouseArea {
     hoverEnabled: true
     state: "hidden"
 
+    property bool popupVisible: false
     property string behavior: "MacOS"
     property bool desktopBehavior: (behavior == "MacOS" || behavior == "Windows" || behavior == "Linux")
     property int previousCurrentIndex: -1
@@ -38,36 +39,36 @@ MouseArea {
         parent = p;
     }
 
-    function showPopup() {
-        var oldMouseX = mouseX
-        reparentToTop()
-        previousCurrentIndex = currentIndex;
-        positionPopup();
-        popupFrameLoader.item.opacity = 1;
-        if (oldMouseX === mouseX){
-            // Work around bug: mouseX and mouseY does not immidiatly
-            // update after reparenting and resizing the mouse area:
-            var pos = originalParent.mapToItem(parent, mouseX, mouseY)
-            highlightItemAt(pos.x, pos.y);
+    onPopupVisibleChanged: {
+        if (popupVisible) {
+            var oldMouseX = mouseX
+            reparentToTop()
+            previousCurrentIndex = currentIndex;
+            positionPopup();
+            popupFrameLoader.item.opacity = 1;
+            if (oldMouseX === mouseX){
+                // Work around bug: mouseX and mouseY does not immidiatly
+                // update after reparenting and resizing the mouse area:
+                var pos = originalParent.mapToItem(parent, mouseX, mouseY)
+                highlightItemAt(pos.x, pos.y);
+            } else {
+                highlightItemAt(mouseX, mouseY);
+            }
+
+            listView.forceActiveFocus();
+            state = ""
         } else {
-            highlightItemAt(mouseX, mouseY);
+            // Reparent the popup back to normal. But we need to be careful not to do this
+            // before the popup is hidden, otherwise you will see it jump to the new parent
+            // on screen. So we make it a binding in case a transition is set on opacity:
+            parent = function() { return popupFrameLoader.item.opacity == 0 ? originalParent : parent; }
+            popupFrameLoader.item.opacity = 0;
+            popup.hideHighlight();
+            // Make sure we only enter the 'hidden' state when the popup is actually not
+            // visible. Otherwise the user will be able do open the popup again by clicking
+            // anywhere on screen while its being hidden (in case of a transition):
+            state = function() { return popupFrameLoader.item.opacity == 0 ? "hidden" : ""; }
         }
-
-        listView.forceActiveFocus();
-        state = ""
-    }
-
-    function hidePopup() {
-        // Reparent the popup back to normal. But we need to be careful not to do this
-        // before the popup is hidden, otherwise you will see it jump to the new parent
-        // on screen. So we make it a binding in case a transition is set on opacity:
-        parent = function() { return popupFrameLoader.item.opacity == 0 ? originalParent : parent; }
-        popupFrameLoader.item.opacity = 0;
-        popup.hideHighlight();
-        // Make sure we only enter the 'hidden' state when the popup is actually not
-        // visible. Otherwise the user will be able do open the popup again by clicking
-        // anywhere on screen while its being hidden (in case of a transition):
-        state = function() { return popupFrameLoader.item.opacity == 0 ? "hidden" : ""; }
     }
 
     function highlightItemAt(posX, posY)
@@ -255,10 +256,10 @@ MouseArea {
                     popup.cancelSelection();
                 }
 
-                popup.hidePopup();
+                popup.popupVisible = false;
             } else if (event.key == Qt.Key_Escape) {
                 popup.cancelSelection();
-                popup.hidePopup();
+                popup.popupVisible = false;
             }
             event.accepted = true;  // consume all keys while popout has focus
         }
@@ -278,7 +279,7 @@ MouseArea {
         if (state == "hidden") {
             // Show the popup:
             pressedTimer.running = true
-            popup.showPopup();
+            popup.popupVisible = true
         }
     }
 
@@ -290,7 +291,7 @@ MouseArea {
             var indexAt = listView.indexAt(mappedPos.x, mappedPos.y);
             if(indexAt != -1)
                 listView.currentIndex = indexAt;
-            popup.hidePopup();
+            popup.popupVisible = false
         }
     }
 

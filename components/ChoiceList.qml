@@ -14,9 +14,10 @@ Item {
 
     property alias model: popup.model
     property int currentIndex: popup.currentIndex
-
-    property alias containsMouse: popup.containsMouse   //mm needed?
-    property bool pressed: false    //mm needed?
+    property string currentText: model && currentIndex >= 0 ? model.get(currentIndex).text : ""
+    property alias popupVisible: popup.popupVisible
+    property alias containsMouse: popup.containsMouse
+    property bool pressed: popup.pressed
 
     property ChoiceListStylingProperties styling: ChoiceListStylingProperties {
         textColor: syspal.text

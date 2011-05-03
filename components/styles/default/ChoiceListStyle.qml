@@ -41,7 +41,7 @@ QtObject {
         Text {
             id:t
             color: styledItem.styling.textColor
-            text: styledItem.model && styledItem.currentIndex >= 0 ? styledItem.model.get(styledItem.currentIndex).text : ""
+            text: styledItem.currentText
             opacity: enabled ? 1 : 0.5
         }
     }
