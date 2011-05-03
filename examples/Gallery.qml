@@ -57,7 +57,7 @@ Rectangle {
                                 Rectangle {
                                     anchors.fill: parent
                                     border.color: "#222"
-                                    color: parent.parent.pressed ? "blue " : "red"
+                                    color: parent.parent.pressed ? "steelblue " : parent.parent.checked ? "blue" : "red"
                                     Text {
                                         anchors.centerIn: parent
                                         text: btn2.text
@@ -65,14 +65,15 @@ Rectangle {
                                 }
                             }
                             Button{
+                                id: btn3
                                 text: "B"
                                 Rectangle {
                                     anchors.fill: parent
-                                    color: parent.parent.pressed ? "blue " : "red"
+                                    color: parent.parent.pressed ? "steelblue " : parent.parent.checked ? "blue" : "red"
                                     border.color: "#222"
                                     Text {
                                         anchors.centerIn: parent
-                                        text: btn2.text
+                                        text: btn3.text
                                     }
                                 }
                             }
