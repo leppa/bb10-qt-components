@@ -50,7 +50,7 @@ Row {
                     item.checkable = true;
             },
             setPosition: function(button, position) {
-                if (button.visible && Behavior.isButton(button))
+                if (button.visible && button.hasOwnProperty("__position"))
                     button.__position = stylePositions[position];
             }
         });

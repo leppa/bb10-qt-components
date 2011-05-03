@@ -37,21 +37,15 @@ var lastVisible = -1;
 var visibleButtons = 0;
 var params = undefined;
 
-// Platform -> Button
-function isButton(item) {
-    return (item && item.hasOwnProperty("__position"));
-}
-
 function hasChecked(item) {
     return (item && item.hasOwnProperty("checked")) || ("checked" in item);
 }
 
 function cleanup() {
     buttons.forEach(function(button, i) {
+        button.visibleChanged.disconnect(buttonVisibleChanged);
         if (button.visible && params.exclusive)
-            exclusiveGroup.disconnectCheckedChanged(button, i)
-        if (isButton(button))
-            button.visibleChanged.disconnect(buttonVisibleChanged);
+            exclusiveGroup.disconnectCheckedChanged(button, i);
     });
     buttons = [];
     if (exclusiveGroup)

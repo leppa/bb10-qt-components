@@ -43,6 +43,10 @@ Column {
             middle: "v_middle",
             last: "bottom" };
 
+        function isButton(item) {
+            return item && item.hasOwnProperty("__position");
+        }
+
         Behavior.create(buttonColumn, {
             exclusive: exclusive,
             prepareItem: function(item) {
@@ -50,12 +54,12 @@ Column {
                     item.checkable = true;
             },
             setPosition: function(button, position) {
-                if (button.visible && Behavior.isButton(button))
+                if (button.visible && isButton(button))
                     button.__position = stylePositions[position];
             },
             resizeChildren: function() {
                  Private.buttons.forEach(function(item, i) {
-                     if (Behavior.isButton(item) && item.visible) {
+                     if (isButton(item) && item.visible) {
                          item.anchors.left = buttonColumn.left;
                          item.anchors.right = buttonColumn.right;
                      }
