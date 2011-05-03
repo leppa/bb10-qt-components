@@ -241,7 +241,7 @@ Rectangle {
                                 }
                             }
                             spacing: rowspacing
-                        }/*
+                        }
                         ProgressBar {
                             id: progress
                             Timer {
@@ -291,7 +291,7 @@ Rectangle {
                                     smooth: true
                                 }
                             }
-                        }
+                        }/*
                         Row {
                             spacing: rowspacing
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -330,6 +330,19 @@ Rectangle {
                             Custom.BusyIndicator { running: true }
                             Custom.BusyIndicator { running: false }
                         }
+                        Custom.ProgressBar {
+                            id: progress2
+                            Timer {
+                                running: true
+                                repeat: true
+                                interval: 25
+                                onTriggered: {
+                                    var next = progress2.value + 0.01;
+                                    progress2.value = (next > progress2.maximumValue) ? progress2.minimumValue : next;
+                                }
+                            }
+                        }
+                        Custom.ProgressBar { indeterminate: true }
                     }
                 }
             }

@@ -1,6 +1,4 @@
 import QtQuick 1.1
-import "./styles"       // ProgressBarStylingProperties
-import "./styles/default" as DefaultStyles
 
 Item {
     id: progressBar
@@ -10,10 +8,6 @@ Item {
     property alias maximumValue: rangeModel.maximumValue
     property bool indeterminate: false
     default property alias data: content.data
-
-    property ProgressBarStylingProperties styling: ProgressBarStylingProperties {
-        background: defaultStyle.background
-    }
 
     // implementation
 
@@ -34,17 +28,7 @@ Item {
     Item {
         id: content
         anchors.fill:parent
-        property alias styledItem: progressBar
     }
-
-/*    Loader {
-        // groove background
-        id: grooveLoader
-        sourceComponent: styling.background
-        anchors.fill: parent
-    }
-*/
-    DefaultStyles.ProgressBarStyle { id: defaultStyle }
 
     Binding {
         property: "value"

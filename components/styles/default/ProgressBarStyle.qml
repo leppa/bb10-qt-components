@@ -25,10 +25,18 @@
 ****************************************************************************/
 
 import QtQuick 1.1
+import "../"
 
-QtObject {
+ProgressBarStylingProperties {
+    minimumWidth: 200
+    minimumHeight: 25
 
-    property Component background: Component {
+    leftMargin: 0
+    rightMargin: 0
+    topMargin: 0
+    bottomMargin: 0
+
+    background: Component {
         Item {
             id: background
             Rectangle { // solid center fill
@@ -48,7 +56,7 @@ QtObject {
                 opacity: styledItem.enabled ? 1: 0.7
                 source: complete > 0.95 ? "images/progressbar_indeterminate.png" : "images/progressbar_fill.png"
                 border { left: complete > 0.1 ? 6: 2; right: complete > 0.1 ? 6: 2; top: 10; bottom: 10 }
-                width: Math.round((progressBar.width-styling.horizontalMargins()) * complete)
+                width: Math.round((styledItem.width-styling.horizontalMargins()) * complete)
                 height: parent.height
                 clip: true
 
