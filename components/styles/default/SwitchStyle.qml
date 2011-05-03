@@ -17,13 +17,13 @@ QtObject {
                     x: handleCenterX-parent.width-parent.anchors.leftMargin
 
                     Rectangle { // positive background highlight
-                        color: "steelblue"
+                        color: "lawngreen"
                         opacity: 0.8
                         anchors.top: parent.top; anchors.bottom: parent.bottom
                         anchors.left: parent.left; anchors.right: parent.horizontalCenter
                     }
                     Rectangle { // negative background highlight
-                        color: "red"
+                        color: "transparent"
                         opacity: 0.8
                         anchors.top: parent.top; anchors.bottom: parent.bottom
                         anchors.left: parent.horizontalCenter; anchors.right: parent.right
@@ -44,6 +44,11 @@ QtObject {
     property Component handle: Component {
         Item {
             width: 42
+            Rectangle {
+                color: "grey"
+                anchors.fill: parent
+                anchors.margins: 2
+            }
             BorderImage {
                 anchors.fill: parent
                 opacity: enabled ? 1 : 0.7
@@ -51,7 +56,7 @@ QtObject {
                 source: pressed ? "images/switch_pressed.png" : "images/switch_normal.png"
                 border { left: 4; top: 4; right: 4; bottom: 4 }
             }
-            Behavior on x { NumberAnimation { easing.type: Easing.OutCubic; duration: 200 } }
         }
+
     }
 }

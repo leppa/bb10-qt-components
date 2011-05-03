@@ -26,9 +26,6 @@
 
 import QtQuick 1.1
 
-import "./styles"       // SliderStylingProperties
-import "./styles/default" as DefaultStyles
-
 Item {
     id: slider
 
@@ -43,10 +40,10 @@ Item {
     property bool updateValueWhileDragging: true
     property alias pressed: mouseArea.pressed
 
-    property bool animateHandle: true
     property string showValueIndicator: "above" // one of "above", "below", "left", "right", or "none"
+
+    property bool animateHandle: true
     property int valueIndicatorMargin: 10
-    default property alias data: content.data
 
     function formatValue(v) {
         if (parseInt(v) != v)
@@ -55,15 +52,9 @@ Item {
         return useDecimals ? (v.toFixed(2)) : v;
     }
 
-    property SliderStylingProperties styling: SliderStylingProperties {
-        handle: defaultStyle.handle
-        valueIndicator: defaultStyle.valueIndicator
-
-        pinWidth: handleLoader.width/2
-
-        defaultWidth: defaultStyle.defaultWidth
-        defaultHeight: defaultStyle.defaultHeight
-    }
+    default property alias _data: content.data
+    property Item handle: null
+    property bool dragging: mouseArea.drag.active
 
     // implementation
 
@@ -71,10 +62,8 @@ Item {
     // floating point value at which point it keeps decimals
     property bool useDecimals: false
 
-    implicitWidth: contents.isVertical ? defaultStyle.defaultHeight : defaultStyle.defaultWidth
-    implicitHeight: contents.isVertical ? defaultStyle.defaultWidth : defaultStyle.defaultHeight
-
-    DefaultStyles.SliderStyle { id: defaultStyle }
+    implicitWidth: contents.isVertical ? 10 : 300
+    implicitHeight: contents.isVertical ? 300 : 10
 
     Item {
         id: contents
@@ -85,11 +74,11 @@ Item {
 
         anchors.centerIn: slider
         property bool isVertical: orientation == Qt.Vertical
-        property real halfHandleWidth: handleLoader.width/2
+        property real halfHandleWidth: handle.width/2
 
         // The width of the "pin" that the handle is attached to, defines
         // how much outside the groove the head of the handle extends
-        property real halfPinWidth: styling.pinWidth/2
+        property real halfPinWidth: handle.width / 4
 
         RangeModel {
             id: rangeModel
@@ -109,39 +98,27 @@ Item {
             id: content
             anchors.fill: parent
 
-            property alias styledItem: slider
-            property real handlePosition: handleLoader.x
+            property real handlePosition: handle.x
             function positionForValue(value) {
                 return rangeModel.positionForValue(value);
             }
         }
 
-        Loader {
-            id: handleLoader
-            transform: Translate { x: -contents.halfHandleWidth }
-            anchors.verticalCenter: content.verticalCenter
-
-            property alias styledItem: slider
-            sourceComponent: styling.handle
-
-            x: shadowHandle.x
-            Behavior on x {
-                id: behavior
-                enabled: !mouseArea.drag.active && slider.animateHandle
-
-                PropertyAnimation {
-                    duration: behavior.enabled ? 150 : 0
-                    easing.type: Easing.OutSine
-                }
+        Item {
+            anchors.fill: parent
+            children: handle
+            Binding {
+                target: handle
+                property: "x"
+                value: shadowHandle.x - contents.halfHandleWidth
             }
         }
 
         Item {
             id: shadowHandle
-            width: handleLoader.width
-            height: handleLoader.height
+            width: handle.width
+            height: handle.height
             transform: Translate { x: -contents.halfHandleWidth }
-            onXChanged: valueIndicatorLoader.indicatorText = slider.formatValue(rangeModel.valueForPosition(shadowHandle.x));
         }
 
         MouseArea {
@@ -170,51 +147,6 @@ Item {
                 // moment that the rangeModel is updated.
                 if (!slider.updateValueWhileDragging)
                     rangeModel.position = shadowHandle.x;
-            }
-        }
-
-        Loader {
-            id: valueIndicatorLoader
-
-            anchors.margins: valueIndicatorMargin
-            transform: Translate { x: -contents.halfHandleWidth }
-            rotation: contents.isVertical ? 90 : 0
-            visible: (actualPosition != undefined)
-
-            property string indicatorText
-            property alias styledItem: slider
-            sourceComponent: styling.valueIndicator //mm Only load while handle is pressed?
-
-            property variant actualPosition
-            actualPosition: {
-                switch(showValueIndicator.toLowerCase()) {
-                case "above": return (orientation == Qt.Horizontal ? Qt.AlignTop : Qt.AlignRight);
-                case "below": return (orientation == Qt.Horizontal ? Qt.AlignBottom : Qt.AlignLeft);
-                case "left": return (orientation == Qt.Horizontal ? Qt.AlignLeft : Qt.AlignTop);
-                case "right": return (orientation == Qt.Horizontal ? Qt.AlignRight : Qt.AlignBottom);
-                default: return undefined;
-                }
-            }
-            Component.onCompleted: positionValueIndicator()
-            onActualPositionChanged: positionValueIndicator()
-
-            function positionValueIndicator() {
-                anchors.top = undefined; anchors.bottom = undefined;
-                anchors.left = undefined; anchors.right = undefined;
-                anchors.horizontalCenter =
-                        (actualPosition == Qt.AlignTop || actualPosition == Qt.AlignBottom) ?
-                            handleLoader.horizontalCenter : undefined;
-
-                anchors.verticalCenter =
-                        (actualPosition == Qt.AlignLeft || actualPosition == Qt.AlignRight) ?
-                            handleLoader.verticalCenter : undefined;
-
-                switch(actualPosition) {
-                case Qt.AlignTop: anchors.bottom = handleLoader.top; break;
-                case Qt.AlignBottom: anchors.top = handleLoader.bottom; break;
-                case Qt.AlignLeft: anchors.right = handleLoader.left; break;
-                case Qt.AlignRight: anchors.left = handleLoader.right; break;
-                }
             }
         }
     }
