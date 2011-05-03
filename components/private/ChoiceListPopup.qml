@@ -95,9 +95,6 @@ MouseArea {
         listView.highlightedItem = null; // will trigger positionHighlight() what will hide the highlight
     }
 
-    function setCurrentIndex(index) { listView.currentIndex = index; }
-    function cancelSelection() { listView.currentIndex = previousCurrentIndex; }
-
     function positionPopup() {
         switch(behavior) {
         case "MacOS":
@@ -251,14 +248,14 @@ MouseArea {
                 highlightedIndex = model.count-1;
             } else if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
                 if(highlightedIndex != -1) {
-                    popup.setCurrentIndex(highlightedIndex);
+                    listView.currentIndex = highlightedIndex;
                 } else {
-                    popup.cancelSelection();
+                    listView.currentIndex = popup.previousCurrentIndex;
                 }
 
                 popup.popupVisible = false;
             } else if (event.key == Qt.Key_Escape) {
-                popup.cancelSelection();
+                listView.currentIndex = popup.previousCurrentIndex;
                 popup.popupVisible = false;
             }
             event.accepted = true;  // consume all keys while popout has focus
