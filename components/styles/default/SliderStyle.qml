@@ -33,6 +33,8 @@ QtObject {
     property Component groove: Item {
         opacity: enabled ? 1.0 : 0.7
 
+        property int handlePosition: styledItem.handle.x + styledItem.handle.width / 2
+
         Rectangle {
             color: "white"
             anchors.fill: sliderBackground
@@ -99,7 +101,7 @@ QtObject {
         width: valueText.width + 20
         height: valueText.height + 20
         color: "gray"
-        opacity: pressed ? 0.9 : 0
+        opacity: styledItem.pressed ? 0.9 : 0
         Behavior on opacity { NumberAnimation { duration: 100 } }
         radius: 5
 

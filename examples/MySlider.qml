@@ -1,49 +1,83 @@
 import QtQuick 1.1
 import "../components"
-
+import "../components/styles/default"
 
 Slider {
     id: slider
 
-    height: 30
+    SliderStyle { id: defaultStyle }
 
-    Rectangle {
-        id: groove
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        height: 10
-        color:  "red"
-        border { color: "black"; width: 1 }
+    Loader {
+        id: grooveLoader
+        anchors.fill: parent
+        sourceComponent: defaultStyle.groove
+
+        property alias styledItem: slider
     }
 
-    handle: Rectangle {
-        width: 25
-        height: 25
+    handle: Item {
         anchors.verticalCenter: parent.verticalCenter
-        color:  "green"
-        border { color: "black"; width: 1 }
+        onXChanged:
+            valueIndicatorLoader.indicatorText = slider.formatValue(slider.value)
+        Behavior on x {
+            id: behavior
+            enabled: !dragging && slider.animateHandle
 
-        Item {
-            visible: slider.pressed
-            height: valueLabel.height + 5
-            width: valueLabel.width + 5
-            anchors.bottom: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.margins: 5
-
-            Rectangle {
-                anchors.fill: parent
-                color: "black"
-                opacity: 0.75
-                radius: 5
+            PropertyAnimation {
+                duration: behavior.enabled ? 150 : 0
+                easing.type: Easing.OutSine
             }
+        }
+        Loader {
+            id: handleLoader
+            anchors.centerIn: parent
 
-            Text {
-                id: valueLabel
-                text: slider.formatValue(slider.value)
-                anchors.centerIn: parent
-                color: "white"
+            property alias styledItem: slider
+            sourceComponent: defaultStyle.handle
+
+        }
+
+        Loader {
+            id: valueIndicatorLoader
+
+            anchors.margins: valueIndicatorMargin
+            rotation: slider.orientation == Qt.Horizontal ? 0 : 90
+            visible: (actualPosition != undefined)
+
+            property string indicatorText
+            property alias styledItem: slider
+            sourceComponent: defaultStyle.valueIndicator
+
+            property variant actualPosition
+            actualPosition: {
+                switch(showValueIndicator.toLowerCase()) {
+                case "above": return (orientation == Qt.Horizontal ? Qt.AlignTop : Qt.AlignRight);
+                case "below": return (orientation == Qt.Horizontal ? Qt.AlignBottom : Qt.AlignLeft);
+                case "left": return (orientation == Qt.Horizontal ? Qt.AlignLeft : Qt.AlignTop);
+                case "right": return (orientation == Qt.Horizontal ? Qt.AlignRight : Qt.AlignBottom);
+                default: return undefined;
+                }
+            }
+            Component.onCompleted: positionValueIndicator()
+            onActualPositionChanged: positionValueIndicator()
+
+            function positionValueIndicator() {
+                anchors.top = undefined; anchors.bottom = undefined;
+                anchors.left = undefined; anchors.right = undefined;
+                anchors.horizontalCenter =
+                        (actualPosition == Qt.AlignTop || actualPosition == Qt.AlignBottom) ?
+                            handleLoader.horizontalCenter : undefined;
+
+                anchors.verticalCenter =
+                        (actualPosition == Qt.AlignLeft || actualPosition == Qt.AlignRight) ?
+                            handleLoader.verticalCenter : undefined;
+
+                switch(actualPosition) {
+                case Qt.AlignTop: anchors.bottom = handleLoader.top; break;
+                case Qt.AlignBottom: anchors.top = handleLoader.bottom; break;
+                case Qt.AlignLeft: anchors.right = handleLoader.left; break;
+                case Qt.AlignRight: anchors.left = handleLoader.right; break;
+                }
             }
         }
     }
