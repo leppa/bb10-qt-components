@@ -36,6 +36,25 @@ Row {
     // implementation
     onExclusiveChanged: Behavior.rebuild()
 
-    Component.onCompleted: Behavior.create(buttonRow, {direction: Qt.Horizontal})
+    Component.onCompleted: {
+        var stylePositions = {
+            single: "",
+            first: "leftmost",
+            middle: "h_middle",
+            last: "rightmost" };
+
+        Behavior.create(buttonRow, {
+            exclusive: exclusive,
+            prepareItem: function(item) {
+                if (buttonRow.exclusive && item["checkable"] !== undefined)
+                    item.checkable = true;
+            },
+            setPosition: function(button, position) {
+                if (button.visible && Behavior.isButton(button))
+                    button.__position = stylePositions[position];
+            }
+        });
+    }
+
     Component.onDestruction: Behavior.destroy()
 }

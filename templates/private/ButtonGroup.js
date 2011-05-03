@@ -1,137 +1,178 @@
-var self;
-var checkHandlers = [];
-var visibleButtons = [];
-var nonVisibleButtons = [];
-var direction;
+/****************************************************************************
+**
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
+** All rights reserved.
+** Contact: Nokia Corporation (qt-info@nokia.com)
+**
+** This file is part of the Qt Components project on Qt Labs.
+**
+** No Commercial Usage
+** This file contains pre-release code and may not be distributed.
+** You may use this file in accordance with the terms and conditions contained
+** in the Technology Preview License Agreement accompanying this package.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** If you have questions regarding the use of this file, please contact
+** Nokia at qt-info@nokia.com.
+**
+****************************************************************************/
 
-function create(that, options) {
-    self = that;
-    direction = options.direction || Qt.Horizontal;
-    self.childrenChanged.connect(rebuild);
-//    self.widthChanged.connect(resizeChildren);
-    build();
-}
+// XXX: this is a placeholder until we get .import in QML 2.0
+Qt.include("ExclusiveGroup.js")
 
+/// Helper code that is shared between ButtonRow.qml and ButtonColumn.qml.
+
+var self = undefined;
+var exclusiveGroup = null;
+var buttons = [];
+var firstVisible = -1;
+var lastVisible = -1;
+var visibleButtons = 0;
+var params = undefined;
+
+// Platform -> Button
 function isButton(item) {
-    if (item && item.hasOwnProperty("__position"))
-        return true;
-    return false;
+    return (item && item.hasOwnProperty("__position"));
 }
 
 function hasChecked(item) {
-    return (item && item.hasOwnProperty("checked"));
-}
-
-function destroy() {
-    self.childrenChanged.disconnect(rebuild);
-//    self.widthChanged.disconnect(resizeChildren);
-    cleanup();
-}
-
-function build() {
-    visibleButtons = [];
-    nonVisibleButtons = [];
-
-    for (var i = 0, item; (item = self.children[i]); i++) {
-        if (!hasChecked(item))
-            continue;
-
-        item.visibleChanged.connect(rebuild); // Not optimal, but hardly a bottleneck in your app
-        if (!item.visible) {
-            nonVisibleButtons.push(item);
-            continue;
-        }
-        visibleButtons.push(item);
-
-        if (self.exclusive && item.hasOwnProperty("checkable"))
-            item.checkable = true;
-
-        if (self.exclusive) {
-            item.checked = false;
-            checkHandlers.push(checkExclusive(item));
-            item.checkedChanged.connect(checkHandlers[checkHandlers.length - 1]);
-        }
-    }
-
-    var nrButtons = visibleButtons.length;
-    if (nrButtons == 0)
-        return;
-
-    if (self.checkedButton)
-        self.checkedButton.checked = true;
-    else if (self.exclusive) {
-        self.checkedButton = visibleButtons[0];
-        self.checkedButton.checked = true;
-    }
-
-    if (nrButtons == 1) {
-        finishButton(visibleButtons[0], "only");
-    } else {
-        finishButton(visibleButtons[0], direction == Qt.Horizontal ? "leftmost" : "top");
-        for (var i = 1; i < nrButtons - 1; i++)
-            finishButton(visibleButtons[i], direction == Qt.Horizontal ? "h_middle": "v_middle");
-        finishButton(visibleButtons[nrButtons - 1], direction == Qt.Horizontal ? "rightmost" : "bottom");
-    }
-}
-
-function finishButton(button, position) {
-    if (isButton(button)) {
-        button.__position = position;
-        if (direction == Qt.Vertical) {
-            button.anchors.left = self.left     //mm How to make this not cause binding loops? see QTBUG-17162
-            button.anchors.right = self.right
-        }
-    }
+    return (item && item.hasOwnProperty("checked")) || ("checked" in item);
 }
 
 function cleanup() {
-    visibleButtons.forEach(function(item, i) {
-        if (checkHandlers[i])
-            item.checkedChanged.disconnect(checkHandlers[i]);
-        item.visibleChanged.disconnect(rebuild);
+    buttons.forEach(function(button, i) {
+        if (button.visible && params.exclusive)
+            exclusiveGroup.disconnectCheckedChanged(button, i)
+        if (isButton(button))
+            button.visibleChanged.disconnect(buttonVisibleChanged);
     });
-    checkHandlers = [];
-
-    nonVisibleButtons.forEach(function(item, i) {
-        item.visibleChanged.disconnect(rebuild);
-    });
+    buttons = [];
+    if (exclusiveGroup)
+        exclusiveGroup.clear();
 }
 
-function rebuild() {
-    if (self == undefined)
+function updateButtons() {
+    cleanup();
+
+    params.exclusive = self.exclusive;
+
+    var checkedButton = null;
+    var length = self.children.length;
+    for (var i = 0; i < length; i++) {
+        var item = self.children[i];
+        if (!hasChecked(item))
+            continue;
+        buttons.push(item);
+
+        item.visibleChanged.connect(buttonVisibleChanged);
+
+        // Platform -> ButtonRow/ButtonColumn
+        if (item.checked) {
+            if (!checkedButton && (self.checkedButton === item || self.checkedButton == undefined))
+                checkedButton = item;
+            else if (params.exclusive && self.checkedButton != item)
+                item.checked = false;
+        } else if (self.checkedButton === item) {
+            if (checkedButton && params.exclusive)
+                checkedButton.checked = false;
+            checkedButton = item;
+            item.checked = true;
+        }
+
+        if (typeof params.prepareItem === "function")
+            params.prepareItem(item);
+
+        if (params.exclusive)
+            exclusiveGroup.connectCheckedChanged(item);
+    }
+    self.checkedButton = checkedButton;
+
+    buttonVisibleChanged();
+}
+
+function buttonVisibleChanged() {
+    visibleButtons = 0;
+    firstVisible = -1;
+    lastVisible = -1;
+    buttons.forEach(function (button, i) {
+        if (button.visible) {
+            if (firstVisible === -1)
+                firstVisible = i;
+            lastVisible = i;
+            visibleButtons++;
+        }
+    });
+
+    if (visibleButtons === 0 || typeof params.setPosition !== "function")
         return;
 
-    cleanup();
-    build();
+    if (visibleButtons == 1) {
+        params.setPosition(buttons[0], "single")
+    } else {
+        params.setPosition(buttons[firstVisible], "first");
+        for (var i = firstVisible + 1; i < lastVisible; i++)
+            params.setPosition(buttons[i], "middle");
+        params.setPosition(buttons[lastVisible], "last");
+    }
+
+    resizeChildren();
 }
+
+var resizing = false;  // resizeChildren() may trigger reentrant calls
 
 function resizeChildren() {
-    if (direction != Qt.Horizontal)
+    if (resizing || visibleButtons === 0)
         return;
 
-    var extraPixels = self.width % visibleButtons;
-    var buttonSize = (self.width - extraPixels) / visibleButtons;
-    visibleButtons.forEach(function(item, i) {
-        if (!item || !item.visible)
-            return;
-        item.width = buttonSize + (extraPixels > 0 ? 1 : 0);
-        if (extraPixels > 0)
-            extraPixels--;
-    });
-}
-
-function checkExclusive(item) {
-    var button = item;
-    return function() {
-        for (var i = 0, ref; (ref = visibleButtons[i]); i++) {
-            if (ref.checked == (button === ref))
-                continue;
-
-            // Disconnect the signal to avoid recursive calls
-            ref.checkedChanged.disconnect(checkHandlers[i]);
-            ref.checked = !ref.checked;
-            ref.checkedChanged.connect(checkHandlers[i]);
-        }
-        self.checkedButton = button;
+    if (typeof params.resizeChildren === "function") {
+        resizing = true;
+        params.resizeChildren(self);
+        resizing = false;
     }
 }
+
+function notifyExclusiveGroup() {
+    if (exclusiveGroup)
+        exclusiveGroup.updateCheckedObj(self.checkedButton);
+}
+
+function create(s, p) {
+    if (!s) {
+        console.log("Error creating ButtonGroup: invalid owner.");
+        return;
+    }
+    if (!s.hasOwnProperty("checkedButton")) {
+        console.log("Error creating ButtonGroup: owner has no 'checkedButton' property.");
+        return;
+    }
+
+    self = s;
+    params = p;
+
+    exclusiveGroup = new ExclusiveGroup(self.checkedButton, params.exclusive,
+                                        function() { self.checkedButton = this.checkedObj; });
+    self.checkedButtonChanged.connect(notifyExclusiveGroup);
+
+    updateButtons();
+    self.childrenChanged.connect(updateButtons);
+    self.exclusiveChanged.connect(updateButtons);
+    self.widthChanged.connect(resizeChildren);
+}
+
+function destroy() {
+    if (self) {
+        self.checkedButtonChanged.disconnect(notifyExclusiveGroup);
+        self.childrenChanged.disconnect(updateButtons);
+        self.widthChanged.disconnect(resizeChildren);
+        self = undefined;
+    }
+    cleanup();
+}
+

@@ -36,6 +36,33 @@ Column {
     // implementation
     onExclusiveChanged: Behavior.rebuild()
 
-    Component.onCompleted: Behavior.create(buttonColumn, {direction: Qt.Vertical})
+    Component.onCompleted: {
+        var stylePositions = {
+            single: "",
+            first: "top",
+            middle: "v_middle",
+            last: "bottom" };
+
+        Behavior.create(buttonColumn, {
+            exclusive: exclusive,
+            prepareItem: function(item) {
+                if (buttonColumn.exclusive && item["checkable"] !== undefined)
+                    item.checkable = true;
+            },
+            setPosition: function(button, position) {
+                if (button.visible && Behavior.isButton(button))
+                    button.__position = stylePositions[position];
+            },
+            resizeChildren: function() {
+                 Private.buttons.forEach(function(item, i) {
+                     if (Behavior.isButton(item) && item.visible) {
+                         item.anchors.left = buttonColumn.left;
+                         item.anchors.right = buttonColumn.right;
+                     }
+                 });
+            }
+        });
+    }
+
     Component.onDestruction: Behavior.destroy()
 }
