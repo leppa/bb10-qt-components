@@ -1,67 +1,28 @@
 import QtQuick 1.1
-import "./styles"   // SwitchStylingProperties
-import "./styles/default" as DefaultStyles
+import "../components"
+import "../components/styles/default"
 
-Item {
-    id: toggleSwitch    // "switch" is a reserved word
+Switch {
+    id: sw
 
-    signal clicked
-    property bool pressed: mouseArea.pressed
-    property bool checked: false
-    property alias containsMouse: mouseArea.containsMouse
-    default property alias _data: content.data
-
-    property Item handle: null
-
-
-    // implementation
-
-    implicitWidth: 80
-    implicitHeight: 30
-
-    onCheckedChanged: snapHandleIntoPlace();
-
-    Item {
-        id: content
+    Loader {
+        id: grooveLoader
         anchors.fill: parent
+        property alias styledItem: sw
+        property real handleCenterX: handle.x + (handle.width/2)
+        sourceComponent: style.groove
     }
 
-    Item {
-        children: handle
-        Component.onCompleted: snapHandleIntoPlace()
+    SwitchStyle {
+        id: style
     }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
+    handle: Loader {
+        id: handleLoader
+        height: sw.height
+        property alias styledItem: sw
+        sourceComponent: style.handle
 
-        drag.axis: Drag.XAxis
-        drag.minimumX: 0
-        drag.maximumX: toggleSwitch.width - handle.width
-        drag.target: handle
-
-        onPressed: toggleSwitch.pressed = true  // needed when hover is enabled
-        onCanceled: { snapHandleIntoPlace(); toggleSwitch.pressed = false; }   // mouse stolen e.g. by Flickable
-        onReleased: {
-            var wasChecked = checked;
-            if (drag.active) {
-                checked =  (handle.x > (drag.maximumX - drag.minimumX)/2)
-            } else if (toggleSwitch.pressed && enabled) { // No click if release outside area
-                checked = !checked;
-            }
-
-            snapHandleIntoPlace();
-
-            toggleSwitch.pressed = false
-            if(checked != wasChecked)
-                toggleSwitch.clicked();
-        }
-    }
-
-    onWidthChanged: snapHandleIntoPlace()
-    function snapHandleIntoPlace() {
-        if(handle)
-            handle.x = checked ? mouseArea.drag.maximumX : mouseArea.drag.minimumX;
+        Behavior on x { NumberAnimation { easing.type: Easing.OutCubic; duration: 200 } }
     }
 }
