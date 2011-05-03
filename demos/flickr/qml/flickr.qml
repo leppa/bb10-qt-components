@@ -36,7 +36,7 @@ Window {
 
         anchors.fill: parent
         toolBar: toolBar
-        onDepthChanged: searchBar.hideSearch();
+        onDepthChanged: searchBar.close();
     }
 
     StatusBar {
@@ -51,7 +51,7 @@ Window {
 
         anchors.top: statusBar.bottom
         width: statusBar.width
-        onSearchTagChanged: thumbnailPage.tags = searchTag
+        onSearchTagChanged: photoFeedModel.tags = searchTag
     }
 
     ToolBar {
@@ -66,9 +66,26 @@ Window {
 
         anchors { fill: parent; topMargin: statusBar.height; bottomMargin: toolBar.height }
         inPortrait: window.inPortrait
-        onBackClicked: Qt.quit();
-        onSearchClicked: searchBar.searching ? searchBar.hideSearch() : searchBar.search();
-        onReloadClicked: if (searchBar.searching) searchBar.hideSearch();
+        model: PhotoFeedModel {
+            id: photoFeedModel
+        }
+        tools: ToolBarLayout {
+            ToolButton {
+                iconSource: "images/tb_back.svg"
+                onClicked: Qt.quit();
+            }
+            ToolButton {
+                iconSource: "images/tb_reload.svg"
+                onClicked: {
+                    photoFeedModel.reload();
+                    searchBar.close();
+                }
+            }
+            ToolButton {
+                iconSource: "images/tb_search.svg"
+                onClicked: searchBar.toggle();
+            }
+        }
         onPhotoClicked: {
             largeImagePage.setPhotoData(url, photoWidth, photoHeight);
             detailsPage.setPhotoData(author, date, description, tags, title,
@@ -80,16 +97,35 @@ Window {
     LargeImagePage {
         id: largeImagePage
 
-        onBackClicked: pageStack.pop();
-        onInfoClicked: pageStack.replace(detailsPage);
+        tools: ToolBarLayout {
+            ToolButton {
+                iconSource: "images/tb_back.svg"
+                onClicked: pageStack.pop();
+            }
+            ToolButton {
+                iconSource: "images/tb_info.svg"
+                checked: false
+                onClicked: pageStack.replace(detailsPage);
+            }
+        }
     }
 
     DetailsPage {
         id: detailsPage
 
         anchors { fill: parent; topMargin: statusBar.height; bottomMargin: toolBar.height }
-        onBackClicked: pageStack.pop();
-        onInfoClicked: pageStack.replace(largeImagePage);
+
+        tools: ToolBarLayout {
+            ToolButton {
+                iconSource: "images/tb_back.svg"
+                onClicked: pageStack.pop();
+            }
+            ToolButton {
+                iconSource: "images/tb_info.svg"
+                checked: true
+                onClicked: pageStack.replace(largeImagePage);
+            }
+        }
     }
 
     Splash {

@@ -31,74 +31,58 @@ import "UIConstants.js" as UI
 FlickrPage {
     id: thumbnailPage
 
-    property alias tags: photoFeedModel.tags
+    property XmlListModel model
     property bool inPortrait
 
-    signal backClicked
-    signal reloadClicked
-    signal searchClicked
     signal photoClicked(string url, int photoWidth, int photoHeight,
                         string author, string date, string description,
                         string tags, string title)
 
-    tools: ToolBarLayout {
-        ToolButton {
-            iconSource: "images/tb_back.svg"
-            onClicked: thumbnailPage.backClicked();
-        }
-
-        ToolButton {
-            iconSource: "images/tb_reload.svg"
-            onClicked: {
-                photoFeedModel.reload();
-                thumbnailPage.reloadClicked();
-            }
-        }
-
-        ToolButton {
-            iconSource: "images/tb_search.svg"
-            onClicked: thumbnailPage.searchClicked();
-        }
-    }
-
-    PhotoFeedModel { id: photoFeedModel }
-
-    GridView {
-        property int thumbnailsInRow: 4
-
-        function cellWidth() {
-            return Math.floor(width / thumbnailsInRow);
-        }
-
-        anchors { fill: parent; margins: UI.GRIDVIEW_MARGIN }
-        cacheBuffer: 2 * height
-        cellHeight: cellWidth
-        cellWidth: cellWidth()
-        delegate: GridDelegate {
-            onPhotoClicked: {
-                thumbnailPage.photoClicked(url, photoWidth, photoHeight, author,
-                                           date, description, tags, title);
-            }
-        }
-        model: photoFeedModel
-        visible: !thumbnailPage.inPortrait
-
-        onWidthChanged: {
-            thumbnailsInRow = width / (UI.THUMBNAIL_WRAPPER_SIDE + UI.THUMBNAIL_SPACING);
-        }
-    }
-
-    ListView {
+    Loader {
+        sourceComponent: inPortrait ? listComponent : gridComponent
         anchors { fill: parent; margins: UI.LISTVIEW_MARGIN }
-        cacheBuffer: 2 * height
-        delegate: ListDelegate {
-            onPhotoClicked: {
-                thumbnailPage.photoClicked(url, photoWidth, photoHeight, author,
-                                           date, description, tags, title);
+    }
+
+    Component {
+        id: gridComponent
+
+        GridView {
+            property int thumbnailsInRow: 4
+
+            function cellWidth() {
+                return Math.floor(width / thumbnailsInRow);
+            }
+
+            cacheBuffer: 2 * height
+            cellHeight: cellWidth
+            cellWidth: cellWidth()
+            delegate: GridDelegate {
+                onPhotoClicked: {
+                    thumbnailPage.photoClicked(url, photoWidth, photoHeight, author,
+                                               date, description, tags, title);
+                }
+            }
+            model: thumbnailPage.model
+
+            onWidthChanged: {
+                thumbnailsInRow = width / (UI.THUMBNAIL_WRAPPER_SIDE + UI.THUMBNAIL_SPACING);
             }
         }
-        model: photoFeedModel
-        visible: thumbnailPage.inPortrait
+    }
+
+    Component {
+        id: listComponent
+
+        ListView {
+            cacheBuffer: 2 * height
+            delegate: ListDelegate {
+                onPhotoClicked: {
+                    thumbnailPage.photoClicked(url, photoWidth, photoHeight, author,
+                                               date, description, tags, title);
+                }
+            }
+            model: thumbnailPage.model
+        }
     }
 }
 //![0]
