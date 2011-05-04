@@ -359,12 +359,6 @@ Rectangle {
                             Custom.RadioButton { }
                             Custom.RadioButton { checked: true }
                         }
-                        Row {
-                            spacing: rowspacing
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            Custom.BusyIndicator { running: true }
-                            Custom.BusyIndicator { running: false }
-                        }
                         Custom.ProgressBar {
                             id: progress2
                             Timer {
@@ -378,6 +372,12 @@ Rectangle {
                             }
                         }
                         Custom.ProgressBar { indeterminate: true }
+                        Row {
+                            spacing: rowspacing
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            Custom.BusyIndicator { running: true }
+                            Custom.BusyIndicator { running: false }
+                        }
                     }
                 }
             }
