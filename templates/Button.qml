@@ -9,7 +9,6 @@ Item {
     property alias containsMouse: behavior.containsMouse
     property alias checkable: behavior.checkable  // button toggles between checked and !checked
     property alias checked: behavior.checked
-    default property alias data: contentItem.data
 
     property string text
     property url iconSource
@@ -18,11 +17,6 @@ Item {
     implicitHeight: 30
 
     property string __position: "only"
-
-    Item {
-        id: contentItem
-        anchors.fill: parent
-    }
 
     ButtonBehavior {
         id: behavior

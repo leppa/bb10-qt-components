@@ -24,7 +24,7 @@ QtObject {
                 BorderImage {
                     anchors.fill: parent
                     smooth: true
-                    source: pressed || checked ? "images/button_pressed.png" : "images/button_normal.png";
+                    source: styledItem.pressed || styledItem.checked ? "images/button_pressed.png" : "images/button_normal.png";
                     border.left: 6; border.top: 6
                     border.right: 6; border.bottom: 6
                 }

@@ -43,7 +43,7 @@ Rectangle {
                             Rectangle {
                                 anchors.fill: parent
                                 border.color: "#222"
-                                color: parent.parent.pressed ? "blue " : "red"
+                                color: btn.pressed ? "blue " : "red"
                                 Text {
                                     anchors.centerIn: parent
                                     text: btn.text
