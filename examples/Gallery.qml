@@ -323,13 +323,57 @@ Rectangle {
                                     smooth: true
                                 }
                             }
-                        }/*
+                        }
                         Row {
                             spacing: rowspacing
                             anchors.horizontalCenter: parent.horizontalCenter
-                            BusyIndicator { running: true }
-                            BusyIndicator { running: false }
-                        }*/
+                            BusyIndicator {
+                                id: bi1
+                                running: true
+                                Rectangle {
+                                    id: wheel
+                                    radius: 5
+                                    width: 32
+                                    height: 32
+                                    color: "black"
+
+                                    property int steps: 12
+                                    property int rotationStep: 0
+                                    rotation: rotationStep * (360 / steps)
+
+                                    NumberAnimation on rotationStep {
+                                        running: bi1.opacity > 0 &&
+                                                 bi1.visible &&
+                                                 bi1.running
+                                        from: 0; to: wheel.steps;
+                                        loops: Animation.Infinite; duration: 1000 // 1s per revolution
+                                    }
+                                }
+                            }
+                            BusyIndicator {
+                                id: bi2
+                                running: false
+                                Rectangle {
+                                    id: wheel2
+                                    radius: 5
+                                    width: 32
+                                    height: 32
+                                    color: "black"
+
+                                    property int steps: 12
+                                    property int rotationStep: 0
+                                    rotation: rotationStep * (360 / steps)
+
+                                    NumberAnimation on rotationStep {
+                                        running: bi2.opacity > 0 &&
+                                                 bi2.visible &&
+                                                 bi2.running
+                                        from: 0; to: wheel2.steps;
+                                        loops: Animation.Infinite; duration: 1000 // 1s per revolution
+                                    }
+                                }
+                            }
+                        }
                     }
                }
                Item {
