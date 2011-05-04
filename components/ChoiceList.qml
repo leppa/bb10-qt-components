@@ -67,7 +67,6 @@ Item {
         id: popup
         listItem: styling.listItem
         popupFrame: styling.popupFrame
-        popupLocation: "below"
     }
 
     SystemPalette { id: syspal }
