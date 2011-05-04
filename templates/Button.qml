@@ -1,14 +1,13 @@
 import QtQuick 1.1
-import "./behaviors"    // ButtonBehavior
 
 Item {
     id: button
 
     signal clicked
-    property alias pressed: behavior.pressed
-    property alias containsMouse: behavior.containsMouse
-    property alias checkable: behavior.checkable  // button toggles between checked and !checked
-    property alias checked: behavior.checked
+    property alias pressed: mouseArea.pressed
+    property alias containsMouse: mouseArea.containsMouse
+    property bool checkable: false
+    property bool checked: false
 
     property string text
     property url iconSource
@@ -18,9 +17,14 @@ Item {
 
     property string __position: "only"
 
-    ButtonBehavior {
-        id: behavior
+    MouseArea {
+        id: mouseArea
         anchors.fill: parent
-        onClicked: button.clicked()
+
+        onClicked: {
+            if (button.checkable)
+                button.checked = !button.checked;
+            button.clicked();
+        }
     }
 }

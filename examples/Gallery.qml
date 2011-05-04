@@ -191,6 +191,7 @@ Rectangle {
                         }
                         Row{
                             CheckBox {
+                                id: cb1
                                 Rectangle{
                                     anchors.fill: parent
                                     radius: 2
@@ -201,7 +202,7 @@ Rectangle {
                                     Rectangle {
                                         width: 12
                                         height: 12
-                                        visible: parent.parent.parent.checked
+                                        visible: cb1.checked
                                         anchors.centerIn: parent
                                         radius: 5
                                         color: "black"
@@ -210,6 +211,7 @@ Rectangle {
                                 }
                             }
                             CheckBox {
+                                id: cb2
                                 checked: true
                                 Rectangle {
                                     anchors.fill: parent
@@ -221,7 +223,7 @@ Rectangle {
                                     Rectangle {
                                         width: 12
                                         height: 12
-                                        visible: parent.parent.parent.checked
+                                        visible: cb2.checked
                                         anchors.centerIn: parent
                                         radius: 5
                                         color: "black"
@@ -230,6 +232,7 @@ Rectangle {
                                 }
                             }
                             RadioButton {
+                                id: rb1
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: 2
@@ -240,7 +243,7 @@ Rectangle {
                                     Rectangle {
                                         width:12
                                         height:12
-                                        visible: parent.parent.parent.checked
+                                        visible: rb1.checked
                                         anchors.centerIn: parent
                                         radius: 5
                                         color: "black"
@@ -249,6 +252,7 @@ Rectangle {
                                 }
                             }
                             RadioButton {
+                                id: rb2
                                 checked:true
                                 Rectangle {
                                     anchors.fill: parent
@@ -260,7 +264,7 @@ Rectangle {
                                     Rectangle {
                                         width:12
                                         height:12
-                                        visible: parent.parent.parent.checked
+                                        visible: rb2.checked
                                         anchors.centerIn: parent
                                         radius: 5
                                         color: "black"

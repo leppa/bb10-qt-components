@@ -1,27 +1,26 @@
 import QtQuick 1.1
-import "./behaviors"
 
 Item {
     id: checkBox
 
     signal clicked
-    property alias pressed: behavior.pressed
-    property alias checked: behavior.checked
-    property alias containsMouse: behavior.containsMouse
-    default property alias data: content.data
+    property alias pressed: mouseArea.pressed
+    property bool checked: false
+    property alias containsMouse: mouseArea.containsMouse
 
     implicitWidth: 32
     implicitHeight: 32
 
-    Item {
-        id: content
-        anchors.fill: parent
+    function __handleChecked() {
+        checkBox.checked = !checkBox.checked;
     }
 
-    ButtonBehavior {
-        id: behavior
+    MouseArea {
+        id: mouseArea
         anchors.fill: parent
-        checkable: true
-        onClicked: checkBox.clicked()
+        onClicked: {
+            __handleChecked();
+            checkBox.clicked();
+        }
     }
 }
