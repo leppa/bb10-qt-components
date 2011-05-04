@@ -17,7 +17,7 @@ Item {
     property string currentText: model && currentIndex >= 0 ? model.get(currentIndex).text : ""
     property alias popupOpen: popup.popupOpen
     property alias containsMouse: popup.containsMouse
-    property bool pressed: popup.pressed
+    property bool pressed: popup.buttonPressed
 
     property ChoiceListStylingProperties styling: ChoiceListStylingProperties {
         textColor: syspal.text
@@ -67,6 +67,7 @@ Item {
         id: popup
         listItem: styling.listItem
         popupFrame: styling.popupFrame
+        popupLocation: "below"
     }
 
     SystemPalette { id: syspal }

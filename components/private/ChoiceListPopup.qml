@@ -29,6 +29,11 @@ MouseArea {
     property alias model: listView.model
     property alias currentIndex: listView.currentIndex
 
+    // buttonPressed will be true when the mouse press starts
+    // while the popup is closed. At that point, this component can be
+    // seen as a button, and not yet a popup menu:
+    property bool buttonPressed: false
+
     property Component listItem
     property Component listHighlight
     property Component popupFrame
@@ -287,6 +292,7 @@ MouseArea {
             // Show the popup:
             pressedTimer.running = true
             popup.popupOpen = true
+            popup.buttonPressed = true
         }
     }
 
@@ -300,6 +306,7 @@ MouseArea {
                 listView.currentIndex = indexAt;
             popup.popupOpen = false
         }
+        popup.buttonPressed = false
     }
 
     onPositionChanged: {
