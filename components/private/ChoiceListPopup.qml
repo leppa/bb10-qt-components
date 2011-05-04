@@ -9,15 +9,23 @@ MouseArea {
     // close the popup by clicking anywhere in the window. Letting the popup act as the mouse
     // area for the button that 'owns' it is also nessesary to support drag'n'release behavior.
 
+    // The 'popupframe' delegate will be told to show or hide by assigning
+    // opacity to 1 or 0, respectively.
+
     anchors.fill: parent
-    hoverEnabled: true
-    state: "hidden"
+    hoverEnabled: true    
+    state: "popupClosed"
 
+    // Set 'popupVisible' to show/hide the popup. The 'state' property is more
+    // internal, and contains additional states used to protect the popup from
+    // e.g. receiving mouse clicks while its about to hide etc.
     property bool popupVisible: false
-    property string behavior: "MacOS"
-    property bool desktopBehavior: (behavior == "MacOS" || behavior == "Windows" || behavior == "Linux")
-    property int previousCurrentIndex: -1
 
+    // 'popupLocation' can be either 'center' or 'below':
+    property string popupLocation: "center"
+
+    property bool desktopBehavior: true
+    property int previousCurrentIndex: -1
     property alias model: listView.model
     property alias currentIndex: listView.currentIndex
 
@@ -54,20 +62,19 @@ MouseArea {
             } else {
                 highlightItemAt(mouseX, mouseY);
             }
-
             listView.forceActiveFocus();
-            state = ""
+            state = "popupOpen"
         } else {
             // Reparent the popup back to normal. But we need to be careful not to do this
             // before the popup is hidden, otherwise you will see it jump to the new parent
             // on screen. So we make it a binding in case a transition is set on opacity:
-            parent = function() { return popupFrameLoader.item.opacity == 0 ? originalParent : parent; }
+            parent = function() { return (popupFrameLoader.item.opacity == 0) ? originalParent : parent; }
             popupFrameLoader.item.opacity = 0;
             popup.hideHighlight();
             // Make sure we only enter the 'hidden' state when the popup is actually not
             // visible. Otherwise the user will be able do open the popup again by clicking
             // anywhere on screen while its being hidden (in case of a transition):
-            state = function() { return popupFrameLoader.item.opacity == 0 ? "hidden" : ""; }
+            state = function() { return (popupFrameLoader.item.opacity == 0) ? "popupClosed" : "popupClosing"; }
         }
     }
 
@@ -96,49 +103,46 @@ MouseArea {
     }
 
     function positionPopup() {
-        switch(behavior) {
-        case "MacOS":
-            var mappedListPos = mapFromItem(choiceList, 0, 0);
+        // Set initial values to top left corner of original parent:
+        var globalPos = mapFromItem(originalParent, 0, 0);
+        var newX = globalPos.x;
+        var newY = globalPos.y
+        var newW = originalParent.width;
+        var newH = listView.contentHeight
+
+        switch (popupLocation) {
+        case "center":
+            // Show centered over original parent with respect to selected item:
             var itemHeight = Math.max(listView.contentHeight/listView.count, 0);
             var currentItemY = Math.max(currentIndex*itemHeight, 0);
             currentItemY += Math.floor(itemHeight/2 - choiceList.height/2);  // correct for choiceLists that are higher than items in the list
-
-            listView.y = mappedListPos.y - currentItemY;
-            listView.x = mappedListPos.x;
-
-            listView.width = choiceList.width;
-            listView.height = listView.contentHeight    //mm see QTBUG-16037
-
-            if(listView.y < styling.topMargin) {
-                var excess = Math.floor(currentItemY - mappedListPos.y);
-                listView.y = styling.topMargin;
-                listView.height += excess;
-                listView.contentY = excess + styling.topMargin;
-
-                if(listView.contentY != excess+styling.topMargin) //mm setting listView.height seems to make it worse
-                    print("!!! ChoiceListPopup.qml: listView.contentY should be " + excess+styling.topMargin + " but is " + listView.contentY)
-            }
-
-            if(listView.height+listView.contentY > listView.contentHeight) {
-                listView.height = listView.contentHeight-listView.contentY;
-            }
-
-            if(listView.y+listView.height+styling.bottomMargin > popup.height) {
-                listView.height = popup.height-listView.y-styling.bottomMargin;
-            }
+            newY -= currentItemY;
             break;
-        case "Windows":
-            var point = popup.mapFromItem(choiceList, 0, listView.height);
-            listView.y = point.y;
-            listView.x = point.x;
-
-            listView.width = choiceList.width;
-            listView.height = 200;
-
-            break;
-        case "MeeGo":
+        case "below":
+        case "":
+            // Show below original parent:
+            newX -= popupFrameLoader.anchors.leftMargin;
+            newY += originalParent.height - popupFrameLoader.anchors.topMargin;
             break;
         }
+
+        // Ensure the popup is inside the window:
+        if (newX < styling.leftMargin)
+            newX = styling.leftMargin;
+        else if (newX + newW > popup.width - styling.rightMargin)
+            newX = popup.width - styling.rightMargin - newW;
+
+        if (newY < styling.topMargin)
+            newY = styling.topMargin;
+        else if (newY + newH > popup.height - styling.bottomMargin)
+            newY = popup.height - styling.bottomMargin - newH;
+
+        // Todo: handle case when the list itself is larger than the window...
+
+        listView.x = newX
+        listView.y = newY
+        listView.width = newW
+        listView.height = newH
     }
 
     Loader {
@@ -273,7 +277,7 @@ MouseArea {
     }
 
     onPressed: {
-        if (state == "hidden") {
+        if (state == "popupClosed") {
             // Show the popup:
             pressedTimer.running = true
             popup.popupVisible = true
@@ -281,7 +285,7 @@ MouseArea {
     }
 
     onReleased: {
-        if (pressedTimer.running === false) {
+        if (state == "popupOpen" && pressedTimer.running === false) {
             // Either we have a 'new' click on the popup, or the user has
             // done a drag'n'release. In either case, the user has done a selection:
             var mappedPos = mapToItem(listView.contentItem, mouseX, mouseY);
@@ -293,7 +297,7 @@ MouseArea {
     }
 
     onPositionChanged: {
-        if (state != "hidden")
+        if (state == "popupOpen")
             popup.highlightItemAt(mouseX, mouseY)
     }
 }
