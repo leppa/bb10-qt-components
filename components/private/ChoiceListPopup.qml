@@ -16,10 +16,10 @@ MouseArea {
     hoverEnabled: true    
     state: "popupClosed"
 
-    // Set 'popupVisible' to show/hide the popup. The 'state' property is more
+    // Set 'popupOpen' to show/hide the popup. The 'state' property is more
     // internal, and contains additional states used to protect the popup from
     // e.g. receiving mouse clicks while its about to hide etc.
-    property bool popupVisible: false
+    property bool popupOpen: false
 
     // 'popupLocation' can be either 'center' or 'below':
     property string popupLocation: "center"
@@ -34,23 +34,20 @@ MouseArea {
     property Component popupFrame
 
     property Item originalParent: parent
-    function reparentToTop() {
-        if (originalParent != parent) {
-            // Already reparented. Return early to
-            // avoid changing originalParent:
-            return
-        }
-        originalParent = parent;
-        var p = parent;
-        while (p.parent != undefined)
-            p = p.parent
-        parent = p;
-    }
 
-    onPopupVisibleChanged: {
-        if (popupVisible) {
+    onPopupOpenChanged: {
+        if (popupFrameLoader.item === null)
+            return;
+        if (popupOpen) {
             var oldMouseX = mouseX
-            reparentToTop()
+
+            // Reparent to root, so the popup stacks in front:
+            originalParent = parent;
+            var p = parent;
+            while (p.parent != undefined)
+                p = p.parent
+            parent = p;
+
             previousCurrentIndex = currentIndex;
             positionPopup();
             popupFrameLoader.item.opacity = 1;
@@ -75,6 +72,15 @@ MouseArea {
             // visible. Otherwise the user will be able do open the popup again by clicking
             // anywhere on screen while its being hidden (in case of a transition):
             state = function() { return (popupFrameLoader.item.opacity == 0) ? "popupClosed" : "popupClosing"; }
+        }
+    }
+
+    Component.onCompleted: {
+        // In case 'popupOpen' was set to 'true' before
+        // 'popupFrameLoader' was finished, we open the popup now instead:
+        if (popup.popupOpen){
+            popup.popupOpen = false
+            popup.popupOpen = true
         }
     }
 
@@ -257,10 +263,10 @@ MouseArea {
                     listView.currentIndex = popup.previousCurrentIndex;
                 }
 
-                popup.popupVisible = false;
+                popup.popupOpen = false;
             } else if (event.key == Qt.Key_Escape) {
                 listView.currentIndex = popup.previousCurrentIndex;
-                popup.popupVisible = false;
+                popup.popupOpen = false;
             }
             event.accepted = true;  // consume all keys while popout has focus
         }
@@ -280,7 +286,7 @@ MouseArea {
         if (state == "popupClosed") {
             // Show the popup:
             pressedTimer.running = true
-            popup.popupVisible = true
+            popup.popupOpen = true
         }
     }
 
@@ -292,7 +298,7 @@ MouseArea {
             var indexAt = listView.indexAt(mappedPos.x, mappedPos.y);
             if(indexAt != -1)
                 listView.currentIndex = indexAt;
-            popup.popupVisible = false
+            popup.popupOpen = false
         }
     }
 
