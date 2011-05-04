@@ -4,8 +4,9 @@ QtObject {
 
     property Component background: Component {
         Item {
-            implicitWidth: row.implicitWidth + 10
-            implicitHeight: row.implicitHeight + 10
+            // minimum sizes and are margins could be in style properties
+            implicitWidth: Math.max(90, row.implicitWidth + 10)
+            implicitHeight: Math.max(32, row.implicitHeight + 10)
 
             opacity: enabled ? 1 : 0.7
             clip: true  // clip connected buttons, as they overlap to remove the rounded edjes
