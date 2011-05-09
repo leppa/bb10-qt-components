@@ -11,6 +11,8 @@ Button {
         id: style
     }
 
+    property string __position: "only"
+
     Loader {
         id: loader
         sourceComponent: style.background

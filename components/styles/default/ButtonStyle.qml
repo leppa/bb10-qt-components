@@ -4,7 +4,6 @@ QtObject {
 
     property Component background: Component {
         Item {
-            // minimum sizes and are margins could be in style properties
             implicitWidth: Math.max(90, row.implicitWidth + 10)
             implicitHeight: Math.max(32, row.implicitHeight + 10)
 

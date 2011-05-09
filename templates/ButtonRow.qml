@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "private/ButtonGroup.js" as Behavior
+import "private/ButtonGroup.js" as BG
 
 /*
    Class: ButtonRow
@@ -15,46 +15,39 @@ import "private/ButtonGroup.js" as Behavior
        }
    </code>
 */
+
 Row {
     id: buttonRow
 
-    /*
-     * Property: exclusive
-     * [bool=true] Specifies the grouping behavior. If enabled, the checked property on buttons contained
-     * in the group will be exclusive.
-     *
-     * Note that a button in an exclusive group will allways be checkable
-     */
-    property bool exclusive: true
+     /*
+      * Property: exclusive
+      * [bool=true] Specifies the grouping behavior. If enabled, the checked property on buttons contained
+      * in the group will be exclusive.
+      *
+      * Note that a Button in an exclusive group will allways be checkable
+      */
+     property bool exclusive: true
 
-    /*
-     * Property: checkedButton
-     * [string] Contains the last checked Button.
-     */
-    property Item checkedButton     // read-only
+     /*
+      * Property: checkedButton
+      * [Item] Contains the last checked Item.
+      */
+     property Item checkedButton
 
-    // implementation
-    onExclusiveChanged: Behavior.rebuild()
+    onExclusiveChanged: BG.rebuild()
+
+    function prepareItem(item) { }
+    function setPosition(button, position) { }
+    function resizeChildren(items) { }
 
     Component.onCompleted: {
-        var stylePositions = {
-            single: "",
-            first: "leftmost",
-            middle: "h_middle",
-            last: "rightmost" };
-
-        Behavior.create(buttonRow, {
+        BG.create(buttonRow, {
             exclusive: exclusive,
-            prepareItem: function(item) {
-                if (buttonRow.exclusive && item["checkable"] !== undefined)
-                    item.checkable = true;
-            },
-            setPosition: function(button, position) {
-                if (button.visible && button.hasOwnProperty("__position"))
-                    button.__position = stylePositions[position];
-            }
-        });
+            prepareItem: prepareItem,
+            setPosition: setPosition,
+            resizeChildren: resizeChildren
+            });
     }
 
-    Component.onDestruction: Behavior.destroy()
+    Component.onDestruction: BG.destroy()
 }

@@ -15,8 +15,6 @@ Item {
     implicitWidth: 100
     implicitHeight: 30
 
-    property string __position: "only"
-
     MouseArea {
         id: mouseArea
         anchors.fill: parent

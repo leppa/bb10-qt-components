@@ -10,14 +10,14 @@ ButtonRow {
     }
 
     function setPosition(button, position) {
-        if (button.visible && button.hasOwnProperty("__position"))
-            button.__position = __stylePositions[position];
+        if (button.visible && button.hasOwnProperty("__borderRect"))
+            button.__borderRect.border.color = __stylePositions[position];
     }
 
     property variant __stylePositions: {
-        single: "",
-        first: "leftmost",
-        middle: "h_middle",
-        last: "rightmost"
+        single: "black",
+        first: "red",
+        middle: "green",
+        last: "blue"
     }
 }

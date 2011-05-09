@@ -37,47 +37,33 @@ Rectangle {
                         anchors.topMargin: 6
 
                         Text{ font.bold: true; text: "Default:" ; styleColor: "white" ; color: "#333" ; style: "Raised"}
-                        Button {
+                        GalleryButton {
                             id: btn
                             text: "Push Me"
-                            Rectangle {
-                                anchors.fill: parent
-                                border.color: "#222"
-                                color: btn.pressed ? "blue " : "red"
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: btn.text
-                                }
+                        }
+                        GalleryButtonRow {
+                            GalleryButton {
+                                text: "A"
+                            }
+                            GalleryButton {
+                                text: "B"
+                            }
+                            GalleryButton {
+                                text: "C"
                             }
                         }
-                        ButtonRow {
-                            Button{
-                                id: btn2
+                        GalleryButtonColumn {
+                            GalleryButton {
                                 text: "A"
-                                Rectangle {
-                                    anchors.fill: parent
-                                    border.color: "#222"
-                                    color: parent.pressed ? "steelblue " : parent.checked ? "blue" : "red"
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: btn2.text
-                                    }
-                                }
                             }
-                            Button{
-                                id: btn3
+                            GalleryButton {
                                 text: "B"
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: parent.pressed ? "steelblue " : parent.checked ? "blue" : "red"
-                                    border.color: "#222"
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: btn3.text
-                                    }
-                                }
                             }
-                        }/*
+                            GalleryButton {
+                                text: "C"
+                            }
+                        }
+                        /*
                         TextField {
                             Rectangle{
                                 anchors.fill:parent
@@ -391,6 +377,12 @@ Rectangle {
                         Custom.ButtonRow {
                             Custom.Button { text: "A" }
                             Custom.Button { text: "B" }
+                            Custom.Button { text: "C" }
+                        }
+                        Custom.ButtonColumn {
+                            Custom.Button { text: "A" }
+                            Custom.Button { text: "B" }
+                            Custom.Button { text: "C" }
                         }
                         Custom.Slider {
                             value: 0.5

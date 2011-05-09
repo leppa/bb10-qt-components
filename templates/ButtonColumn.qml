@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "private/ButtonGroup.js" as Behavior
+import "private/ButtonGroup.js" as BG
 
 /*
    Class: ButtonColumn
@@ -15,58 +15,39 @@ import "private/ButtonGroup.js" as Behavior
        }
    </code>
 */
+
 Column {
-    id: buttonColumn
+    id: buttonRow
 
-    /*
-     * Property: exclusive
-     * [bool=true] Specifies the grouping behavior. If enabled, the checked property on buttons contained
-     * in the group will be exclusive.
-     *
-     * Note that a button in an exclusive group will allways be checkable
-     */
-    property bool exclusive: true
+     /*
+      * Property: exclusive
+      * [bool=true] Specifies the grouping behavior. If enabled, the checked property on buttons contained
+      * in the group will be exclusive.
+      *
+      * Note that a Button in an exclusive group will allways be checkable
+      */
+     property bool exclusive: true
 
-    /*
-     * Property: checkedButton
-     * [string] Contains the last checked Button.
-     */
-    property Item checkedButton  // read-only
+     /*
+      * Property: checkedButton
+      * [Item] Contains the last checked Item.
+      */
+     property Item checkedButton
 
-    // implementation
-    onExclusiveChanged: Behavior.rebuild()
+    onExclusiveChanged: BG.rebuild()
+
+    function prepareItem(item) { }
+    function setPosition(button, position) { }
+    function resizeChildren(items) { }
 
     Component.onCompleted: {
-        var stylePositions = {
-            single: "",
-            first: "top",
-            middle: "v_middle",
-            last: "bottom" };
-
-        function isButton(item) {
-            return item && item.hasOwnProperty("__position");
-        }
-
-        Behavior.create(buttonColumn, {
+        BG.create(buttonRow, {
             exclusive: exclusive,
-            prepareItem: function(item) {
-                if (buttonColumn.exclusive && item["checkable"] !== undefined)
-                    item.checkable = true;
-            },
-            setPosition: function(button, position) {
-                if (button.visible && isButton(button))
-                    button.__position = stylePositions[position];
-            },
-            resizeChildren: function() {
-                 Private.buttons.forEach(function(item, i) {
-                     if (isButton(item) && item.visible) {
-                         item.anchors.left = buttonColumn.left;
-                         item.anchors.right = buttonColumn.right;
-                     }
-                 });
-            }
-        });
+            prepareItem: prepareItem,
+            setPosition: setPosition,
+            resizeChildren: resizeChildren
+            });
     }
 
-    Component.onDestruction: Behavior.destroy()
+    Component.onDestruction: BG.destroy()
 }

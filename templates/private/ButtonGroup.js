@@ -127,7 +127,7 @@ function resizeChildren() {
 
     if (typeof params.resizeChildren === "function") {
         resizing = true;
-        params.resizeChildren(self);
+        params.resizeChildren(buttons);
         resizing = false;
     }
 }
