@@ -118,12 +118,12 @@ Item {
 
             Text {
                 text: !!value ? value : ""
-                elide: Text.ElideRight
-                horizontalAlignment: "AlignHCenter"
+                elide: tumblerColumn.privateResizeToFit ? Text.ElideNone : Text.ElideRight
+                horizontalAlignment: tumblerColumn.textAlignment == undefined ? "AlignHCenter" : tumblerColumn.textAlignment
                 verticalAlignment: "AlignVCenter"
                 color: delegateItem.PathView.isCurrentItem ? platformStyle.colorHighlighted : platformStyle.colorNormalLight
                 font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeLarge }
-                anchors.fill: parent
+                anchors { fill: parent; margins: platformStyle.paddingLarge }
 
                 MouseArea {
                     anchors.fill: parent
@@ -133,6 +133,12 @@ Item {
                             root.changed(template.index);
                         }
                     }
+                }
+
+                Component.onCompleted: {
+                    if (tumblerColumn.privateResizeToFit && paintedHeight > templateInternal.columnFitWidth)
+                        templateInternal.columnFitWidth = paintedWidth;
+                    templateInternal.delegatesCount++;
                 }
             }
         }
@@ -148,6 +154,26 @@ Item {
             height: privateStyle.menuItemHeight
             source: privateStyle.imagePath("qtg_fr_tumbler_highlight")
             fillMode: Image.TileHorizontally
+        }
+    }
+
+    QtObject {
+        id: templateInternal
+
+        property int columnFitWidth: -1
+        property int delegatesCount: 0
+
+        onDelegatesCountChanged: {
+            if (tumblerColumn.privateResizeToFit && delegatesCount == tumblerColumn.items.count)
+                asyncTimer.running = true
+        }
+    }
+
+    Timer {
+        id: asyncTimer
+        interval: 1
+        onTriggered: {
+            tumblerColumn.width = templateInternal.columnFitWidth + platformStyle.paddingLarge * 2;
         }
     }
 }

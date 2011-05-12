@@ -54,14 +54,14 @@ Dialog {
     }
     content: Item {
         id: dialogContent
-        height: tumbler.height
+        height: tumbler.height + platformStyle.paddingLarge * 2
         width: parent.width
 
         Tumbler {
             id: tumbler
 
             function _handleTumblerChanges(index) {
-                if (index == 1 || index == 2) {
+                if (index == 0 || index == 2) {
                     var curYear = yearColumn.selectedIndex + yearList.get(0).value;
                     var curMonth = monthColumn.selectedIndex + 1;
 
@@ -76,11 +76,13 @@ Dialog {
                 }
             }
 
-            columns:  [dayColumn, monthColumn, yearColumn]
+            columns:  [monthColumn, dayColumn, yearColumn]
             onChanged: {
                 _handleTumblerChanges(index);
             }
+            anchors.centerIn: parent
             height: privateStyle.menuItemHeight * 4
+            width: parent.width - platformStyle.paddingMedium * 4
             privateDelayInit: true
             states: State {
                 when: screen.currentOrientation == Screen.Landscape || screen.currentOrientation == Screen.LandscapeInverted
@@ -91,6 +93,7 @@ Dialog {
 
             TumblerColumn {
                 id: dayColumn
+                width: privateStyle.menuItemHeight
                 items: ListModel {
                     id: dayList
                 }
@@ -99,6 +102,7 @@ Dialog {
 
             TumblerColumn {
                 id: monthColumn
+                textAlignment: "AlignLeft"
                 items: ListModel {
                     id: monthList
                 }
@@ -111,6 +115,7 @@ Dialog {
                     id: yearList
                 }
                 selectedIndex: yearList.length > 0 ? root.year - yearList.get(0).value : 0
+                privateResizeToFit: true
             }
         }
     }
@@ -195,7 +200,7 @@ Dialog {
             for (var d = 1; d <= nDays; ++d)
                 dayList.append({"value" : d})  // day
             for (var m = 1; m <= 12; ++m)
-                monthList.append({"value" : dateTime.shortMonthName(m)});
+                monthList.append({"value" : dateTime.longMonthName(m)});
 
             tumbler.privateInitialize()
             internal.initialised = true;
