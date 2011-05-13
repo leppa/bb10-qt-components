@@ -13,7 +13,7 @@ Item {
     id: choiceList
 
     property alias model: popup.model
-    property int currentIndex: popup.currentIndex
+    property alias currentIndex: popup.currentIndex
     property string currentText: model && currentIndex >= 0 ? model.get(currentIndex).text : ""
     property alias popupOpen: popup.popupOpen
     property alias containsMouse: popup.containsMouse
