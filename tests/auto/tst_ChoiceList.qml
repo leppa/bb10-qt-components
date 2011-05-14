@@ -66,5 +66,16 @@ ComponentTestCase {
             "Setting model a valid and non-empty model should set the currentIndex to 0.";
         obj.model = choices;
         compare(obj.currentIndex, 0, message);
+
+        var message =
+            "Invalid indexes should return empty text.";
+        obj.currentIndex = -1;
+        compare(obj.currentText, "", message);
+        obj.currentIndex = 0;
+        compare(obj.currentText, "Alpha", message);
+        obj.currentIndex = 4;
+        compare(obj.currentText, "", message);
+        obj.currentIndex = 3;
+        compare(obj.currentText, "Delta", message);
     }
 }

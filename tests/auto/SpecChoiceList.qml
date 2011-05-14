@@ -45,7 +45,7 @@ QtObject {
     property Component api:
     Component {
         QtObject {
-            property QtObject model
+            property variant model
             property int currentIndex
         }
     }

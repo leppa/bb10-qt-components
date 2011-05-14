@@ -93,7 +93,7 @@ QtObject {
                 font.bold: index == styledItem.currentIndex
                 color: highlighted ? "white" : styledItem.styling.textColor
                 anchors.margins: 10
-                text: styledItem.model ? styledItem.model.get(index).text : ""  // list properties can't be automatically be added to the scope, so use get()
+                text: styledItem.model && styledItem.model.count > 0 ? styledItem.model.get(index).text : ""  // list properties can't be automatically be added to the scope, so use get()
             }
         }
     }

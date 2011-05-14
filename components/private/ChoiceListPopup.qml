@@ -183,6 +183,13 @@ MouseArea {
             }
         }
 
+        onModelChanged: {
+            if (model == null || model.count == 0)
+                currentIndex = -1;
+            else
+                currentIndex = 0;
+        }
+
         property int highlightedIndex: -1
         onHighlightedIndexChanged: positionViewAtIndex(highlightedIndex, ListView.Contain)
 

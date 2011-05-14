@@ -14,7 +14,7 @@ Item {
 
     property alias model: popup.model
     property alias currentIndex: popup.currentIndex
-    property string currentText: model && currentIndex >= 0 ? model.get(currentIndex).text : ""
+    property string currentText: model && model.count > 0 && currentIndex >= 0 && currentIndex < model.count ? model.get(currentIndex).text : ""
     property alias popupOpen: popup.popupOpen
     property alias containsMouse: popup.containsMouse
     property bool pressed: popup.buttonPressed
