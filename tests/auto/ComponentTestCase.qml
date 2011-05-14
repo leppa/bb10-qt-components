@@ -60,6 +60,10 @@ TestCase {
         apiSkeleton.destroy();
     }
 
+    function test_check_api() {
+        Util.check_api(testSubject);
+    }
+
     function test_defaults_sanity() {
         Util.check_defaults(testSubject);
     }
