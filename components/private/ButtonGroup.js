@@ -92,6 +92,12 @@ function updateButtons() {
         if (params.exclusive)
             exclusiveGroup.connectCheckedChanged(item);
     }
+
+    if (!checkedButton && params.exclusive && length > 0) {
+        checkedButton = self.children[0];
+        checkedButton.checked = true;
+    }
+
     self.checkedButton = checkedButton;
 
     buttonVisibleChanged();
