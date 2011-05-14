@@ -34,7 +34,7 @@ Column {
     property Item checkedButton  // read-only
 
     // implementation
-    onExclusiveChanged: Behavior.rebuild()
+    onExclusiveChanged: Behavior.updateButtons()
 
     Component.onCompleted: {
         var stylePositions = {
