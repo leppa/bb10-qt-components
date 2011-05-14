@@ -54,7 +54,7 @@ Column {
                     button.__position = stylePositions[position];
             },
             resizeChildren: function() {
-                 Private.buttons.forEach(function(item, i) {
+                 Behavior.buttons.forEach(function(item, i) {
                      if (Behavior.isButton(item) && item.visible) {
                          item.anchors.left = buttonColumn.left;
                          item.anchors.right = buttonColumn.right;
