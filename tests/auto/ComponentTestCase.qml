@@ -48,7 +48,9 @@ TestCase {
         var apiSkeleton = testSubject.api.createObject(null);
 
         for (var prop in apiSkeleton) {
-            if (prop.match(".+Changed$") || prop == "objectName")
+            if (prop.match(".+Changed$"))
+                continue;
+            if (prop == "objectName" || prop == "addMethods")
                 continue;
 
             if (typeof this["test_" + prop] != "function") {

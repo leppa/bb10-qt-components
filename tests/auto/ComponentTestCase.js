@@ -33,6 +33,10 @@ function check_api(testSubject)
         if (prop.match(".+Changed$"))
             continue;
 
+        // XXX: Ignore this method since is a hack added by RangeModel
+        if (prop == "addMethods")
+            continue;
+
         var message = "Missing " + (typeof apiSkeleton[prop] == "function"
                 ? "function" : "property") + ": " + prop;
         compare(rawObject.hasOwnProperty(prop), true, message);
