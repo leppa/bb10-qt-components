@@ -24,43 +24,46 @@
 **
 ****************************************************************************/
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef SDECLARATIVEINDICATORDATA_H
+#define SDECLARATIVEINDICATORDATA_H
 
-#include <QObject>
-#include <QStringList>
+#include <e32base.h> // CBase
 
-class FileAccess : public QObject
+class TResourceReader;
+
+class CSDeclarativeIndicatorData : public CBase
 {
-    Q_OBJECT
-
 public:
-    explicit FileAccess(QObject *parent = 0);
+    static CSDeclarativeIndicatorData* NewL( TResourceReader& aReader );
+    ~CSDeclarativeIndicatorData();
 
-    Q_INVOKABLE QStringList qmlFileNames(const QString &path) const;
-    Q_INVOKABLE QStringList qmlFilePaths(const QString &path) const;
-    Q_INVOKABLE QStringList qmlPaths() const;
+    TInt Uid() const;
+    TInt Priority() const;
+    TInt FrameCount() const;
+    TPtrC BitmapFile() const;
+    TBool MultiColorMode() const;
+    TInt GetIndicatorBitmapIndexes( RArray<TInt>& aIndexes ) const;
+
+    TInt State() const;
+    void SetState( TInt aState );
+    TInt CurrentFrame() const;
+    void SetCurrentFrame( TInt aCurrentFrame );
+
+private:
+    CSDeclarativeIndicatorData();
+    void ConstructFromResourceL( TResourceReader& aReader );
+    void ReadBitmapIndexesL( TResourceReader& aReader, TInt aCount );
+
+private: // data
+    TInt iState;
+    TInt iUid;
+    TInt iPriority;
+    TInt iFrameCount;
+    TInt iCurrentFrame;
+    HBufC* iBitmapFile;
+    TBool iMultiColorMode;
+    RArray<TInt> iIndicatorBitmapIndexes;
+
 };
 
-class Settings : public QObject
-{
-    Q_OBJECT
-    Q_ENUMS(IndicatorIds)
-public:
-
-    enum IndicatorIds {
-        IndicatorEMail = 2,
-        IndicatorSecuredConnection = 6,
-        IndicatorBluetooth = 12,
-        IndicatorUsb = 28
-    };
-
-    explicit Settings(QObject *parent = 0);
-    ~Settings();
-
-    Q_INVOKABLE void setOrientation(int orientation);
-    Q_INVOKABLE int orientation() const;
-    Q_INVOKABLE void setIndicatorState(int indicatorId, bool on) const;
-};
-
-#endif // UTILS_H
+#endif // SDECLARATIVEINDICATORDATA_H

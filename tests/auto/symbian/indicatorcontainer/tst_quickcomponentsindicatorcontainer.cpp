@@ -24,43 +24,41 @@
 **
 ****************************************************************************/
 
-#ifndef UTILS_H
-#define UTILS_H
+#include <qtest.h>
+#include "tst_quickcomponentstest.h"
 
-#include <QObject>
-#include <QStringList>
-
-class FileAccess : public QObject
+class tst_quickcomponentsindicatorcontainer : public QObject
 {
     Q_OBJECT
 
-public:
-    explicit FileAccess(QObject *parent = 0);
+private slots:
+    void initTestCase();
+    void validateProperties();
 
-    Q_INVOKABLE QStringList qmlFileNames(const QString &path) const;
-    Q_INVOKABLE QStringList qmlFilePaths(const QString &path) const;
-    Q_INVOKABLE QStringList qmlPaths() const;
+private:
+    QObject *m_componentObject;
 };
 
-class Settings : public QObject
+void tst_quickcomponentsindicatorcontainer::initTestCase()
 {
-    Q_OBJECT
-    Q_ENUMS(IndicatorIds)
-public:
+    QString errors;
+    m_componentObject = tst_quickcomponentstest::createComponentFromFile("tst_quickcomponentsindicatorcontainer.qml", &errors);
+    QVERIFY2(m_componentObject, qPrintable(errors));
+}
 
-    enum IndicatorIds {
-        IndicatorEMail = 2,
-        IndicatorSecuredConnection = 6,
-        IndicatorBluetooth = 12,
-        IndicatorUsb = 28
-    };
+void tst_quickcomponentsindicatorcontainer::validateProperties()
+{
+    QVariant mode = m_componentObject->property("indicatorColor");
+    QVERIFY(mode.isValid());
+    QVERIFY(mode.canConvert(QVariant::Color));
 
-    explicit Settings(QObject *parent = 0);
-    ~Settings();
+    QVERIFY(m_componentObject->property("indicatorWidth").isValid());
+    QVERIFY(m_componentObject->property("indicatorHeight").isValid());
+    QVERIFY(m_componentObject->property("indicatorPadding").isValid());
+    QVERIFY(m_componentObject->property("maxIndicatorCount").isValid());
+}
 
-    Q_INVOKABLE void setOrientation(int orientation);
-    Q_INVOKABLE int orientation() const;
-    Q_INVOKABLE void setIndicatorState(int indicatorId, bool on) const;
-};
 
-#endif // UTILS_H
+QTEST_MAIN(tst_quickcomponentsindicatorcontainer)
+
+#include "tst_quickcomponentsindicatorcontainer.moc"

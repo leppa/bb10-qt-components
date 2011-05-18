@@ -24,43 +24,44 @@
 **
 ****************************************************************************/
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef SDECLARATIVEINDICATOR_H
+#define SDECLARATIVEINDICATOR_H
 
-#include <QObject>
-#include <QStringList>
+#include <QDeclarativeItem>
+#include <QScopedPointer>
 
-class FileAccess : public QObject
+class SDeclarativeIndicatorPrivate;
+class CSDeclarativeIndicatorData;
+
+class SDeclarativeIndicator : public QDeclarativeItem
 {
     Q_OBJECT
-
+    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
 public:
-    explicit FileAccess(QObject *parent = 0);
+    SDeclarativeIndicator(CSDeclarativeIndicatorData *data, QDeclarativeItem *parent = 0);
+    ~SDeclarativeIndicator();
 
-    Q_INVOKABLE QStringList qmlFileNames(const QString &path) const;
-    Q_INVOKABLE QStringList qmlFilePaths(const QString &path) const;
-    Q_INVOKABLE QStringList qmlPaths() const;
+    int uid() const;
+    int priority() const;
+    int state() const;
+    bool setState(int state);
+
+    QColor color() const;
+
+public slots:
+    void setColor(const QColor &color);
+
+signals:
+    void colorChanged();
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    virtual void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
+    QScopedPointer<SDeclarativeIndicatorPrivate> d_ptr;
+
+private:
+    Q_DISABLE_COPY(SDeclarativeIndicator)
+    Q_DECLARE_PRIVATE(SDeclarativeIndicator)
 };
 
-class Settings : public QObject
-{
-    Q_OBJECT
-    Q_ENUMS(IndicatorIds)
-public:
-
-    enum IndicatorIds {
-        IndicatorEMail = 2,
-        IndicatorSecuredConnection = 6,
-        IndicatorBluetooth = 12,
-        IndicatorUsb = 28
-    };
-
-    explicit Settings(QObject *parent = 0);
-    ~Settings();
-
-    Q_INVOKABLE void setOrientation(int orientation);
-    Q_INVOKABLE int orientation() const;
-    Q_INVOKABLE void setIndicatorState(int indicatorId, bool on) const;
-};
-
-#endif // UTILS_H
+#endif //SDECLARATIVEINDICATOR_H
