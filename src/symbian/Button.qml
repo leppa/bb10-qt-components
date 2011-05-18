@@ -47,44 +47,22 @@ ImplicitSizeItem {
     property bool platformAutoRepeat: false
     property bool platformLongPress: false
 
-    implicitWidth: {
-        var prefWidth = 20;
-
-        if (iconSource != "" && text)
-            prefWidth = icon.sourceSize.width > privateStyle.textWidth(label.text, label.font)
-                ? icon.anchors.leftMargin + icon.sourceSize.width + icon.anchors.rightMargin
-                : label.anchors.leftMargin + privateStyle.textWidth(label.text, label.font) + label.anchors.rightMargin
-        else if (iconSource != "")
-            prefWidth = icon.anchors.leftMargin + icon.sourceSize.width + icon.anchors.rightMargin;
-        else if (text)
-            prefWidth = icon.anchors.leftMargin + privateStyle.textWidth(label.text, label.font) + label.anchors.rightMargin;
-
-        return prefWidth;
-    }
-
-    implicitHeight: {
-        var prefHeight = icon.anchors.topMargin + icon.anchors.bottomMargin;
-
-        if (iconSource != "" && text)
-            prefHeight = prefHeight + icon.sourceSize.height + privateStyle.fontHeight(label.font);
-        else if (iconSource != "")
-            prefHeight = prefHeight + icon.sourceSize.height;
-        else if (text)
-            prefHeight = prefHeight + privateStyle.fontHeight(label.font);
-
-        return prefHeight;
-    }
+    implicitWidth: Math.max(container.contentWidth + 2 * internal.horizontalPadding, privateStyle.buttonSize)
+    implicitHeight: Math.max(container.contentHeight + 2 * internal.verticalPadding, privateStyle.buttonSize)
 
     QtObject {
         id: internal
         objectName: "internal"
 
         property int autoRepeatInterval: 60
+        property int verticalPadding: (privateStyle.buttonSize - platformStyle.graphicSizeSmall) / 2
+        property int horizontalPadding: label.text ? platformStyle.paddingLarge : verticalPadding
 
+        // "pressed" is a transient state, see press() function
         function bg_postfix() {
-            if (activeFocus && checked)
-                return "pressed"
-            else if (checked)
+            if (!button.enabled)
+                return "disabled"
+            else if (button.checked)
                 return "latched"
             else
                 return "normal"
@@ -92,48 +70,48 @@ ImplicitSizeItem {
 
         function toggleChecked() {
             if (checkable)
-                checked = !checked;
+                checked = !checked
         }
 
         function press() {
             if (checkable && checked)
-                privateStyle.play(Symbian.SensitiveButton);
+                privateStyle.play(Symbian.SensitiveButton)
             else
-                privateStyle.play(Symbian.BasicButton);
+                privateStyle.play(Symbian.BasicButton)
             highlight.source = privateStyle.imagePath(internal.imageName() + "pressed")
-            layout.scale = 0.95;
-            highlight.opacity = 1;
+            container.scale = 0.95
+            highlight.opacity = 1
         }
 
         function release() {
-            layout.scale = 1;
-            highlight.opacity = 0;
+            container.scale = 1
+            highlight.opacity = 0
             if (tapRepeatTimer.running)
-                tapRepeatTimer.stop();
-            button.platformReleased();
+                tapRepeatTimer.stop()
+            button.platformReleased()
         }
 
         function click() {
-            internal.toggleChecked();
+            internal.toggleChecked()
             if (!checkable || (checkable && !checked))
-                privateStyle.play(Symbian.BasicButton);
-            clickedEffect.restart();
-            button.clicked();
+                privateStyle.play(Symbian.BasicButton)
+            clickedEffect.restart()
+            button.clicked()
         }
 
         function hold() {
             // If autorepeat is enabled, do not emit long press, but repeat the tap action.
             if (button.platformAutoRepeat)
-                tapRepeatTimer.start();
+                tapRepeatTimer.start()
 
             if (button.platformLongPress)
-                button.platformPressAndHold();
+                button.platformPressAndHold()
         }
 
         function repeat() {
             if (!checkable)
-                privateStyle.play(Symbian.SensitiveButton);
-            button.clicked();
+                privateStyle.play(Symbian.SensitiveButton)
+            button.clicked()
         }
 
         // The function imageName() handles fetching correct graphics for the Button.
@@ -150,41 +128,41 @@ ImplicitSizeItem {
         id: stateGroup
 
         states: [
-            State { name: "Pressed"; },
-            State { name: "PressAndHold"; },
-            State { name: "Canceled"; }
+            State { name: "Pressed" },
+            State { name: "PressAndHold" },
+            State { name: "Canceled" }
         ]
 
         transitions: [
             Transition {
                 to: "Pressed"
-                ScriptAction { script: internal.press(); }
+                ScriptAction { script: internal.press() }
             },
             Transition {
                 from: "Pressed"
                 to: "PressAndHold"
-                ScriptAction { script: internal.hold(); }
+                ScriptAction { script: internal.hold() }
             },
             Transition {
                 from: "Pressed"
                 to: ""
-                ScriptAction { script: internal.release(); }
-                ScriptAction { script: internal.click(); }
+                ScriptAction { script: internal.release() }
+                ScriptAction { script: internal.click() }
             },
             Transition {
                 from: "PressAndHold"
                 to: ""
-                ScriptAction { script: internal.release(); }
+                ScriptAction { script: internal.release() }
             },
             Transition {
                 from: "Pressed"
                 to: "Canceled"
-                ScriptAction { script: internal.release(); }
+                ScriptAction { script: internal.release() }
             },
             Transition {
                 from: "PressAndHold"
                 to: "Canceled"
-                ScriptAction { script: internal.release(); }
+                ScriptAction { script: internal.release() }
             }
         ]
     }
@@ -203,43 +181,50 @@ ImplicitSizeItem {
     }
 
     Item {
-        id: layout
-        width: implicitWidth < button.width ? implicitWidth : button.width
-        height: implicitHeight < button.height ? implicitHeight : button.height
+        id: container
+
+        // Having both icon and text simultaneously is unspecified but supported by implementation
+        property int spacing: (icon.height && label.text) ? platformStyle.paddingSmall : 0
+        property int contentWidth: Math.max(icon.width, label.textWidth)
+        property int contentHeight: icon.height + spacing + label.height
+
+        width: Math.min(contentWidth, button.width - 2 * internal.horizontalPadding)
+        height: Math.min(contentHeight, button.height - 2 * internal.verticalPadding)
+        clip: true
         anchors.centerIn: parent
 
         Image {
             id: icon
-            sourceSize.width : platformStyle.graphicSizeSmall
-            sourceSize.height : platformStyle.graphicSizeSmall
-            fillMode: Image.PreserveAspectFit
+            sourceSize.width: platformStyle.graphicSizeSmall
+            sourceSize.height: platformStyle.graphicSizeSmall
             smooth: true
-
-            anchors {
-                horizontalCenter: layout.horizontalCenter
-                verticalCenter: layout.verticalCenter
-                verticalCenterOffset: text ? -platformStyle.paddingLarge : 0
-                margins: platformStyle.paddingLarge
-            }
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
         }
-
         Text {
             id: label
-            elide: layout.width >= button.width ? Text.ElideRight : Text.ElideNone
+            elide: Text.ElideRight
+            property int textWidth: text ? privateStyle.textWidth(text, font) : 0
             anchors {
-                leftMargin: platformStyle.paddingLarge
-                rightMargin: platformStyle.paddingLarge
-                left: layout.left
-                right: layout.right
-                top: iconSource != "" ? icon.bottom : layout.top
-                bottom: layout.bottom
+                top: icon.bottom
+                topMargin: parent.spacing
+                left: parent.left
+                right: parent.right
             }
-
+            height: text ? privateStyle.fontHeight(font) : 0
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-
-            font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeMedium }
-            color: platformStyle.colorNormalLight
+            font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeLarge }
+            color: {
+                if (!button.enabled)
+                    return platformStyle.colorDisabledLight
+                else if (button.pressed)
+                    return platformStyle.colorPressed
+                else if (button.checked)
+                    return platformStyle.colorChecked
+                else
+                    return platformStyle.colorNormalLight
+            }
         }
     }
 
@@ -254,14 +239,14 @@ ImplicitSizeItem {
 
         onCanceled: {
             // Mark as canceled
-            stateGroup.state = "Canceled";
+            stateGroup.state = "Canceled"
             // Reset state. Can't expect a release since mouse was ungrabbed
-            stateGroup.state = "";
+            stateGroup.state = ""
         }
 
         onPressAndHold: {
             if (stateGroup.state != "Canceled" && (platformLongPress || platformAutoRepeat))
-                stateGroup.state = "PressAndHold";
+                stateGroup.state = "PressAndHold"
         }
 
         onExited: stateGroup.state = "Canceled"
@@ -277,7 +262,7 @@ ImplicitSizeItem {
     ParallelAnimation {
         id: clickedEffect
         PropertyAnimation {
-            target: layout
+            target: container
             property: "scale"
             from: 0.95
             to: 1.0
@@ -296,15 +281,15 @@ ImplicitSizeItem {
 
     Keys.onPressed: {
         if (event.key == Qt.Key_Select || event.key == Qt.Key_Return) {
-            stateGroup.state = "Pressed";
-            event.accepted = true;
+            stateGroup.state = "Pressed"
+            event.accepted = true
         }
     }
 
     Keys.onReleased: {
         if (event.key == Qt.Key_Select || event.key == Qt.Key_Return) {
-            stateGroup.state = "";
-            event.accepted = true;
+            stateGroup.state = ""
+            event.accepted = true
         }
     }
 }
