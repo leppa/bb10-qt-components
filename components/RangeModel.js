@@ -53,7 +53,9 @@ setRange: function(newMin, newMax)
     var oldPos = this.position;
 
     this.min = newMin;
+    model.minimumValue = this.min = newMin;
     this.max = newMax;
+    model.maximumValue = this.max = newMax;
 
     this.updateValueAndPosition(oldValue, oldPos);
     this.recursionBlocked = false;

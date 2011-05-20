@@ -37,9 +37,6 @@ ComponentTestCase {
     function test_minimumValue() {}
     function test_maximumValue() {}
     function test_value() {
-/*
-	// I wonder if RangeModel is useful at all given that we don't enforce these rules
-
         var message =
             "When setting a value over the maximum limit, the value should be set to the " +
             "maximum limit.";
@@ -80,7 +77,6 @@ ComponentTestCase {
         compare(obj.maximumValue, 2.0, message);
         compare(obj.minimumValue, 2.0, message);
         compare(obj.value, 2.0, message);
-*/
     }
 
     function test_indeterminate() {

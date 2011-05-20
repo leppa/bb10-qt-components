@@ -30,8 +30,8 @@ import "RangeModel.js" as Priv
 QtObject {
     id: model
     property real value: Priv.ate.publicValue(Priv.ate.value)
-    property real minimumValue: Priv.ate.minimumValue
-    property real maximumValue: Priv.ate.maximumValue
+    property real minimumValue: Priv.ate.min
+    property real maximumValue: Priv.ate.max
     property real stepSize: Priv.ate.stepSize
     property real position: Priv.ate.publicPosition(Priv.ate.position)
     property real positionAtMinimum: Priv.ate.posAtMin

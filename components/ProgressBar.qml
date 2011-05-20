@@ -5,7 +5,7 @@ import "./styles/default" as DefaultStyles
 Item {
     id: progressBar
 
-    property real value: rangeModel.value
+    property alias value: rangeModel.value
     property alias minimumValue: rangeModel.minimumValue
     property alias maximumValue: rangeModel.maximumValue
     property bool indeterminate: false
@@ -72,12 +72,6 @@ Item {
     }
 
     DefaultStyles.ProgressBarStyle { id: defaultStyle }
-
-    Binding {
-        property: "value"
-        target: rangeModel
-        value: progressBar.value
-    }
 
     SystemPalette { id: syspal }
 }
