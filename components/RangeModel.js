@@ -24,7 +24,7 @@
 **
 ****************************************************************************/
 
-Qt.include("JSUtils.js")
+Qt.include("private/JSUtils.js");
 
 function RangeModel()
 {
