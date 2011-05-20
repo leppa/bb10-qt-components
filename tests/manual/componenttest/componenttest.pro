@@ -23,8 +23,10 @@ symbian {
     componenttest_qmls3.path = tests/utils
     componenttest_qmls4.sources = tests/content/*.qml
     componenttest_qmls4.path = tests/content
+    componenttest_qmls5.sources = components/*.qml
+    componenttest_qmls5.path = components
     componenttest_js.sources = *.js
-    DEPLOYMENT += componenttest_qmls1 componenttest_qmls2 componenttest_qmls3 componenttest_qmls4 componenttest_js
+    DEPLOYMENT += componenttest_qmls1 componenttest_qmls2 componenttest_qmls3 componenttest_qmls4 componenttest_qmls5 componenttest_js
     BLD_INF_RULES.prj_exports += "componenttest.iby $$CORE_APP_LAYER_IBY_EXPORT_PATH(componenttest.iby)"
 
     stubsis = \
@@ -52,12 +54,13 @@ OTHER_FILES += \
     main.qml \
     ../shared/MemoryDisplay.qml \
     components/FontSelectionDialog.qml \
+    components/TextSettings.qml \
+    components/TextSettingsModel.qml \
     tests/BusyIndicator.qml \
     tests/Button.qml \
     tests/ButtonRow.qml \
     tests/ButtonColumn.qml \
     tests/CheckBox.qml \
-    tests/ChoiceList.qml \
     tests/ContextMenu.qml \
     tests/DatePickerDialog.qml \
     tests/InfoBanner.qml \
