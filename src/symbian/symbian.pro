@@ -21,11 +21,13 @@ SOURCES += \
     sdeclarativeicon.cpp \
     sdeclarativeimageprovider.cpp \
     sdeclarativeimplicitsizeitem.cpp \
+    sdeclarativemagnifier.cpp \
     sdeclarativemaskedimage.cpp \
     sdeclarativescreen.cpp \
     sdeclarativestyle.cpp \
     sdeclarativestyleinternal.cpp \
     siconpool.cpp \
+    smousegrabdisabler.cpp \
     snetworkinfo.cpp \
     spopupmanager.cpp \
     sstyleengine.cpp \
@@ -54,6 +56,7 @@ HEADERS += \
     sdeclarativeicon.h \
     sdeclarativeimageprovider.h \
     sdeclarativeimplicitsizeitem.h \
+    sdeclarativemagnifier.h \
     sdeclarativemaskedimage.h \
     sdeclarativemaskedimage_p.h \
     sdeclarativescreen.h \
@@ -61,6 +64,7 @@ HEADERS += \
     sdeclarativestyle.h \
     sdeclarativestyleinternal.h \
     siconpool.h \
+    smousegrabdisabler.h \
     snetworkinfo.h \
     spopupmanager.h \
     sstyleengine.h \
@@ -110,6 +114,7 @@ QML_FILES = \
     ProgressBar.qml \
     QueryDialog.qml \
     RadioButton.qml \
+    RectUtils.js \
     ScrollBar.qml \
     ScrollBarSizer.qml \
     ScrollDecorator.qml \
@@ -128,6 +133,10 @@ QML_FILES = \
     TabGroup.qml \
     TextArea.qml \
     TextField.qml \
+    TextMagnifier.qml \
+    TextContextMenu.qml \
+    TextSelectionHandle.qml \
+    TextTouchController.qml \
     ToolBar.qml \
     ToolBarLayout.qml \
     ToolButton.qml \

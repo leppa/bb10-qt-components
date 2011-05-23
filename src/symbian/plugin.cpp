@@ -38,6 +38,8 @@
 #include "sbatteryinfo.h"
 #include "snetworkinfo.h"
 #include "spopupmanager.h"
+#include "smousegrabdisabler.h"
+#include "sdeclarativemagnifier.h"
 
 #include <QCoreApplication>
 #include <QtDeclarative>
@@ -109,6 +111,8 @@ public:
         qmlRegisterType<SDeclarativeFocusScopeItem>(uri, 1, 0, "FocusScopeItem");
         qmlRegisterType<SDeclarativeIndicatorContainer>(uri, 1, 0, "UniversalIndicators");
         qmlRegisterType<SDeclarativeNetworkIndicator>(uri, 1, 0, "NetworkIndicator");
+        qmlRegisterType<SMouseGrabDisabler>(uri, 1, 0, "MouseGrabDisabler");
+        qmlRegisterType<SDeclarativeMagnifier>(uri, 1, 0, "Magnifier");
         qmlRegisterUncreatableType<SDeclarative>(uri, 1, 0, "Symbian", "");
         qmlRegisterUncreatableType<SDeclarativeScreen>(uri, 1, 0, "Screen", "");
         qmlRegisterUncreatableType<SDialogStatus>(uri, 1, 0, "DialogStatus", "");
