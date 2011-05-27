@@ -32,7 +32,7 @@ ImplicitSizeItem {
 
     // Common Public API
     property bool checked: false
-    property bool pressed: stateGroup.state == "Pressed"
+    property bool pressed: stateGroup.state == "Pressed" || stateGroup.state == "KeyPressed"
 
     signal clicked
 
@@ -66,12 +66,7 @@ ImplicitSizeItem {
             return privateStyle.imagePath("qtg_graf_checkbox_" + id)
         }
 
-        function press() {
-            privateStyle.play(Symbian.BasicItem)
-        }
-
         function toggle() {
-            privateStyle.play(Symbian.CheckBox)
             clickedEffect.restart()
             root.checked = !root.checked
             root.clicked()
@@ -83,19 +78,27 @@ ImplicitSizeItem {
 
         states: [
             State { name: "Pressed" },
+            State { name: "KeyPressed" },
             State { name: "Canceled" }
         ]
 
         transitions: [
             Transition {
                 to: "Pressed"
-                ScriptAction { script: internal.press() }
+                ScriptAction { script:  privateStyle.play(Symbian.BasicItem) }
             },
             Transition {
                 from: "Pressed"
                 to: ""
+                ScriptAction { script: privateStyle.play(Symbian.CheckBox) }
+                ScriptAction { script: internal.toggle() }
+            },
+            Transition {
+                from: "KeyPressed"
+                to: ""
                 ScriptAction { script: internal.toggle() }
             }
+
         ]
     }
 
@@ -128,26 +131,6 @@ ImplicitSizeItem {
         id: mouseArea
         anchors.fill: parent
 
-        SequentialAnimation {
-            id: clickedEffect
-            PropertyAnimation {
-                target: contentIcon
-                property: "scale"
-                from: 1.0
-                to: 0.8
-                easing.type: Easing.Linear
-                duration: 50
-            }
-            PropertyAnimation {
-                target: contentIcon
-                property: "scale"
-                from: 0.8
-                to: 1.0
-                easing.type: Easing.OutQuad
-                duration: 170
-            }
-        }
-
         onPressed: stateGroup.state = "Pressed"
         onReleased: stateGroup.state = ""
         onClicked: stateGroup.state = ""
@@ -157,6 +140,40 @@ ImplicitSizeItem {
             stateGroup.state = "Canceled"
             // Reset state. Can't expect a release since mouse was ungrabbed
             stateGroup.state = ""
+        }
+    }
+
+    SequentialAnimation {
+        id: clickedEffect
+        PropertyAnimation {
+            target: contentIcon
+            property: "scale"
+            from: 1.0
+            to: 0.8
+            easing.type: Easing.Linear
+            duration: 50
+        }
+        PropertyAnimation {
+            target: contentIcon
+            property: "scale"
+            from: 0.8
+            to: 1.0
+            easing.type: Easing.OutQuad
+            duration: 170
+        }
+    }
+    
+    Keys.onPressed: {
+        if (event.key == Qt.Key_Select || event.key == Qt.Key_Return || event.key == Qt.Key_Enter) {
+            stateGroup.state = "KeyPressed"
+            event.accepted = true
+        }
+    }
+
+    Keys.onReleased: {
+        if (event.key == Qt.Key_Select || event.key == Qt.Key_Return || event.key == Qt.Key_Enter) {
+            stateGroup.state = ""
+            event.accepted = true
         }
     }
 }
