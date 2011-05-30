@@ -88,23 +88,36 @@ FocusScopeItem {
     // http://bugreports.qt.nokia.com/browse/QTBUG-16665
     // http://bugreports.qt.nokia.com/browse/QTBUG-16710 (fixed in Qt 4.7.2)
     // http://bugreports.qt.nokia.com/browse/QTBUG-12305 (fixed in QtQuick1.1)
+    property real platformMaxImplicitWidth: -1
+    property real platformMaxImplicitHeight: -1
     property bool enabled: true // overriding due to QTBUG-15797 and related bugs
-    property real platformMaxImplicitWidth: (parent ? parent.width : screen.width) - root.x
-    property real platformMaxImplicitHeight: (parent ? parent.height : screen.height) - root.y
 
     implicitWidth: {
-        var preferredWidth = Math.max(flick.contentWidth, privy.minImplicitWidth)
-        preferredWidth += container.verticalMargins
-        return Math.min(preferredWidth, root.platformMaxImplicitWidth)
+        var preferredWidth = placeholder.visible ? placeholder.model.paintedWidth
+                                                 : flick.contentWidth
+        preferredWidth = Math.max(preferredWidth, privy.minImplicitWidth)
+        preferredWidth += container.horizontalMargins
+        if (root.platformMaxImplicitWidth >= 0)
+            return Math.min(preferredWidth, root.platformMaxImplicitWidth)
+        return preferredWidth
     }
 
     implicitHeight: {
-        // first check content's height (text or placeholder) and reserve room for paddings
-        var preferredHeight = Math.max(flick.contentHeight, placeholder.model.paintedHeight)
-        preferredHeight += container.horizontalMargins
+        var preferredHeight = placeholder.visible ? placeholder.model.paintedHeight
+                                                  : flick.contentHeight
+        preferredHeight += container.verticalMargins
         // layout spec gives minimum height (textFieldHeight) which includes required padding
         preferredHeight = Math.max(privateStyle.textFieldHeight, preferredHeight)
-        return Math.min(preferredHeight, root.platformMaxImplicitHeight)
+        if (root.platformMaxImplicitHeight >= 0)
+            return Math.min(preferredHeight, root.platformMaxImplicitHeight)
+        return preferredHeight
+    }
+
+    onWidthChanged: {
+        // Detect when a width has been explicitly set. Needed to determine if the TextEdit should
+        // grow horizontally or wrap. I.e. in determining the model's width. There's no way to get
+        // notified of having an explicit width set. Therefore it's polled in widthChanged.
+        privy.widthExplicit = root.widthExplicit()
     }
 
     Connections {
@@ -119,9 +132,11 @@ FocusScopeItem {
     QtObject {
         id: privy
         // TODO: More consistent minimum width for empty TextArea than 20 * " " on current font?
-        property real minImplicitWidth: placeholder.text ? placeholder.model.paintedWidth
-                                                         : privateStyle.textWidth("                    ", textEdit.font)
-
+        property real minImplicitWidth: privateStyle.textWidth("                    ", textEdit.font)
+        property bool widthExplicit: false
+        property bool wrap: privy.widthExplicit || root.platformMaxImplicitWidth >= 0
+        property real wrapWidth: privy.widthExplicit ? root.width - container.horizontalMargins
+                                                     : root.platformMaxImplicitWidth - container.horizontalMargins
         function bg_postfix() {
             if (root.errorHighlight)
                 return "error"
@@ -150,15 +165,15 @@ FocusScopeItem {
     Item {
         id: container
 
-        property real verticalMargins:   container.anchors.leftMargin
-                                       + container.anchors.rightMargin
-                                       + flick.anchors.leftMargin
-                                       + flick.anchors.rightMargin
+        property real horizontalMargins:   container.anchors.leftMargin
+                                         + container.anchors.rightMargin
+                                         + flick.anchors.leftMargin
+                                         + flick.anchors.rightMargin
 
-        property real horizontalMargins:  container.anchors.topMargin
-                                        + container.anchors.bottomMargin
-                                        + flick.anchors.topMargin
-                                        + flick.anchors.bottomMargin
+        property real verticalMargins:  container.anchors.topMargin
+                                      + container.anchors.bottomMargin
+                                      + flick.anchors.topMargin
+                                      + flick.anchors.bottomMargin
 
         anchors {
             fill: parent
@@ -181,9 +196,14 @@ FocusScopeItem {
                 wrapMode: textEdit.wrapMode
                 horizontalAlignment: textEdit.horizontalAlignment
                 verticalAlignment: textEdit.verticalAlignment
-                height: root.platformMaxImplicitHeight - container.horizontalMargins
-                width: root.platformMaxImplicitWidth - container.verticalMargins
                 opacity: 0
+
+                Binding {
+                    when: privy.wrap
+                    target: placeholder.model
+                    property: "width"
+                    value: privy.wrapWidth
+                }
             }
 
             color: platformStyle.colorNormalMid
@@ -191,7 +211,7 @@ FocusScopeItem {
             horizontalAlignment: textEdit.horizontalAlignment
             verticalAlignment: textEdit.verticalAlignment
             visible: {
-                if (text && (textEdit.paintedWidth == 0 && textEdit.paintedHeight <= textEdit.cursorRectangle.height))
+                if (text && (textEdit.model.paintedWidth == 0 && textEdit.model.paintedHeight <= textEdit.cursorRectangle.height))
                     return (readOnly || !textEdit.activeFocus)
                 else
                     return false
@@ -245,9 +265,16 @@ FocusScopeItem {
                     wrapMode: textEdit.wrapMode
                     visible: false
                     opacity: 0
-                    height: root.platformMaxImplicitHeight - container.horizontalMargins
-                    width: root.platformMaxImplicitWidth - container.verticalMargins
 
+                    // In Wrap mode, if the width is bound the text will always get wrapped at the
+                    // set width. If the width is not bound the text won't get wrapped but
+                    // paintedWidth will increase.
+                    Binding {
+                        when: privy.wrap
+                        target: textEdit.model
+                        property: "width"
+                        value: privy.wrapWidth
+                    }
                 }
                 enabled: root.enabled
                 focus: true
@@ -287,13 +314,13 @@ FocusScopeItem {
                     id: touchController
 
                     anchors {
-                        top: editor.top; topMargin: -container.horizontalMargins
-                        left: editor.left; leftMargin: -container.verticalMargins
+                        top: editor.top; topMargin: -container.verticalMargins
+                        left: editor.left; leftMargin: -container.horizontalMargins
                     }
-                    height: Math.max(root.height, flick.contentHeight + container.horizontalMargins * 2)
-                    width: Math.max(root.width, flick.contentWidth + container.verticalMargins * 2)
-                    editorScrolledX: flick.contentX - container.verticalMargins
-                    editorScrolledY: flick.contentY - container.horizontalMargins
+                    height: Math.max(root.height, flick.contentHeight + container.verticalMargins * 2)
+                    width: Math.max(root.width, flick.contentWidth + container.horizontalMargins * 2)
+                    editorScrolledX: flick.contentX - container.horizontalMargins
+                    editorScrolledY: flick.contentY - container.verticalMargins
                     copyEnabled: textEdit.selectedText
                     cutEnabled: !textEdit.readOnly && textEdit.selectedText
                     // TODO: QtQuick 1.1 has textEdit.canPaste
