@@ -47,8 +47,6 @@ release/
 /features/qt-components-config.prf
 /demos/flickr/flickr
 /demos/musicplayer/musicplayer
-/examples/meego/calculator/calculator
-/examples/meego/widgetgallery/widgetgallery
 /examples/native/focus/focus
 /examples/symbian/extrasgallery/qmlextrasgallery
 /examples/symbian/gallery/qmlgallery
@@ -74,8 +72,6 @@ release/
 /tests/auto/maketestselftest/dummy_output
 /tests/auto/maketestselftest/test/tst_maketestselftest
 /tests/auto/maketestselftest/test/tst_maketestselftest.app
-/tests/auto/mlocalthemedaemonclient/mlocalthemedaemonclient
-/tests/auto/mremotethemedaemonclient/mremotethemedaemonclient
 /tests/auto/qrangemodel/qrangemodel
 /tests/auto/symbian/applicationwindow/tst_applicationwindow
 /tests/auto/symbian/button/tst_symbian_button

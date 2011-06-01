@@ -12,7 +12,6 @@ QHELPGENERATOR = $$[QT_INSTALL_BINS]/qhelpgenerator
 QHELPGENERATOR = $$replace(QHELPGENERATOR, /, $$QMAKE_DIR_SEP)
 
 symbian3:QDOCCONF = $${Q_COMPONENTS_SOURCE_TREE}/doc/src/symbian/qt-components.qdocconf
-meego:QDOCCONF = $${Q_COMPONENTS_SOURCE_TREE}/doc/src/meego/qt-components.qdocconf
 
 !isEmpty(QDOCCONF) {
     $$unixstyle {

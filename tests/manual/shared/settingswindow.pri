@@ -1,4 +1,4 @@
-!meego:!symbian {
+!symbian {
     INCLUDEPATH += $$PWD
     DEPENDPATH += $$PWD
 

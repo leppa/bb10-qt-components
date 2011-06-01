@@ -29,16 +29,11 @@ BUILD_TREE=`/bin/pwd`
 SOURCE_TREE=`dirname $0`
 SOURCE_TREE=`cd "$SOURCE_TREE"; /bin/pwd`
 
-BUILD_MEEGO_STYLE=no
-BUILD_SYMBIAN_STYLE=no
+BUILD_SYMBIAN_STYLE=yes
 BUILD_DEMOS=yes
 BUILD_EXAMPLES=yes
 BUILD_EXTRAS=yes
 BUILD_TESTS=yes
-HAVE_MEEGOTOUCH=no
-HAVE_XDAMAGE=no
-HAVE_CONTEXTSUBSCRIBER=no
-HAVE_MEEGOGRAPHICSSYSTEM=no
 HAVE_MOBILITY=auto
 HAVE_SYMBIAN_INTERNAL=no
 QMAKE_CONFIG=
@@ -63,14 +58,6 @@ QMAKEFEATURES=$SOURCE_TREE/features
 CONFIG_PRF="$BUILD_TREE/features/qt-components-config.prf"
 [ -f $CONFIG_PRF ] && rm -f $CONFIG_PRF
 
-# Test for pkg-config enabled dependencies
-which pkg-config > /dev/null
-if [ $? -eq 0 ]; then
-    pkg-config --exists meegotouch && HAVE_MEEGOTOUCH=yes
-    pkg-config --atleast-version=0.5.25 contextsubscriber-1.0 && HAVE_CONTEXTSUBSCRIBER=yes
-    pkg-config --exists xdamage && HAVE_XDAMAGE=yes
-fi
-
 #-------------------------------------------------------------------------------
 # parse command line arguments
 #-------------------------------------------------------------------------------
@@ -86,7 +73,7 @@ while [ "$#" -gt 0 ]; do
         VAL=no
         ;;
     #Qt style yes options
-    -meego|-symbian|-meegotouch|-contextsubscriber|-xdamage|-meegographicssystem|-mobility)
+    -symbian|-mobility)
         VAR=`echo $1 | sed 's,^-\(.*\),\1,'`
         VAL=yes
         ;;
@@ -110,9 +97,6 @@ while [ "$#" -gt 0 ]; do
 
     UNKNOWN_OPT=no
     case "$VAR" in
-    meego)
-        BUILD_MEEGO_STYLE=yes
-        ;;
     symbian)
         BUILD_SYMBIAN_STYLE=yes
         ;;
@@ -172,34 +156,6 @@ while [ "$#" -gt 0 ]; do
         QMAKE_DEBUG="$QMAKE_DEBUG -d"
         ;;
     # autodetection overrides
-    meegotouch)
-        if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
-            HAVE_MEEGOTOUCH=$VAL
-        else
-            UNKNOWN_OPT=yes
-        fi
-        ;;
-    contextsubscriber)
-        if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
-            HAVE_CONTEXTSUBSCRIBER=$VAL
-        else
-            UNKNOWN_OPT=yes
-        fi
-        ;;
-    meegographicssystem)
-        if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
-            HAVE_MEEGOGRAPHICSSYSTEM=$VAL
-        else
-            UNKNOWN_OPT=yes
-        fi
-        ;;
-    xdamage)
-        if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
-            HAVE_XDAMAGE=$VAL
-        else
-            UNKNOWN_OPT=yes
-        fi
-        ;;
     mobility)
         if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
             HAVE_MOBILITY=$VAL
@@ -220,12 +176,11 @@ done
 
 if [ "$OPT_HELP" = "yes" ]; then
     cat << EOF
-Usage:  configure [-meego] [-symbian] [-config <config>]
+Usage:  configure [-symbian] [-config <config>]
     [-make <part>] [-nomake <part>] [-help]
 
 Configure options:
 
-    -meego ................... Build MeeGo Style
     -symbian ................. Build Symbian Style
     -config (config) ......... Configuration options recognized by qmake
     -make (part) ............. Add part to the list of parts to be built at
@@ -238,18 +193,6 @@ Additional options:
  evaluation succeeds, the feature is included. Here is a short explanation
  of each option:
 
-    -no-meegotouch ........... Do not compile MeeGo Touch framework support
- +  -meegotouch .............. Compile MeeGo Touch framework support
-
-    -no-contextsubscriber .... Do not compile Context Subscriber support
- +  -contextsubscriber ....... Compile Context Subscriber support
-
-    -no-xdamage .............. Do not compile XDamage support
- +  -xdamage ................. Compile XDamage support
-
-    -no-meegographicssystem .. Do not compile MeeGo graphics system support
-    -meegographicssystem ..... Compile MeeGo graphics system support
-
     -no-mobility ............. Do not compile Qt Mobility support
  +  -mobility ................ Compile Qt Mobility support
 
@@ -258,17 +201,11 @@ EOF
     exit 0
 fi
 
-[ "$BUILD_MEEGO_STYLE" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG meego"
 [ "$BUILD_SYMBIAN_STYLE" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG symbian3"
 [ "$BUILD_DEMOS" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG demos"
 [ "$BUILD_EXAMPLES" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG examples"
 [ "$BUILD_EXTRAS" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG extras"
 [ "$BUILD_TESTS" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG tests"
-
-[ "$HAVE_MEEGOTOUCH" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG meegotouch"
-[ "$HAVE_CONTEXTSUBSCRIBER" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG contextsubscriber"
-[ "$HAVE_MEEGOGRAPHICSSYSTEM" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG meegographicssystem"
-[ "$HAVE_XDAMAGE" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG xdamage"
 
 [ "$HAVE_MOBILITY" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG mobility"
 [ "$HAVE_MOBILITY" = "no" ] && QMAKE_CONFIG="$QMAKE_CONFIG no_mobility"
@@ -292,13 +229,6 @@ echo
 echo
 echo "Qt Components build configuration:"
 echo "Configuration ....................$QMAKE_CONFIG"
-echo "MeeGo Style ...................... $BUILD_MEEGO_STYLE"
-if [ "$BUILD_MEEGO_STYLE" = "yes" ]; then
-    echo "  MeeGo Touch support  ........... $HAVE_MEEGOTOUCH"
-    echo "  ContextSubscriber support  ..... $HAVE_CONTEXTSUBSCRIBER"
-    echo "  XDamage support  ............... $HAVE_XDAMAGE"
-    echo "  MeeGo Graphics System support .. $HAVE_MEEGOGRAPHICSSYSTEM"
-fi
 echo "Symbian Style .................... $BUILD_SYMBIAN_STYLE"
 if [ "$BUILD_SYMBIAN_STYLE" = "yes" ]; then
     echo "  Qt Mobility support ............ $HAVE_MOBILITY"
