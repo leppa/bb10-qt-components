@@ -32,8 +32,8 @@ ImplicitSizeItem {
     id: root
 
     // Common API
-    property alias checkable: checkable.enabled
-    property alias checked: checkable.checked
+    property alias checkable: checkableItem.enabled
+    property alias checked: checkableItem.checked
     property bool enabled: true // overridden from base class
     property alias text: label.text
     property alias iconSource: contentIcon.source
@@ -41,7 +41,7 @@ ImplicitSizeItem {
     property bool pressed: mouseArea.containsMouse && (stateGroup.state == "Pressed" || stateGroup.state == "PressAndHold")
 
     // Platform API
-    property alias platformExclusiveGroup: checkable.exclusiveGroup
+    property alias platformExclusiveGroup: checkableItem.exclusiveGroup
 
     // Common API
     signal clicked
@@ -51,7 +51,7 @@ ImplicitSizeItem {
     signal platformPressAndHold
 
     onFlatChanged: {
-        background.visible = !flat
+        background.visible = !flat || (checkableItem.enabled && checkableItem.checked && !internal.isButtonRow(parent))
     }
 
     implicitWidth: {
@@ -160,7 +160,7 @@ ImplicitSizeItem {
         property bool isFrameGraphic : imageName().search("_fr") > 0
 
         function belongsToExclusiveGroup() {
-            return checkable.exclusiveGroup
+            return checkableItem.exclusiveGroup
                    || (root.parent
                    && root.parent.hasOwnProperty("checkedButton")
                    && root.parent.exclusive)
@@ -171,6 +171,8 @@ ImplicitSizeItem {
                 return parent.privateModeName(root, 1)
             else if (!enabled)
                 return "disabled"
+            else if (flat && checkableItem.checked && !internal.isButtonRow(parent))
+                return "latched"
             else
                 return "normal"
         }
@@ -185,11 +187,11 @@ ImplicitSizeItem {
 
         function press() {
             if (!belongsToExclusiveGroup()) {
-                if (checkable.enabled && checkable.checked)
+                if (checkableItem.enabled && checkableItem.checked)
                     privateStyle.play(Symbian.SensitiveButton)
                 else
                     privateStyle.play(Symbian.BasicButton)
-            } else if (checkable.enabled && !checkable.checked) {
+            } else if (checkableItem.enabled && !checkableItem.checked) {
                 privateStyle.play(Symbian.BasicButton)
             }
 
@@ -205,19 +207,22 @@ ImplicitSizeItem {
             label.scale = 1
             contentIcon.scale = 1
             highlight.opacity = 0
-            if (flat)
-                visibleEffect.restart()
+
+            if ((checkableItem.enabled && checkableItem.checked && !belongsToExclusiveGroup()) || !checkableItem.enabled)
+                privateStyle.play(Symbian.BasicButton)
+
+            if (flat && isButtonRow(parent))
+                visibleEffect.restart() //Background invisible
+            else if (flat && !checkableItem.enabled)
+                visibleEffect.restart() //Background invisible
+            else
+                clickedEffect.restart() //Background stays visible
+
             root.platformReleased()
         }
 
         function click() {
-            if ((checkable.enabled && checkable.checked && !belongsToExclusiveGroup()) || !checkable.enabled)
-                privateStyle.play(Symbian.BasicButton)
-            if (flat)
-                visibleEffect.restart()
-            else
-                clickedEffect.restart()
-            checkable.toggle()
+            checkableItem.toggle()
             root.clicked()
         }
 
@@ -351,7 +356,7 @@ ImplicitSizeItem {
     }
 
     Checkable {
-        id: checkable
+        id: checkableItem
         value: root.text
     }
 }
