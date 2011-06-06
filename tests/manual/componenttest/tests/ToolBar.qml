@@ -247,7 +247,7 @@ Item {
                 backButton: true
                 ToolButton {
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                     onClicked: stack.pop()
                 }
                 ToolButton {
@@ -333,7 +333,7 @@ Item {
                 backButton: true
                 ToolButton {
                     id: backButton
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                     onClicked: stack.pop()
                 }
                 ButtonRow {
@@ -370,7 +370,7 @@ Item {
                 right: parent.right
             }
             Button {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "image://theme/toolbar-back"
                 onClicked: stack.pop();
             }
             CheckBox {
@@ -526,7 +526,7 @@ Item {
         ToolBarLayout {
             backButton: root.showBackButton
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
         }
     }
@@ -536,11 +536,11 @@ Item {
         ToolBarLayout {
             backButton: root.showBackButton
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -550,7 +550,7 @@ Item {
         ToolBarLayout {
             backButton: root.showBackButton
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             Button {
                 text: "Button"
@@ -569,7 +569,7 @@ Item {
         ToolBarLayout {
             backButton: root.showBackButton
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             Button {
                 text: "one"
@@ -603,7 +603,7 @@ Item {
         ToolBarLayout {
             backButton: root.showBackButton
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 flat: root.flat
@@ -612,7 +612,7 @@ Item {
 
             ToolButton {
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -623,7 +623,7 @@ Item {
             backButton: root.showBackButton
             ToolButton {
                 objectName: "tbBack"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tb1"
@@ -634,7 +634,7 @@ Item {
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -645,19 +645,19 @@ Item {
             backButton: root.showBackButton
             ToolButton {
                 objectName: "tbBack"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tb1"
                 flat: root.flat
                 text: "ToolBtn"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -668,7 +668,7 @@ Item {
             backButton: true
             ToolButton {
                 objectName: "tbBack"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tb1"
@@ -683,7 +683,7 @@ Item {
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -694,7 +694,7 @@ Item {
             backButton: true
             ToolButton {
                 objectName: "tbBack"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tb1"
@@ -726,7 +726,7 @@ Item {
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -737,16 +737,16 @@ Item {
             backButton: root.showBackButton
             ToolButton {
                 objectName: "tbBack1"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack2"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -757,20 +757,20 @@ Item {
             backButton: root.showBackButton
             ToolButton {
                 objectName: "tbBack1"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack2"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack3"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -781,24 +781,24 @@ Item {
             backButton: root.showBackButton
             ToolButton {
                 objectName: "tbBack1"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack2"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack3"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack4"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -810,28 +810,28 @@ Item {
 
             ToolButton {
                 objectName: "tbBack1"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack2"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack3"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack4"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack5"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -842,32 +842,32 @@ Item {
             backButton: root.showBackButton
             ToolButton {
                 objectName: "tbBack1"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack2"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack3"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack4"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack5"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbBack6"
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
             ToolButton {
                 objectName: "tbOptions"
                 onClicked: stack.push(secondPage)
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -957,7 +957,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -979,7 +979,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1010,7 +1010,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1046,7 +1046,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1062,7 +1062,7 @@ Item {
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
 
         }
@@ -1073,7 +1073,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1098,7 +1098,7 @@ Item {
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
 
         }
@@ -1109,7 +1109,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1139,7 +1139,7 @@ Item {
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
 
         }
@@ -1158,7 +1158,7 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1179,13 +1179,13 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1206,19 +1206,19 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb3
                     objectName: "tb3"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1239,25 +1239,25 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb3
                     objectName: "tb3"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb4
                     objectName: "tb4"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1268,7 +1268,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1279,7 +1279,7 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1290,7 +1290,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1303,13 +1303,13 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1320,7 +1320,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1333,19 +1333,19 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb3
                     objectName: "tb3"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1356,7 +1356,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1369,25 +1369,25 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb3
                     objectName: "tb3"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb4
                     objectName: "tb4"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
         }
@@ -1398,7 +1398,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1409,12 +1409,12 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -1424,7 +1424,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1437,18 +1437,18 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -1458,7 +1458,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1471,24 +1471,24 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb3
                     objectName: "tb3"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
@@ -1498,7 +1498,7 @@ Item {
         ToolBarLayout {
             backButton: true
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_back"
+                iconSource: "toolbar-back"
             }
 
             ButtonRow {
@@ -1511,30 +1511,30 @@ Item {
                     id: tb1
                     objectName: "tb1"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb2
                     objectName: "tb2"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb3
                     objectName: "tb3"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
                 ToolButton {
                     id: tb4
                     objectName: "tb4"
                     flat: root.flat
-                    iconSource: "image://theme/qtg_toolbar_back"
+                    iconSource: "toolbar-back"
                 }
             }
 
             ToolButton {
-                iconSource: "image://theme/qtg_toolbar_options"
+                iconSource: "toolbar-menu"
             }
         }
     }
