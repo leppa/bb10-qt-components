@@ -33,10 +33,8 @@ import "." 1.0
 ImplicitSizeItem {
     id: root
 
-    //Determines wether the first child (if it has iconSource) is used as backButton
-    //Backbutton occupies the leftmost space in layout. If there is no backbutton
-    //this space is always empty
-    property bool backButton: true
+    property bool backButton: true // deprecated
+    onBackButtonChanged: { console.log("warning: ToolBarLayout.backButton is deprecated.") }
 
     implicitWidth: screen.width
     implicitHeight: internal.defaultHeightToolBar
@@ -77,7 +75,9 @@ ImplicitSizeItem {
         property real centerSpacingTextButtonDouble: platformStyle.paddingLarge
 
         function isIconButton(item) {
-            return item.hasOwnProperty("iconSource") && item.iconSource != ""
+            return item.hasOwnProperty("iconSource")
+                && item.hasOwnProperty("text")
+                && item.text == ""
         }
 
         function isTextToolButton(item) {
@@ -120,11 +120,11 @@ ImplicitSizeItem {
             return Math.round((root.width - (outerContents * 2) - centerSpacing) / 2.0)
         }
 
-        function widthButtonRowLong(backButton, leftMargin, innerSpacing, rightMargin) {
+        function widthButtonRowLong(leftButton, leftMargin, innerSpacing, rightMargin) {
             // calculate the width of a long button row in the special case where
             // there is not a right item. It can still vary depending on whether there
-            // is a back button
-            var leftContents = backButton ? leftMargin + innerSpacing : rightMargin
+            // is a left button
+            var leftContents = leftButton ? leftMargin + innerSpacing : rightMargin
             return root.width - leftContents - rightMargin
         }
 
@@ -187,7 +187,7 @@ ImplicitSizeItem {
             // detect whether we have left and or right items. we need to lay out
             // the remaining children (that are not left or right items) whether they
             // are tool buttons, text buttons or a button row
-            var leftItem = (backButton && isIconButton(children[0])) ?
+            var leftItem = isIconButton(children[0]) ?
                     children[0] : undefined
             var rightItem = isIconButton(children[numChildren-1]) ?
                     children[numChildren-1] : undefined
@@ -235,7 +235,7 @@ ImplicitSizeItem {
                     // back button, then this is still the only item so use the special
                     // margin on the left as well
                     overrideChildWidth = widthButtonRowLong(
-                                backButton,
+                                true,
                                 leftMargin,
                                 innerSpacingButtonRowLong,
                                 outerMarginButtonRowLong)
@@ -250,7 +250,7 @@ ImplicitSizeItem {
                 if (isButtonRow(loneChild)) {
                     loneChildWidth = overrideChildWidth
                 }
-                if (loneChild.hasOwnProperty("iconSource") && loneChild.iconSource != "" && backButton)
+                if (loneChild.hasOwnProperty("iconSource") && loneChild.iconSource != "")
                     loneChild.x = outerMarginHorizontal
                 else
                     loneChild.x = centerOffset(root.width, loneChildWidth)
@@ -320,7 +320,6 @@ ImplicitSizeItem {
     Component.onCompleted: internal.layoutChildren()
     onParentChanged: internal.layoutChildren()
     onChildrenChanged: internal.layoutChildren()
-    onBackButtonChanged: internal.layoutChildren()
     onImplicitWidthChanged: internal.layoutChildren()
     onImplicitHeightChanged: internal.layoutChildren()
 }
