@@ -37,15 +37,10 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-//For qDebug
-//#define QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
 
 #include <QtTest/QTest>
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeComponent>
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-#include <QtCore/QDebug>
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
 #include "tst_quickcomponentstest.h"
 
 static const QByteArray QT_COMP_IMPORT_STRING_SYMBIAN = "import com.nokia.symbian 1.0\n";
@@ -89,7 +84,6 @@ private slots:
 
 private:
     //common function for ScrollDecorator and ScrollBar
-    void checkProperties(const QMetaProperty &property, QObject *obj, int *propertyCount);
     void testValid();
 
 private:
@@ -111,85 +105,6 @@ void tst_scrollbar::init()
 
 void tst_scrollbar::cleanup()
 {
-}
-
-void tst_scrollbar::checkProperties(const QMetaProperty &property, QObject *obj, int *propertyCount)
-{
-    if (property.name() == QString("flickableItem")) {
-        (*propertyCount)++;
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (flickableItem) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QVERIFY(property.read(obj).toString().isNull());
-    }
-    if (property.name() == QString("policy")) {
-        (*propertyCount)++;
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (policy) = (Symbian.ScrollBarWhenScrolling) " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QCOMPARE(property.read(obj).toInt(), 1);
-        property.write(obj, 0);
-        QCOMPARE(property.read(obj).toInt(), 0);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (policy) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("interactive")) {
-        (*propertyCount)++;
-        property.write(obj, true);
-        QCOMPARE(property.read(obj).toBool(), true);
-        property.write(obj, false);
-        QCOMPARE(property.read(obj).toBool(), false);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (interactive) = " << property.read(obj).toBool();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("position")) {
-        (*propertyCount)++;
-        const qreal value = 0.8;
-        property.write(obj, value);
-        QCOMPARE(property.read(obj).toReal(), value);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (position) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("pageSize")) {
-        (*propertyCount)++;
-        const qreal value = 0.8;
-        property.write(obj, value);
-        QCOMPARE(property.read(obj).toReal(), value);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (pageSize) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("orientation")) {
-        (*propertyCount)++;
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (orientation) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QCOMPARE(property.read(obj).toInt(), int(Qt::Vertical));
-        property.write(obj, Qt::Horizontal);
-        QCOMPARE(property.read(obj).toInt(), int(Qt::Horizontal));
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (orientation) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("implicitWidth")) {
-        (*propertyCount)++;
-        //check for default value is something 'draggable' for the tool
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (implicitWidth) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QVERIFY(!property.read(obj).isNull());
-    }
-    if (property.name() == QString("implicitHeight")) {
-        (*propertyCount)++;
-        //check for default value is something 'draggable' for the tool
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (implicitHeight) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QVERIFY(!property.read(obj).isNull());
-    }
 }
 
 void tst_scrollbar::testValid()
@@ -335,25 +250,21 @@ void tst_scrollbar::testPropertiesScrollBar()
     QVERIFY2(obj, qPrintable(errors));
 
     QVERIFY(obj->property("interactive").isValid());
+    QCOMPARE(obj->property("interactive").toBool(), true);
+    obj->setProperty("interactive", false);
+    QCOMPARE(obj->property("interactive").toBool(), false);
+
     QVERIFY(obj->property("flickableItem").isValid());
+
     QVERIFY(obj->property("orientation").isValid());
+    QCOMPARE(obj->property("orientation").toInt(), int(Qt::Vertical));
+    obj->setProperty("orientation", Qt::Horizontal);
+    QCOMPARE(obj->property("orientation").toInt(), int(Qt::Horizontal));
+
     QVERIFY(obj->property("policy").isValid());
-    QVERIFY(obj->property("implicitWidth").isValid());
-    QVERIFY(obj->property("implicitHeight").isValid());
-
-    const QMetaObject *metaInfo = obj->metaObject();
-
-    int propertyCount = 0;
-    int metaPropertyCount = metaInfo->propertyCount();
-    for (int i = 0 ; i < metaPropertyCount ; i++) {
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "PROPERTY UNDER CHECK IS" << metaInfo->property(i).name();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QMetaProperty property = metaInfo->property(i);
-        checkProperties(property, obj, &propertyCount);
-    }
-    QCOMPARE(propertyCount, 6);
-    delete obj;
+    QCOMPARE(obj->property("policy").toInt(), 1);
+    obj->setProperty("policy", 0);
+    QCOMPARE(obj->property("policy").toInt(), 0);
 }
 
 void tst_scrollbar::testValidScrollDecorator_data()
@@ -505,27 +416,8 @@ void tst_scrollbar::testPropertiesScrollDecorator()
     QVERIFY2(obj, qPrintable(errors));
 
     //ScrollDecorator.qml part of Common API and is a wrapper using ScrollBar.qml
-    QVERIFY(!obj->property("interactive").isValid());
     QVERIFY(obj->property("flickableItem").isValid());
-    QVERIFY(!obj->property("orientation").isValid());
-    QVERIFY(!obj->property("policy").isValid());
-    QVERIFY(!obj->property("position").isValid());
-    QVERIFY(!obj->property("pageSize").isValid());
-    QVERIFY(!obj->property("implicitWidth").isValid());
-    QVERIFY(!obj->property("implicitHeight").isValid());
 
-    const QMetaObject *metaInfo = obj->metaObject();
-
-    int propertyCount = 0;
-    int metaPropertyCount = metaInfo->propertyCount();
-    for (int i = 0 ; i < metaPropertyCount ; i++) {
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "PROPERTY UNDER CHECK IS" << metaInfo->property(i).name();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QMetaProperty property = metaInfo->property(i);
-        checkProperties(property, obj, &propertyCount);
-    }
-    QCOMPARE(propertyCount, 1);
     delete obj;
 }
 
