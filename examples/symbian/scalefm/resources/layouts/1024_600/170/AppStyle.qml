@@ -39,7 +39,7 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import Qt.labs.components.native 1.0
+import com.nokia.symbian 1.1
 
 // 7.0" WSVGA
 //![measurements_a]
@@ -56,11 +56,11 @@ Item {
     property int starIconSize: 45
     property int toneIconSize: 45
     property int starTouchSize: 54
-    property int frequencyStripHeight: 78
-    property int frequencyButtonSize: 82
+    property int frequencyStripHeight: 58
+    property int frequencyButtonSize: 62
     //![measurements_b]
 
-    property real consoleRatio: 0.40
+    property real consoleRatio: (screen.currentOrientation == Screen.Landscape) ? 0.75 : 0.65
     property real stationListRatio: 0.8
 
     Text {
