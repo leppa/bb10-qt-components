@@ -40,11 +40,14 @@
 
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import "../TestUtils.js" as Utils
+import "../components"
 
 Item {
     id: root
     property variant contentPages: []
     property int currentIndex: 1
+    property bool platformInverted: false
 
     onContentPagesChanged: {
         if (priv.newItem != null)
@@ -174,7 +177,7 @@ Item {
 
     Component {
         id: tabButtonComponent
-        TabButton {}
+        TabButton {platformInverted: root.platformInverted}
     }
 
     QtObject {
@@ -186,18 +189,19 @@ Item {
 
     Component {
         id: commonContent
+
         Column {
             id: column
             property Item page
 
             anchors.fill: parent
             anchors.topMargin: 20
-            Text {
+            Label {
                 text: (page ? "page: " : "item: ") + column.parent.titleString
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: platformStyle.fontSizeLarge * 1.5
-                color: "white"
+                platformInverted: root.platformInverted
             }
 
             Row {
@@ -220,13 +224,13 @@ Item {
                 columns: inPortrait() ? 1 : 2
                 spacing: 2
 
-                Text {
+                Label {
                     id: editTabButtonLabel
                     width: inPortrait() ? parent.width : parent.width / 3
                     text: "Edit TabButton:"
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: platformStyle.fontSizeLarge
-                    color: "white"
+                    platformInverted: root.platformInverted
                 }
 
                 Row {
@@ -269,6 +273,7 @@ Item {
                             SelectionDialog {
                                 titleText: "Select TabButton image"
                                 selectedIndex: 0
+                                platformInverted: root.platformInverted
                                 model: ListModel {
                                     ListElement { name: "<none>" }
                                     ListElement { name: "tb_plus.png" }
@@ -287,13 +292,13 @@ Item {
                 columns: inPortrait() ? 1 : 2
                 spacing: 2
 
-                Text {
+                Label {
                     id: newPageLabel
                     width: inPortrait() ? parent.width : parent.width / 3
                     text: "New page tabs:"
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: platformStyle.fontSizeLarge
-                    color: "white"
+                    platformInverted: root.platformInverted
                 }
 
                 Row {
@@ -320,6 +325,7 @@ Item {
                             SelectionDialog {
                                 titleText: "Select number of tabs"
                                 selectedIndex: 2
+                                platformInverted: root.platformInverted
                                 model: ListModel {
                                     ListElement { name: "0" }
                                     ListElement { name: "1" }
@@ -367,6 +373,8 @@ Item {
                     }
                 }
             }
+
+        Component.onCompleted: Utils.setItemTreeInversion(column, root.platformInverted)
         }
     }
 
@@ -389,9 +397,9 @@ Page {
     TabGroup {
         height: 100
         width: 100
-        Text { id: tab1content; text: "tab1"; color: "white" }
-        Text { id: tab2content; text: "tab2"; color: "white" }
-        Text { id: tab3content; text: "tab3"; color: "white" }
+        Text { id: tab1content; text: "tab1"; color: "grey" }
+        Text { id: tab2content; text: "tab2"; color: "grey" }
+        Text { id: tab3content; text: "tab3"; color: "grey" }
     }
 }
 */
@@ -416,12 +424,12 @@ Page {
             tabBarContent += "\" } "
 
             // create group content
-            // Text { id: tab1content; text: \"tab1\"; color: \"white\" } "
+            // Text { id: tab1content; text: \"tab1\"; color: \"grey\" } "
             tabGroupContent += "Text { id: tab"
             tabGroupContent += i.toString()
             tabGroupContent += "content; text: \"tab"
             tabGroupContent += i.toString()
-            tabGroupContent += "\"; color: \"white\" } "
+            tabGroupContent += "\"; color: \"grey\" } "
 
         }
 

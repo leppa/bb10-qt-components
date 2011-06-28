@@ -38,77 +38,26 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.1
-import com.nokia.symbian 1.1
-import "../components"
+#ifndef APICHECK_SEARCHBOX_H
+#define APICHECK_SEARCHBOX_H
 
-Item {
-    Menu {
-        id: menu
+#include "apicheckbase.h"
 
-        content: MenuLayout {
-            MenuItem {text: "Zero"; onClicked: signalLabel.text = "itemClicked(0)"}
-            MenuItem {text: "One"; onClicked: signalLabel.text = "itemClicked(1)"}
-            MenuItem {text: "Two"; platformSubItemIndicator: true; onClicked: subMenu.open()}
-            MenuItem {text: "Three - This is a long text which does not fit to the screen"; onClicked: signalLabel.text = "itemClicked(3)"}
-            MenuItem {text: "Four - This is a long text which does not fit to the screen"; platformSubItemIndicator: true; onClicked: subMenu.open()}
-            MenuItem {text: "Five"; onClicked: signalLabel.text = "itemClicked(5)"}
-        }
-    }
+class ApiCheckSearchBox : public ApiCheckBase
+{
+    Q_OBJECT
 
-    Button {
-        id: menuButton
-        x: 10
-        y: 50
-        width: 160
-        height: 50
-        text: "Show menu"
+public:
+    ApiCheckSearchBox(QDeclarativeEngine *engine, const QString &module)
+        : ApiCheckBase(engine, module) { }
 
-        onClicked: {
-            signalLabel.text = "No signal"
-            menu.open()
-        }
-    }
+private slots:
+    void initTestCase();
+    void backButton();
+    void placeHolderText();
+    void searchText();
+    void clearClicked();
+    void backClicked();
+};
 
-    Button {
-        id: menuButton2
-        x: 180
-        y: 50
-        width: 170
-        height: 50
-        text: "Menu, ext dismiss"
-
-        onClicked: {
-            signalLabel.text = "No signal"
-            menu.open()
-            menuDismissTimer.start()
-        }
-    }
-
-    Timer {
-        id: menuDismissTimer
-        interval: 3000
-        onTriggered: menu.close()
-    }
-
-    Row {
-        anchors { top: menuButton.bottom; topMargin: 20 }
-        x: 50
-
-        Label {
-            text: "Signal: "
-        }
-        Label {
-            id: signalLabel
-        }
-    }
-
-    ContextMenu {
-        id: subMenu
-
-        content: MenuLayout {
-            MenuItem {text: "Zero"; onClicked: signalLabel.text = "subItemClicked(0)"}
-            MenuItem {text: "One"; onClicked: signalLabel.text = "subItemClicked(1)"}
-        }
-    }
-}
+#endif

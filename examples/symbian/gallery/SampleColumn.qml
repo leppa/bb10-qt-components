@@ -48,6 +48,7 @@ Column {
     // for demonstration and testing purposes each component needs to
     // set its inverted state explicitly
     property bool childrenInverted: false
+    property bool windowInverted: false
 
     spacing: 14
 
@@ -69,6 +70,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         placeholderText: "TextField"
         width: parent.width - parent.spacing
+        platformInverted: column.childrenInverted
     }
 
     TextField {
@@ -78,13 +80,15 @@ Column {
         text: "Clearable TextField"
         platformRightMargin: clearText.width + platformStyle.paddingMedium * 2
         width: parent.width - parent.spacing
+        platformInverted: column.childrenInverted
 
         Image {
             id: clearText
             anchors { top: parent.top; right: parent.right; margins: platformStyle.paddingMedium }
             fillMode: Image.PreserveAspectFit
             smooth: true; visible: parent.text
-            source: clear.pressed ? "image://theme/qtg_graf_textfield_clear_pressed" : "image://theme/qtg_graf_textfield_clear_normal"
+            source: clear.pressed ? "image://theme/qtg_graf_textfield_clear_pressed"
+                                  : "image://theme/qtg_graf_textfield_clear_normal"
             height: parent.height - platformStyle.paddingMedium * 2
             width: parent.height - platformStyle.paddingMedium * 2
 
@@ -103,13 +107,15 @@ Column {
         placeholderText: "Custom operation"
         platformRightMargin: addText.width + platformStyle.paddingMedium
         width: parent.width - parent.spacing
+        platformInverted: column.childrenInverted
 
         Image {
             id: addText
             anchors { top: parent.top; right: parent.right }
             smooth: true
             fillMode: Image.PreserveAspectFit
-            source: add.pressed ? "image://theme/qtg_graf_textfield_add_pressed" : "image://theme/qtg_graf_textfield_add_normal"
+            source: add.pressed ? "image://theme/qtg_graf_textfield_add_pressed"
+                                : "image://theme/qtg_graf_textfield_add_normal"
             height: parent.height; width: parent.height
 
             MouseArea {
@@ -122,6 +128,7 @@ Column {
                 id: textSelection
                 titleText: "Preset Texts"
                 selectedIndex: -1
+                platformInverted: column.childrenInverted
                 model: ListModel {
                     ListElement { name: "Lorem ipsum." }
                     ListElement { name: "Lorem ipsum dolor sit amet." }
@@ -142,6 +149,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         placeholderText: "This is a\n multiline control."
         width: parent.width - parent.spacing; height: 280
+        platformInverted: column.childrenInverted
     }
 
     Slider {
@@ -218,6 +226,7 @@ Column {
         CommonDialog {
             id: dialog
             titleText: "Dialog"
+            platformInverted: column.childrenInverted
 
             buttons: ToolBar {
                 id: buttons
@@ -272,6 +281,7 @@ Column {
         SelectionDialog {
             titleText: "Select background color"
             selectedIndex: 1
+            platformInverted: column.childrenInverted
 
             model: ListModel {
                 id: colorModel
@@ -296,7 +306,8 @@ Column {
         height: selectionDialogButton.height
         width: parent.width - parent.spacing
         radius: 10
-        color: "black"
+        color: column.windowInverted ? platformStyle.colorBackgroundInverted
+                                     : platformStyle.colorBackground
         Button {
             id: selectionDialogButton
             property SelectionDialog singleSelectionDialog
@@ -341,6 +352,7 @@ Column {
             rejectButtonText: "Cancel"
 
             icon: "image://theme/qtg_anim_spinner_large_1"
+            platformInverted: column.childrenInverted
         }
     }
 
@@ -349,7 +361,8 @@ Column {
         height: contentMenuButton.height
         width: parent.width - parent.spacing
         radius: 10
-        color: "black"
+        color: column.windowInverted ? platformStyle.colorBackgroundInverted
+                                     : platformStyle.colorBackground
         Button {
             id: contentMenuButton
             property ContextMenu contextMenu
@@ -473,6 +486,7 @@ Column {
             SelectionDialog {
                 titleText: "Select"
                 selectedIndex: 2
+                platformInverted: column.childrenInverted
                 model: ListModel {
                     ListElement { name: "One" }
                     ListElement { name: "Two" }
@@ -588,6 +602,7 @@ Column {
         id: sectionScrollComponent
         Dialog {
             id: sectionScroll
+            platformInverted: column.childrenInverted
             title: Text {
                 text: "Section Scroller"
                 font { bold: true; pixelSize: 16 }
