@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
@@ -38,28 +38,19 @@
 **
 ****************************************************************************/
 import QtQuick 1.0
-import Qt.labs.components.native 1.0
+import com.nokia.symbian 1.1
 
-Rectangle {
-    id: rectangle
-    height: 500
-    width:  200
-    color: "gray"
-
+Item {
     Column {
         id: colColumn
         spacing: 10
         anchors.fill: parent
+        anchors.margins: 50
 
 //! [1]
         CheckBox {
             id: chkPlatformAutoRepeat
             text: "platformAutoRepeat"
-        }
-
-        CheckBox {
-            id: chkPlatformLongPress
-            text: "platformLongPress"
         }
 //! [1]
 
@@ -75,7 +66,6 @@ Rectangle {
             anchors.right: parent.right
             text: "Signals"
 
-            platformLongPress: chkPlatformLongPress.checked     // bind platformLongPress to the "platformLongPress" checkbox
             platformAutoRepeat: chkPlatformAutoRepeat.checked   // bind platformAutoRepeat to the "checked" checkbox
             checkable: chkCheckable.checked     // bind checkable to the "checkable" checkbox
             onPlatformReleased: {
@@ -100,6 +90,7 @@ Rectangle {
 
         Text {
             id: txtLog
+            color: "white"
             anchors.left: parent.left
             anchors.right: parent.right
         }

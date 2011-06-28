@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -31,11 +31,20 @@
     \since 1.0
     \inherits Column
 
-    \brief
+    \brief Provides a component for positioning menu items in a menu.
+
+
+    MenuLayout is a Column positioner that places its child objects
+    vertically in a column.
+
+    Even thought MenuLayout can contain any type of objects, it is recommended to
+    build the menu with \l MenuItem objects. Usage of other objects
+    may result in unexpected behaviour.
 
 */
 
 /*!
     \qmlsignal MenuLayout::clicked()
 
+    This signal is emitted when a menu item inside a MenuLayout is clicked.
 */

@@ -88,9 +88,10 @@ def collect_pro_files():
 def create_package_file():
     file = open(options.repository + "src/symbian/s60installs/qtcomponents.pkg", "w+")
     file.write("&EN\n")
-    file.write("#{\"Qt Quick components for Symbian\"},(0x200346DE),1,0,0,TYPE=SA,RU\n")
+    file.write("#{\"Qt Quick components for Symbian\"},(0x200346DE),1,1,0,TYPE=SA,RU\n")
     file.write("%{\"Nokia\"}\n")
     file.write(":\"Nokia, Qt\"\n")
+    file.write("[0x20022E6D], 0, 0, 0, {\"S60ProductID\"}\n")
     return file
 
 # Extracts TARGET and UID3 from included pro files
@@ -108,6 +109,15 @@ def append_to_package_file(pkgFile, pro_file, target, uid):
 
     # Extract path
     path = pro_file[:pro_file.rfind("/")]
+    if uid == "0x2003DE93":
+        uid = "0x200346DD"  # symbianplugin SIS UID must remain the same between versions
+
+    if uid == "0x2003DF67":
+        uid = "0x200346E1"  # qtcomponentsplugin SIS UID must remain the same between versions
+
+    if uid == "0x2003DF68":
+        uid = "0x2003A913"  # symbianextrasplugin SIS UID must remain the same between versions
+
     pkgFile.write("@\"%s/%s.sis\",(%s)\n" % (path, target, uid))
 
 def collect_names_and_uids(pkgFile):

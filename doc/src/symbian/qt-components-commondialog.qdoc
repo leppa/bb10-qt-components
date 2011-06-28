@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -25,22 +25,27 @@
 **
 ****************************************************************************/
 
-
-### Template: Search-replace CommonDialog with your component's CommonDialog.
-
 /*!
 
     \qmlclass CommonDialog
     \ingroup qt-components
     \since 1.0
     \inherits Dialog
-
     \brief
+    Provides a dialog with the platform-style title area.
+
+    CommonDialog is a convenience component that provides a dialog with the
+    platform-style title area. You only have to define \c titleText.
+    CommonDialog handles its layout automatically.
+
+    \note This component is experimental, so it may be changed or removed in
+    future releases.
 
 */
 
 /*!
-    \qmlproperty  string CommonDialog::titleText
+    \qmlproperty string CommonDialog::titleText
 
+    The dialog's title text.
 */
 

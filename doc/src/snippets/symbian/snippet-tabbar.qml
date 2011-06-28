@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
@@ -38,17 +38,13 @@
 **
 ****************************************************************************/
 import QtQuick 1.0
-import Qt.labs.components.native 1.0
 
 //! [0]
-import com.nokia.symbian 1.0
+import com.nokia.symbian 1.1
 
 Window {
     height: 350
     width: 350
-
-    // define a property that refers directly to the TabBarLayout item of the tab bar
-    property alias tabBarLayout: tabBar.layout
 
     // define a tab bar with three buttons and link them to the content
     TabBar {
@@ -63,46 +59,39 @@ Window {
     TabGroup {
         id: tabGroup
         anchors { left: parent.left; right: parent.right; top: tabBar.bottom; bottom: parent.bottom }
-    }
 
-    // define the content for tab 1
-    Page {
-        id: tab1content
-        Text {
-            anchors.centerIn: parent
-            text: "Tab 1 content"
-            font.pointSize: 25
-            color: "white"
+        // define the content for tab 1
+        Page {
+            id: tab1content
+            Text {
+                anchors.centerIn: parent
+                text: "Tab 1 content"
+                font.pointSize: 25
+                color: "white"
+            }
         }
-    }
 
-    // define the content for tab 2
-    Page {
-        id: tab2content
-        Text {
-            anchors.centerIn: parent
-            text: "Tab 2 content"
-            font.pointSize: 25
-            color: "pink"
+        // define the content for tab 2
+        Page {
+            id: tab2content
+            Text {
+                anchors.centerIn: parent
+                text: "Tab 2 content"
+                font.pointSize: 25
+                color: "pink"
+            }
         }
-    }
 
-    // define content for tab 3
-    Page {
-        id: tab3content
-        Text {
-            anchors.centerIn: parent
-            text: "Tab 3 content"
-            font.pointSize: 25
-            color: "cyan"
+        // define content for tab 3
+        Page {
+            id: tab3content
+            Text {
+                anchors.centerIn: parent
+                text: "Tab 3 content"
+                font.pointSize: 25
+                color: "cyan"
+            }
         }
-    }
-
-    // add the tab content items to the tab group
-    Component.onCompleted: {
-        tabGroup.addTab(tab1content)
-        tabGroup.addTab(tab2content)
-        tabGroup.addTab(tab3content)
     }
 }
 //! [0]

@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
@@ -38,7 +38,7 @@
 **
 ****************************************************************************/
 import QtQuick 1.0
-import Qt.labs.components.native 1.0
+import com.nokia.symbian 1.1
 
 Rectangle {
     id: rectangle

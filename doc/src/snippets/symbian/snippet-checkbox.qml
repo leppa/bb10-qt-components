@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
@@ -38,50 +38,27 @@
 **
 ****************************************************************************/
 import QtQuick 1.0
-import Qt.labs.components.native 1.0
+import com.nokia.symbian 1.1
 
-Rectangle {
-    id: rectangle
-    width: 250
-    height: 300
-    color: "gray"
+Window {
+    id: root
 
     Column {
-        id: colColumn
         spacing: 10
         anchors.fill: parent
+        anchors.margins: 10
 
-//! [0]
+        //! [0]
         CheckBox {
-            id: chkCheckBox
+            id: checkBox
             text: "Check box text"
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            onClicked: {
-                txtLog.text = txtLog.text + "The 'clicked' signal: "
-                if (checked) {
-                    txtLog.text = txtLog.text + "The check box is checked. <br>"
-                } else {
-                    txtLog.text = txtLog.text + "The check box is unchecked. <br>"
-                }
-            }
         }
-//! [0]
-
-
-
-
-        Button {
-            id: btnClearText
-            anchors.left: parent.left
-            anchors.right: parent.right
-            text: "Clear text"
-            onClicked: txtLog.text = ""
-        }
-
         Text {
-            id: txtLog
+            text: checkBox.checked ? "Checked" : "Unchecked"
+            font.pixelSize: platformStyle.fontSizeMedium
+            font.family: platformStyle.fontFamilyRegular
+            color: platformStyle.colorNormalLight
         }
+        //! [0]
     }
 }

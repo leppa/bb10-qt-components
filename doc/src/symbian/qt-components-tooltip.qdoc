@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -32,22 +32,47 @@
     \since 1.0
     \inherits Item
 
-    \brief
+    \brief Provides a tooltip that shows a hint or contextual feedback.
 
+    The contextual feedback can be the value of a determinate progress bar, for
+    example. To display a tooltip, you need to set the text to to be displayed and a
+    component that the tooltip is connected to. The tooltip can be set to
+    visible \c true or \c false.
+
+    By default, the tooltip is positioned above the object bound to its \c
+    target. The tooltip will relocate itself automatically if it would be
+    displayed out of the screen's visible area. The display position is
+    determined in the following order: top, right, left, and bottom.
+
+    \section1 Displaying a ToolTip
+
+    The code snippet below illustrates how to show a tooltip when the user
+    presses the rectangle, and hide it when the user releases the rectangle.
+
+    \snippet src/snippets/symbian/snippet-tooltip.qml 0
+
+    The screenshot below illustrates the case where the user is pressing the
+    rectangle.
+
+    \image symbian/tooltip_visible.png
 */
 
 /*!
     \qmlproperty font ToolTip::font
-
+    The font of the tooltip's label.
 */
 
 /*!
     \qmlproperty string ToolTip::text
 
+    The text that is displayed as the tooltip's label. The default text is an
+    empty string. The property also accepts rich text.
+
 */
 
 /*!
     \qmlproperty variant ToolTip::target
-
+    The object that the tooltip is connected to. The position of the
+    tooltip is calculated in relation to the element given as the target.
 */
 

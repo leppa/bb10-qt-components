@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -33,7 +33,7 @@
     \inherits QtObject
 
     \brief
-    A CheckableGroup groups together a number of related Checkable items.
+    Provides a component for grouping together related Checkable elements.
 
     The CheckableGroup is used in components like RadioButton where only one of
     the Checkable items can be selected at a time. This is known as an exclusive

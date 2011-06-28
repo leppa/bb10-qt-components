@@ -4,31 +4,45 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
-** No Commercial Usage
-** This file contains pre-release code and may not be distributed.
-** You may use this file in accordance with the terms and conditions contained
-** in the Technology Preview License Agreement accompanying this package.
+** $QT_BEGIN_LICENSE:BSD$
+** You may use this file under the terms of the BSD license as follows:
 **
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** "Redistribution and use in source and binary forms, with or without
+** modification, are permitted provided that the following conditions are
+** met:
+**   * Redistributions of source code must retain the above copyright
+**     notice, this list of conditions and the following disclaimer.
+**   * Redistributions in binary form must reproduce the above copyright
+**     notice, this list of conditions and the following disclaimer in
+**     the documentation and/or other materials provided with the
+**     distribution.
+**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
+**     the names of its contributors may be used to endorse or promote
+**     products derived from this software without specific prior written
+**     permission.
 **
-** If you have questions regarding the use of this file, please contact
-** Nokia at qt-info@nokia.com.
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+** $QT_END_LICENSE$
 **
 ****************************************************************************/
 
-import QtQuick 1.0
+import QtQuick 1.1
 import "SectionScroller.js" as Sections
-import "." 1.0
+import "." 1.1
 
-ImplicitSizeItem {
+Item {
     id: root
 
     property Flickable flickableItem: null
@@ -36,6 +50,7 @@ ImplicitSizeItem {
     property bool interactive: true
     property int policy: Symbian.ScrollBarWhenScrolling
     property bool privateSectionScroller: false
+    property bool platformInverted: false
 
     //implicit values for qml designer when no Flickable is present
     implicitHeight: privateStyle.scrollBarThickness * (orientation == Qt.Vertical ? 3 : 1)
@@ -241,7 +256,10 @@ ImplicitSizeItem {
     BorderImage {
         id: track
         objectName: "track"
-        source: privateStyle.imagePath(orientation == Qt.Vertical ? "qtg_fr_scrollbar_v_track_normal" : "qtg_fr_scrollbar_h_track_normal")
+        source: privateStyle.imagePath((orientation == Qt.Vertical
+                                        ? "qtg_fr_scrollbar_v_track_normal"
+                                        : "qtg_fr_scrollbar_h_track_normal"),
+                                       root.platformInverted)
         visible: interactive
         anchors.fill: parent
         border.right: orientation == Qt.Horizontal ? 7 : 0
@@ -264,14 +282,15 @@ ImplicitSizeItem {
         BorderImage {
             id: indexFeedbackBackground
             objectName: "indexFeedbackBackground"
-            source: privateStyle.imagePath("qtg_fr_popup_transparent")
+            source: privateStyle.imagePath("qtg_fr_popup_transparent", root.platformInverted)
             border { left: platformStyle.borderSizeMedium; top: platformStyle.borderSizeMedium; right: platformStyle.borderSizeMedium; bottom: platformStyle.borderSizeMedium }
             visible: trackMouseArea.pressed
             anchors.fill: parent
             Text {
                 id: indexFeedbackText
                 objectName: "indexFeedbackText"
-                color: platformStyle.colorNormalLight
+                color: root.platformInverted ? platformStyle.colorNormalDarkInverted // intentionally dark inverted
+                                             : platformStyle.colorNormalLight
                 anchors {
                     left: parent.left;
                     leftMargin: platformStyle.paddingLarge;
@@ -285,6 +304,7 @@ ImplicitSizeItem {
                     capitalization: indexFeedbackText.text.length == 1 ? Font.AllUppercase : Font.MixedCase
                 }
                 text: internal.currentSection
+                horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
             }
             states: [
@@ -364,9 +384,9 @@ ImplicitSizeItem {
     BorderImage {
         id: handle
         objectName: "handle"
-        source: privateStyle.imagePath(handleFileName())
-        x: orientation == Qt.Horizontal ? internal.handlePosition : (!flickableItem ? NaN : flickableItem.x)
-        y: orientation == Qt.Vertical ? internal.handlePosition : (!flickableItem ? NaN : flickableItem.y)
+        source: privateStyle.imagePath(handleFileName(), root.platformInverted)
+        x: orientation == Qt.Horizontal ? internal.handlePosition : NaN
+        y: orientation == Qt.Vertical ? internal.handlePosition : NaN
         height: orientation == Qt.Vertical ? internal.dynamicHandleLength : root.height
         width: orientation == Qt.Horizontal ? internal.dynamicHandleLength : root.width
         border.right: orientation == Qt.Horizontal ? 7 : 0

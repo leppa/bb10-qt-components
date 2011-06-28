@@ -4,32 +4,51 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
-** No Commercial Usage
-** This file contains pre-release code and may not be distributed.
-** You may use this file in accordance with the terms and conditions contained
-** in the Technology Preview License Agreement accompanying this package.
+** $QT_BEGIN_LICENSE:BSD$
+** You may use this file under the terms of the BSD license as follows:
 **
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** "Redistribution and use in source and binary forms, with or without
+** modification, are permitted provided that the following conditions are
+** met:
+**   * Redistributions of source code must retain the above copyright
+**     notice, this list of conditions and the following disclaimer.
+**   * Redistributions in binary form must reproduce the above copyright
+**     notice, this list of conditions and the following disclaimer in
+**     the documentation and/or other materials provided with the
+**     distribution.
+**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
+**     the names of its contributors may be used to endorse or promote
+**     products derived from this software without specific prior written
+**     permission.
 **
-** If you have questions regarding the use of this file, please contact
-** Nokia at qt-info@nokia.com.
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+** $QT_END_LICENSE$
 **
 ****************************************************************************/
 
-import QtQuick 1.0
-import com.nokia.symbian 1.0
-import Qt.labs.components 1.0
+import QtQuick 1.1
+import com.nokia.symbian 1.1
+import Qt.labs.components 1.1
 
 Column {
     id: column
+
+    // for demonstration and testing purposes each component needs to
+    // set its inverted state explicitly
+    property bool childrenInverted: false
+
     spacing: 14
 
     Text {
@@ -43,6 +62,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Push me"
         width: parent.width - parent.spacing
+        platformInverted: column.childrenInverted
     }
 
     TextField {
@@ -127,6 +147,7 @@ Column {
     Slider {
         anchors.horizontalCenter: parent.horizontalCenter
         value: 50
+        platformInverted: column.childrenInverted
     }
 
     Row {
@@ -137,10 +158,12 @@ Column {
 
         RadioButton {
             platformExclusiveGroup: group
+            platformInverted: column.childrenInverted
         }
 
         RadioButton {
             platformExclusiveGroup: group
+            platformInverted: column.childrenInverted
         }
     }
 
@@ -149,10 +172,12 @@ Column {
         spacing: parent.spacing
 
         CheckBox {
+            platformInverted: column.childrenInverted
         }
 
         CheckBox {
             checked: true
+            platformInverted: column.childrenInverted
         }
     }
 
@@ -161,15 +186,18 @@ Column {
         spacing: parent.spacing
 
         Switch {
+            platformInverted: column.childrenInverted
         }
 
         Switch {
             checked: true
+            platformInverted: column.childrenInverted
         }
     }
 
     ProgressBar {
         anchors.horizontalCenter: parent.horizontalCenter
+        platformInverted: column.childrenInverted
 
         Timer {
             running: true
@@ -182,6 +210,7 @@ Column {
     ProgressBar {
         anchors.horizontalCenter: parent.horizontalCenter
         indeterminate: true
+        platformInverted: column.childrenInverted
     }
 
     Component {
@@ -194,6 +223,7 @@ Column {
                 id: buttons
                 width: parent.width
                 height: privateStyle.toolBarHeightLandscape + 2 * platformStyle.paddingSmall
+                platformInverted: column.childrenInverted
 
                 tools: Row {
                     anchors.centerIn: parent
@@ -202,12 +232,14 @@ Column {
                     ToolButton {
                         text: "Ok"
                         width: (buttons.width - 3 * platformStyle.paddingMedium) / 2
+                        platformInverted: column.childrenInverted
                         onClicked: dialog.accept()
                     }
 
                     ToolButton {
                         text: "Cancel"
                         width: (buttons.width - 3 * platformStyle.paddingMedium) / 2
+                        platformInverted: column.childrenInverted
                         onClicked: dialog.reject()
                     }
                 }
@@ -227,6 +259,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - parent.spacing
         text: "Dialog"
+        platformInverted: column.childrenInverted
         onClicked: {
             if (!dialog)
                 dialog = dialogComponent.createObject(column)
@@ -269,7 +302,7 @@ Column {
             property SelectionDialog singleSelectionDialog
             anchors.centerIn: parent
             text: "Selection Dialog"
-
+            platformInverted: column.childrenInverted
             onClicked: {
                 if (!singleSelectionDialog)
                     singleSelectionDialog = singleSelectionDialogComponent.createObject(column)
@@ -283,6 +316,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - parent.spacing
         text: "QueryDialog"
+        platformInverted: column.childrenInverted
         onClicked: {
             if (!queryDialog)
                 queryDialog = queryDialogComponent.createObject(column)
@@ -294,7 +328,8 @@ Column {
         id: queryDialogComponent
         QueryDialog {
             titleText: "Query Dialog"
-            message: "Lorem ipsum dolor sit amet, consectetur adipisici elit,"
+            // Arabic character in the beginning to test right-to-left UI alignment
+            message: (LayoutMirroring.enabled ? "\u062a" : "") + "Lorem ipsum dolor sit amet, consectetur adipisici elit,"
                      + "sed eiusmod tempor incidunt ut labore et dolore magna aliqua."
                      + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris"
                      + "nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit"
@@ -320,6 +355,7 @@ Column {
             property ContextMenu contextMenu
             anchors.horizontalCenter: parent.horizontalCenter
             text: "ContextMenu"
+            platformInverted: column.childrenInverted
             onClicked: {
                 if (!contextMenu)
                     contextMenu = contextMenuComponent.createObject(column)
@@ -331,11 +367,28 @@ Column {
     Component {
         id: contextMenuComponent
         ContextMenu {
+            platformInverted: column.childrenInverted
             content: MenuLayout {
-                MenuItem { text: "White"; onClicked: { contentMenuButton.parent.color = "White" } }
-                MenuItem { text: "Red"; onClicked: { contentMenuButton.parent.color = "Red" } }
-                MenuItem { text: "LightBlue"; onClicked: { contentMenuButton.parent.color = "LightBlue" } }
-                MenuItem { text: "LightGreen"; onClicked: { contentMenuButton.parent.color = "LightGreen" } }
+                MenuItem {
+                    text: "White"
+                    platformInverted: column.childrenInverted
+                    onClicked: contentMenuButton.parent.color = "White"
+                }
+                MenuItem {
+                    text: "Red"
+                    platformInverted: column.childrenInverted
+                    onClicked: contentMenuButton.parent.color = "Red"
+                }
+                MenuItem {
+                    text: "LightBlue"
+                    platformInverted: column.childrenInverted
+                    onClicked: contentMenuButton.parent.color = "LightBlue"
+                }
+                MenuItem {
+                    text: "LightGreen"
+                    platformInverted: column.childrenInverted
+                    onClicked: contentMenuButton.parent.color = "LightGreen"
+                }
             }
         }
     }
@@ -361,11 +414,13 @@ Column {
     Component {
         id: listHeading
         ListHeading {
-            width: parent.width
+            width: column.width
+            platformInverted: column.childrenInverted
             ListItemText {
                 anchors.fill: parent.paddingItem
                 role: "Heading"
                 text: "ListHeading"
+                platformInverted: column.childrenInverted
             }
         }
     }
@@ -377,14 +432,18 @@ Column {
             Column {
                 anchors.fill: listItem.paddingItem
                 ListItemText {
+                    width: parent.width
                     mode: listItem.mode
                     role: "Title"
                     text: titleText
+                    platformInverted: column.childrenInverted
                 }
                 ListItemText {
+                    width: parent.width
                     mode: listItem.mode
                     role: "SubTitle"
                     text: subTitleText
+                    platformInverted: column.childrenInverted
                 }
             }
         }
@@ -401,6 +460,7 @@ Column {
         }
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - parent.spacing
+        platformInverted: column.childrenInverted
 
         onClicked: {
             if (!selectionDialog)
@@ -431,15 +491,16 @@ Column {
 
     TabBar {
         width: parent.width - parent.spacing
-        TabButton { tab: tab1content; text: "1" }
-        TabButton { tab: tab2content; text: "2" }
-        TabButton { tab: tab3content; text: "3" }
+        platformInverted: column.childrenInverted
+        TabButton { tab: tab1content; text: "1"; platformInverted: column.childrenInverted }
+        TabButton { tab: tab2content; text: "2"; platformInverted: column.childrenInverted }
+        TabButton { tab: tab3content; text: "3"; platformInverted: column.childrenInverted }
     }
 
     TabGroup {
         height: 100
         width: parent.width - parent.spacing
-        Button { id: tab1content; text: "tab1" }
+        Button { id: tab1content; text: "tab1"; platformInverted: column.childrenInverted }
         Text {
             id: tab2content
             text: "tab2"
@@ -449,25 +510,28 @@ Column {
         }
         Page {
             id: tab3content
-            CheckBox { anchors.fill: parent; text: "tab3" }
+            CheckBox { anchors.fill: parent; text: "tab3"; platformInverted: column.childrenInverted }
         }
     }
 
     ToolButton {
         id: toolButton
         text: "ToolButton"
+        platformInverted: column.childrenInverted
     }
 
     ToolButton {
         id: toolButton2
         flat: true
         iconSource: "qrc:ok.svg"
+        platformInverted: column.childrenInverted
     }
 
     ToolButton {
         id: toolButton3
         text: "ToolButton"
         iconSource: "qrc:close_stop.svg"
+        platformInverted: column.childrenInverted
     }
 
     Row {
@@ -478,12 +542,14 @@ Column {
             width: 20
             height: 20
             running: true
+            platformInverted: column.childrenInverted
         }
 
         BusyIndicator {
             // default width/height is 40
             id: busyInd2
             running: true
+            platformInverted: column.childrenInverted
         }
 
         BusyIndicator {
@@ -491,10 +557,12 @@ Column {
             width: 60
             height: 60
             running: true
+            platformInverted: column.childrenInverted
         }
 
         Button {
             text: "Toggle"
+            platformInverted: column.childrenInverted
             onClicked: {
                 busyInd1.running = !busyInd1.running
                 busyInd2.running = !busyInd2.running
@@ -508,6 +576,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - parent.spacing
         text: "SectionScroller"
+        platformInverted: column.childrenInverted
         onClicked: {
             if (!sectionScroll)
                 sectionScroll = sectionScrollComponent.createObject(column)
@@ -531,6 +600,7 @@ Column {
                 ToolButton {
                     text: "Close"
                     height: platformStyle.graphicSizeMedium
+                    platformInverted: column.childrenInverted
                     onClicked: sectionScroll.close()
                 }
             content:
@@ -572,9 +642,12 @@ Column {
                         border { color: "#000"; width: 1 }
                         color: index % 2 == 0 ? "#ffffff" : "#eeeeee"
                         Text {
-                            x: platformStyle.paddingSmall
-                            y: platformStyle.paddingSmall
+                            anchors {
+                                top: parent.top; topMargin: platformStyle.paddingSmall
+                                left: parent.left; leftMargin: platformStyle.paddingSmall
+                            }
                             text: name + " (index " + index + ")"
+                            horizontalAlignment: Text.AlignLeft
                         }
                     }
                     model: testModel
@@ -585,9 +658,12 @@ Column {
                         height: childrenRect.height + (2 * platformStyle.paddingSmall)
                         color: "#888"
                         Text {
-                            x: platformStyle.paddingSmall
-                            y: platformStyle.paddingSmall
+                            anchors {
+                                top: parent.top; topMargin: platformStyle.paddingSmall
+                                left: parent.left; leftMargin: platformStyle.paddingSmall
+                            }
                             text: section
+                            horizontalAlignment: Text.AlignLeft
                             font { bold: true; pointSize: platformStyle.fontSizeMedium }
                         }
                     }
@@ -596,6 +672,7 @@ Column {
                 SectionScroller {
                     id: sectionScroller
                     listView: list
+                    platformInverted: column.childrenInverted
                 }
             }
         }
@@ -607,9 +684,9 @@ Column {
        exclusive: true
        checkedButton: b2
 
-       Button { text: "b1" }
-       Button { text: "b2" }
-       Button { text: "b3" }
+       Button { text: "b1"; platformInverted: column.childrenInverted }
+       Button { text: "b2"; platformInverted: column.childrenInverted }
+       Button { text: "b3"; platformInverted: column.childrenInverted }
    }
 
    ButtonRow {
@@ -617,8 +694,8 @@ Column {
        width: parent.width - parent.spacing
        exclusive: true
 
-       ToolButton { text: "tb1" }
-       ToolButton { text: "tb2" }
+       ToolButton { text: "tb1"; platformInverted: column.childrenInverted }
+       ToolButton { text: "tb2"; platformInverted: column.childrenInverted }
    }
 
    ButtonColumn {
@@ -626,9 +703,9 @@ Column {
        width: parent.width - parent.spacing
        exclusive: true
 
-       Button { text: "b4" }
-       Button { text: "b5" }
-       Button { text: "b6" }
-       Button { text: "b7" }
+       Button { text: "b4"; platformInverted: column.childrenInverted }
+       Button { text: "b5"; platformInverted: column.childrenInverted }
+       Button { text: "b6"; platformInverted: column.childrenInverted }
+       Button { text: "b7"; platformInverted: column.childrenInverted }
    }
 }

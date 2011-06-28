@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -30,10 +30,11 @@
     \ingroup qt-components
     \since 1.0
 
-    \brief Helps user to scroll a long list one section at a time.
+    \brief Provides a functionality for scrolling a long list by one section at
+    a time.
 
     A section scroller is a component that allows the user to scroll through
-    a list one section at a time.  The sections are defined in the list.
+    a list by one section at a time.  The sections are defined in the list.
 
     \code
     Item {
@@ -53,16 +54,16 @@
         }
 
         SectionScroller {
-            list: list
+            listView: list
         }
     }
     \endcode
 */
 
 /*!
-    \qmlproperty ListView SectionScroller::list
+    \qmlproperty  ListView SectionScroller::listView
 
-    The ListView Item that should show the Section Scroller.
+    The ListView that this section scroller is attached to.
+
 */
-
 

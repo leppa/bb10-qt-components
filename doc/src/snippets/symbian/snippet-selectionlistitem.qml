@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
@@ -39,30 +39,33 @@
 ****************************************************************************/
 
 import Qt 4.7
-import com.nokia.symbian 1.0
+import com.nokia.symbian 1.1
 
-Item {
+Window {
+    id: root
+
 //! [0]
     SelectionListItem {
         id: item
-        title: "Selected value"
-        subTitle: selectionDialog.model.get(selectionDialog.selectedIndex).name
+        title: "City"
+        subTitle: selectionDialog.selectedIndex >= 0
+                  ? selectionDialog.model.get(selectionDialog.selectedIndex).name
+                  : "Please select"
 
         onClicked: selectionDialog.open()
 
         SelectionDialog {
             id: selectionDialog
             titleText: "Select one of the values"
-            selectedIndex: 0
+            selectedIndex: -1
             model: ListModel {
-                ListElement { name: "Zero" }
-                ListElement { name: "One" }
-                ListElement { name: "Two" }
-                ListElement { name: "Three" }
-                ListElement { name: "Four" }
+                ListElement { name: "Helsinki" }
+                ListElement { name: "Oulu" }
+                ListElement { name: "Rovaniemi" }
+                ListElement { name: "Tampere" }
+                ListElement { name: "Vaasa" }
             }
         }
     }
 //! [0]
 }
-

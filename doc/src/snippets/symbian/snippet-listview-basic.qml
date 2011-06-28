@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** You may use this file under the terms of the BSD license as follows:
@@ -39,9 +39,9 @@
 ****************************************************************************/
 //! [0]
 import Qt 4.7
-import com.nokia.symbian 1.0
+import com.nokia.symbian 1.1
 
-Item {
+Window {
     id: root
 
     ListView {
@@ -60,7 +60,7 @@ Item {
             id: listItem
 
             Column {
-                anchors.fill: listItem.padding
+                anchors.fill: listItem.paddingItem
 
                 ListItemText {
                     mode: listItem.mode

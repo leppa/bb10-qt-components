@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -41,9 +41,9 @@
     components to both platforms. Each set has a different \c import statement.
 
     \code
-    import com.nokia.symbian    // Symbian components
-    import com.nokia.meego      // MeeGo components
-    import com.nokia.extras     // Extras
+    import com.nokia.symbian 1.1    // Symbian components
+    import com.nokia.meego 1.0      // MeeGo components
+    import com.nokia.extras 1.0     // Extras
     \endcode
 
     \table
@@ -59,7 +59,7 @@
                 \endlist
             \o
                 \list
-                    \o \l{Qt Quick components examples and demos}{Examples and demos}
+                    \o \l{Building the Qt Quick Components for MeeGo}{Build and Install Instructions}
                 \endlist
             \o
                 \list

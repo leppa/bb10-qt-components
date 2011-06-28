@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -33,7 +33,7 @@
     \inherits QtObject
 
     \brief
-    Checkable implements the logic behind a component that can be enabled or disabled.
+    Implements the functionality for a component that can be enabled or disabled.
 
     As well as being used with a single component, a Checkable can also be a
     part of a CheckableGroup where exactly one checkable item in the group can

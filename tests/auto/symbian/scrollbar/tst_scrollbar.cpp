@@ -4,37 +4,46 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
-** No Commercial Usage
-** This file contains pre-release code and may not be distributed.
-** You may use this file in accordance with the terms and conditions contained
-** in the Technology Preview License Agreement accompanying this package.
+** $QT_BEGIN_LICENSE:BSD$
+** You may use this file under the terms of the BSD license as follows:
 **
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** "Redistribution and use in source and binary forms, with or without
+** modification, are permitted provided that the following conditions are
+** met:
+**   * Redistributions of source code must retain the above copyright
+**     notice, this list of conditions and the following disclaimer.
+**   * Redistributions in binary form must reproduce the above copyright
+**     notice, this list of conditions and the following disclaimer in
+**     the documentation and/or other materials provided with the
+**     distribution.
+**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
+**     the names of its contributors may be used to endorse or promote
+**     products derived from this software without specific prior written
+**     permission.
 **
-** If you have questions regarding the use of this file, please contact
-** Nokia at qt-info@nokia.com.
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+** $QT_END_LICENSE$
 **
 ****************************************************************************/
-//For qDebug
-//#define QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
 
 #include <QtTest/QTest>
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeComponent>
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-#include <QtCore/QDebug>
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
 #include "tst_quickcomponentstest.h"
 
-static const QByteArray QT_COMP_IMPORT_STRING_SYMBIAN = "import com.nokia.symbian 1.0\n";
+static const QByteArray QT_COMP_IMPORT_STRING_SYMBIAN = "import com.nokia.symbian 1.1\n";
 
 static void failIfWarnings(QtMsgType type, const char *msg)
 {
@@ -75,7 +84,6 @@ private slots:
 
 private:
     //common function for ScrollDecorator and ScrollBar
-    void checkProperties(const QMetaProperty &property, QObject *obj, int *propertyCount);
     void testValid();
 
 private:
@@ -99,85 +107,6 @@ void tst_scrollbar::cleanup()
 {
 }
 
-void tst_scrollbar::checkProperties(const QMetaProperty &property, QObject *obj, int *propertyCount)
-{
-    if (property.name() == QString("flickableItem")) {
-        (*propertyCount)++;
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (flickableItem) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QVERIFY(property.read(obj).toString().isNull());
-    }
-    if (property.name() == QString("policy")) {
-        (*propertyCount)++;
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (policy) = (Symbian.ScrollBarWhenScrolling) " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QCOMPARE(property.read(obj).toInt(), 1);
-        property.write(obj, 0);
-        QCOMPARE(property.read(obj).toInt(), 0);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (policy) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("interactive")) {
-        (*propertyCount)++;
-        property.write(obj, true);
-        QCOMPARE(property.read(obj).toBool(), true);
-        property.write(obj, false);
-        QCOMPARE(property.read(obj).toBool(), false);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (interactive) = " << property.read(obj).toBool();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("position")) {
-        (*propertyCount)++;
-        const qreal value = 0.8;
-        property.write(obj, value);
-        QCOMPARE(property.read(obj).toReal(), value);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (position) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("pageSize")) {
-        (*propertyCount)++;
-        const qreal value = 0.8;
-        property.write(obj, value);
-        QCOMPARE(property.read(obj).toReal(), value);
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (pageSize) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("orientation")) {
-        (*propertyCount)++;
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (orientation) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QCOMPARE(property.read(obj).toInt(), int(Qt::Vertical));
-        property.write(obj, Qt::Horizontal);
-        QCOMPARE(property.read(obj).toInt(), int(Qt::Horizontal));
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "modified (orientation) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-    }
-    if (property.name() == QString("implicitWidth")) {
-        (*propertyCount)++;
-        //check for default value is something 'draggable' for the tool
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (implicitWidth) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QVERIFY(!property.read(obj).isNull());
-    }
-    if (property.name() == QString("implicitHeight")) {
-        (*propertyCount)++;
-        //check for default value is something 'draggable' for the tool
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "default (implicitHeight) = " << property.read(obj).toString();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QVERIFY(!property.read(obj).isNull());
-    }
-}
-
 void tst_scrollbar::testValid()
 {
     QFETCH(QByteArray, qml);
@@ -189,7 +118,7 @@ void tst_scrollbar::testValid()
 
 void tst_scrollbar::testScrollBarWithInvalidFlickable()
 {
-    QByteArray qml = "import QtQuick 1.0\n"
+    QByteArray qml = "import QtQuick 1.1\n"
                      +QT_COMP_IMPORT_STRING_SYMBIAN
                      +"Item {\n"
                      +"    id: root\n"
@@ -203,7 +132,7 @@ void tst_scrollbar::testScrollBarWithInvalidFlickable()
 
 void tst_scrollbar::testScrollBarLoadingWithNoParams()
 {
-    QByteArray qml = "import QtQuick 1.0\n"
+    QByteArray qml = "import QtQuick 1.1\n"
                      +QT_COMP_IMPORT_STRING_SYMBIAN
                      +"ScrollBar {\n"
                      +"}";
@@ -219,70 +148,70 @@ void tst_scrollbar::testValidScrollBar_data()
 {
     QTest::addColumn<QByteArray>("qml");
     QTest::addColumn<bool>("isValid");
-    QByteArray oneDefaultScrollbarWithListView = "import QtQuick 1.0\n"
+    QByteArray oneDefaultScrollbarWithListView = "import QtQuick 1.1\n"
                                                  +QT_COMP_IMPORT_STRING_SYMBIAN
                                                  +"Item {\n"
                                                  +"    id: root\n"
                                                  +"    ListView { id: flickableArea }\n"
                                                  +"    ScrollBar { flickableItem: flickableArea }\n"
                                                  +"}";
-    QByteArray oneDefaultScrollbarWithGridView= "import QtQuick 1.0\n"
+    QByteArray oneDefaultScrollbarWithGridView= "import QtQuick 1.1\n"
                                                 +QT_COMP_IMPORT_STRING_SYMBIAN
                                                 +"Item {\n"
                                                 +"    id: root\n"
                                                 +"    GridView { id: flickableArea }\n"
                                                 +"    ScrollBar { flickableItem: flickableArea }\n"
                                                 +"}";
-    QByteArray oneDefaultScrollbarWithFlickable = "import QtQuick 1.0\n"
+    QByteArray oneDefaultScrollbarWithFlickable = "import QtQuick 1.1\n"
                                                   +QT_COMP_IMPORT_STRING_SYMBIAN
                                                   +"Item {\n"
                                                   +"    id: root\n"
                                                   +"    Flickable { id: flickableArea }\n"
                                                   +"    ScrollBar { flickableItem: flickableArea }\n"
                                                   +"}";
-    QByteArray nonInteractiveScrollbar = "import QtQuick 1.0\n"
+    QByteArray nonInteractiveScrollbar = "import QtQuick 1.1\n"
                                          +QT_COMP_IMPORT_STRING_SYMBIAN
                                          +"Item {\n"
                                          +"    id: root\n"
                                          +"    Flickable { id: flickableArea }\n"
                                          +"    ScrollBar { interactive: false; flickableItem: flickableArea }\n"
                                          +"}";
-    QByteArray interactiveScrollbar = "import QtQuick 1.0\n"
+    QByteArray interactiveScrollbar = "import QtQuick 1.1\n"
                                       +QT_COMP_IMPORT_STRING_SYMBIAN
                                       +"Item {\n"
                                       +"    id: root\n"
                                       +"    Flickable { id: flickableArea }\n"
                                       +"    ScrollBar { interactive: true; flickableItem: flickableArea }\n"
                                       +"}";
-    QByteArray showWhenScrollingScrollbar = "import QtQuick 1.0\n"
+    QByteArray showWhenScrollingScrollbar = "import QtQuick 1.1\n"
                                             +QT_COMP_IMPORT_STRING_SYMBIAN
                                             +"Item {\n"
                                             +"    id: root\n"
                                             +"    Flickable { id: flickableArea }\n"
                                             +"    ScrollBar { policy: Symbian.ScrollBarWhenScrolling; flickableItem: flickableArea }\n"
                                             +"}";
-    QByteArray showWhenNeededScrollbar = "import QtQuick 1.0\n"
+    QByteArray showWhenNeededScrollbar = "import QtQuick 1.1\n"
                                          +QT_COMP_IMPORT_STRING_SYMBIAN
                                          +"Item {\n"
                                          +"    id: root\n"
                                          +"    Flickable { id: flickableArea }\n"
                                          +"    ScrollBar { policy: Symbian.ScrollBarWhenNeeded; flickableItem: flickableArea }\n"
                                          +"}";
-    QByteArray horizontalScrollbar = "import QtQuick 1.0\n"
+    QByteArray horizontalScrollbar = "import QtQuick 1.1\n"
                                      +QT_COMP_IMPORT_STRING_SYMBIAN
                                      +"Item {\n"
                                      +"    id: root\n"
                                      +"    Flickable { id: flickableArea }\n"
                                      +"    ScrollBar { orientation: Qt.Horizontal; flickableItem: flickableArea }\n"
                                      +"}";
-    QByteArray verticalScrollbar = "import QtQuick 1.0\n"
+    QByteArray verticalScrollbar = "import QtQuick 1.1\n"
                                    +QT_COMP_IMPORT_STRING_SYMBIAN
                                    +"Item {\n"
                                    +"    id: root\n"
                                    +"    Flickable { id: flickableArea }\n"
                                    +"    ScrollBar { orientation: Qt.Horizontal; flickableItem: flickableArea }\n"
                                    +"}";
-    QByteArray twoScrollbars = "import QtQuick 1.0\n"
+    QByteArray twoScrollbars = "import QtQuick 1.1\n"
                                +QT_COMP_IMPORT_STRING_SYMBIAN
                                +"Item {\n"
                                +"    id: root\n"
@@ -309,7 +238,7 @@ void tst_scrollbar::testValidScrollBar()
 
 void tst_scrollbar::testPropertiesScrollBar()
 {
-    QByteArray qml = "import QtQuick 1.0\n"
+    QByteArray qml = "import QtQuick 1.1\n"
                      +QT_COMP_IMPORT_STRING_SYMBIAN
                      +"Item {\n"
                      +"    id: root\n"
@@ -321,24 +250,32 @@ void tst_scrollbar::testPropertiesScrollBar()
     QVERIFY2(obj, qPrintable(errors));
 
     QVERIFY(obj->property("interactive").isValid());
+    QCOMPARE(obj->property("interactive").toBool(), true);
+    obj->setProperty("interactive", false);
+    QCOMPARE(obj->property("interactive").toBool(), false);
+
     QVERIFY(obj->property("flickableItem").isValid());
+
     QVERIFY(obj->property("orientation").isValid());
+    QCOMPARE(obj->property("orientation").toInt(), int(Qt::Vertical));
+    obj->setProperty("orientation", Qt::Horizontal);
+    QCOMPARE(obj->property("orientation").toInt(), int(Qt::Horizontal));
+
     QVERIFY(obj->property("policy").isValid());
-    QVERIFY(obj->property("implicitWidth").isValid());
-    QVERIFY(obj->property("implicitHeight").isValid());
+    QCOMPARE(obj->property("policy").toInt(), 1);
+    obj->setProperty("policy", 0);
+    QCOMPARE(obj->property("policy").toInt(), 0);
 
-    const QMetaObject *metaInfo = obj->metaObject();
+    QVERIFY(obj->property("privateSectionScroller").isValid());
+    QCOMPARE(obj->property("privateSectionScroller").toBool(), false);
+    obj->setProperty("privateSectionScroller", true);
+    QCOMPARE(obj->property("privateSectionScroller").toBool(), true);
 
-    int propertyCount = 0;
-    int metaPropertyCount = metaInfo->propertyCount();
-    for (int i = 0 ; i < metaPropertyCount ; i++) {
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "PROPERTY UNDER CHECK IS" << metaInfo->property(i).name();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QMetaProperty property = metaInfo->property(i);
-        checkProperties(property, obj, &propertyCount);
-    }
-    QCOMPARE(propertyCount, 6);
+    QVERIFY(obj->property("platformInverted").isValid());
+    QCOMPARE(obj->property("platformInverted").toBool(), false);
+    obj->setProperty("platformInverted", true);
+    QCOMPARE(obj->property("platformInverted").toBool(), true);
+
     delete obj;
 }
 
@@ -346,84 +283,84 @@ void tst_scrollbar::testValidScrollDecorator_data()
 {
     QTest::addColumn<QByteArray>("qml");
     QTest::addColumn<bool>("isValid");
-    QByteArray oneDefaultScrollDecoratorWithListView = "import QtQuick 1.0\n"
+    QByteArray oneDefaultScrollDecoratorWithListView = "import QtQuick 1.1\n"
                                                        +QT_COMP_IMPORT_STRING_SYMBIAN
                                                        +"Item {\n"
                                                        +"    id: root\n"
                                                        +"    ListView { id: flickableArea }\n"
                                                        +"    ScrollDecorator { flickableItem: flickableArea }\n"
                                                        +"}";
-    QByteArray oneDefaultScrollDecoratorWithGridView = "import QtQuick 1.0\n"
+    QByteArray oneDefaultScrollDecoratorWithGridView = "import QtQuick 1.1\n"
                                                        +QT_COMP_IMPORT_STRING_SYMBIAN
                                                        +"Item {\n"
                                                        +"    id: root\n"
                                                        +"    GridView { id: flickableArea }\n"
                                                        +"    ScrollDecorator { flickableItem: flickableArea }\n"
                                                        +"}";
-    QByteArray oneDefaultScrollDecoratorWithFlickable = "import QtQuick 1.0\n"
+    QByteArray oneDefaultScrollDecoratorWithFlickable = "import QtQuick 1.1\n"
                                                         +QT_COMP_IMPORT_STRING_SYMBIAN
                                                         +"Item {\n"
                                                         +"    id: root\n"
                                                         +"    Flickable { id: flickableArea }\n"
                                                         +"    ScrollDecorator { flickableItem: flickableArea }\n"
                                                         +"}";
-    QByteArray nonInteractiveScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray nonInteractiveScrollDecorator = "import QtQuick 1.1\n"
                                                +QT_COMP_IMPORT_STRING_SYMBIAN
                                                +"Item {\n"
                                                +"    id: root\n"
                                                +"    Flickable { id: flickableArea }\n"
                                                +"    ScrollDecorator { interactive: false; flickableItem: flickableArea }\n"
                                                +"}";
-    QByteArray interactiveScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray interactiveScrollDecorator = "import QtQuick 1.1\n"
                                             +QT_COMP_IMPORT_STRING_SYMBIAN
                                             +"Item {\n"
                                             +"    id: root\n"
                                             +"    Flickable { id: flickableArea }\n"
                                             +"    ScrollDecorator { interactive: true; flickableItem: flickableArea }\n"
                                             +"}";
-    QByteArray showWhenScrollingScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray showWhenScrollingScrollDecorator = "import QtQuick 1.1\n"
                                                   +QT_COMP_IMPORT_STRING_SYMBIAN
                                                   +"Item {\n"
                                                   +"    id: root\n"
                                                   +"    Flickable { id: flickableArea }\n"
                                                   +"    ScrollDecorator { policy: Symbian.ScrollBarWhenScrolling; flickableItem: flickableArea }\n"
                                                   +"}";
-    QByteArray showWhenNeededScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray showWhenNeededScrollDecorator = "import QtQuick 1.1\n"
                                                +QT_COMP_IMPORT_STRING_SYMBIAN
                                                +"Item {\n"
                                                +"    id: root\n"
                                                +"    Flickable { id: flickableArea }\n"
                                                +"    ScrollDecorator { policy: Symbian.ScrollBarWhenNeeded; flickableItem: flickableArea }\n"
                                                +"}";
-    QByteArray horizontalScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray horizontalScrollDecorator = "import QtQuick 1.1\n"
                                            +QT_COMP_IMPORT_STRING_SYMBIAN
                                            +"Item {\n"
                                            +"    id: root\n"
                                            +"    Flickable { id: flickableArea }\n"
                                            +"    ScrollDecorator { orientation: Qt.Horizontal; flickableItem: flickableArea }\n"
                                            +"}";
-    QByteArray verticalScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray verticalScrollDecorator = "import QtQuick 1.1\n"
                                          +QT_COMP_IMPORT_STRING_SYMBIAN
                                          +"Item {\n"
                                          +"    id: root\n"
                                          +"    Flickable { id: flickableArea }\n"
                                          +"    ScrollDecorator { orientation: Qt.Horizontal; flickableItem: flickableArea }\n"
                                          +"}";
-    QByteArray onPositionChangedScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray onPositionChangedScrollDecorator = "import QtQuick 1.1\n"
                                                   +QT_COMP_IMPORT_STRING_SYMBIAN
                                                   +"Item {\n"
                                                   +"    id: root\n"
                                                   +"    Flickable { id: flickableArea }\n"
                                                   +"    ScrollDecorator { onPositionChanged: {} flickableItem: flickableArea; }\n"
                                                   +"}";
-    QByteArray onPageSizeChangedScrollDecorator = "import QtQuick 1.0\n"
+    QByteArray onPageSizeChangedScrollDecorator = "import QtQuick 1.1\n"
                                                   +QT_COMP_IMPORT_STRING_SYMBIAN
                                                   +"Item {\n"
                                                   +"    id: root\n"
                                                   +"    Flickable { id: flickableArea }\n"
                                                   +"    ScrollDecorator { onPageSizeChanged: {} flickableItem: flickableArea }\n"
                                                   +"}";
-    QByteArray twoScrollDecorators = "import QtQuick 1.0\n"
+    QByteArray twoScrollDecorators = "import QtQuick 1.1\n"
                                      +QT_COMP_IMPORT_STRING_SYMBIAN
                                      +"Item {\n"
                                      +"    id: root\n"
@@ -452,7 +389,7 @@ void tst_scrollbar::testValidScrollDecorator()
 
 void tst_scrollbar::testScrollDecoratorWithInvalidFlickable()
 {
-    QByteArray qml = "import QtQuick 1.0\n"
+    QByteArray qml = "import QtQuick 1.1\n"
                      +QT_COMP_IMPORT_STRING_SYMBIAN
                      +"Item {\n"
                      +"    id: root\n"
@@ -465,7 +402,7 @@ void tst_scrollbar::testScrollDecoratorWithInvalidFlickable()
 }
 void tst_scrollbar::testScrollDecoratorLoadingWithNoParams()
 {
-    QByteArray qml = "import QtQuick 1.0\n"
+    QByteArray qml = "import QtQuick 1.1\n"
                      +QT_COMP_IMPORT_STRING_SYMBIAN
                      +"ScrollDecorator {\n"
                      +"}";
@@ -479,7 +416,7 @@ void tst_scrollbar::testScrollDecoratorLoadingWithNoParams()
 
 void tst_scrollbar::testPropertiesScrollDecorator()
 {
-    QByteArray qml = "import QtQuick 1.0\n"
+    QByteArray qml = "import QtQuick 1.1\n"
                      +QT_COMP_IMPORT_STRING_SYMBIAN
                      +"Item {\n"
                      +"    id: root\n"
@@ -490,28 +427,13 @@ void tst_scrollbar::testPropertiesScrollDecorator()
     QObject *obj = tst_quickcomponentstest::createComponentFromString(qml, &errors)->children().value(1);
     QVERIFY2(obj, qPrintable(errors));
 
-    //ScrollDecorator.qml part of Common API and is a wrapper using ScrollBar.qml
-    QVERIFY(!obj->property("interactive").isValid());
     QVERIFY(obj->property("flickableItem").isValid());
-    QVERIFY(!obj->property("orientation").isValid());
-    QVERIFY(!obj->property("policy").isValid());
-    QVERIFY(!obj->property("position").isValid());
-    QVERIFY(!obj->property("pageSize").isValid());
-    QVERIFY(!obj->property("implicitWidth").isValid());
-    QVERIFY(!obj->property("implicitHeight").isValid());
 
-    const QMetaObject *metaInfo = obj->metaObject();
+    QVERIFY(obj->property("platformInverted").isValid());
+    QCOMPARE(obj->property("platformInverted").toBool(), false);
+    obj->setProperty("platformInverted", true);
+    QCOMPARE(obj->property("platformInverted").toBool(), true);
 
-    int propertyCount = 0;
-    int metaPropertyCount = metaInfo->propertyCount();
-    for (int i = 0 ; i < metaPropertyCount ; i++) {
-#ifdef QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        qDebug() << "PROPERTY UNDER CHECK IS" << metaInfo->property(i).name();
-#endif //QT_COMP_SCROLLBAR_UNIT_TEST_TRACES
-        QMetaProperty property = metaInfo->property(i);
-        checkProperties(property, obj, &propertyCount);
-    }
-    QCOMPARE(propertyCount, 1);
     delete obj;
 }
 

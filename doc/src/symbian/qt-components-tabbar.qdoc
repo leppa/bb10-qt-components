@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -32,23 +32,24 @@
     \since 1.0
     \inherits Item
     \brief
-    Symbian: A TabBar provides a themeable background for a TabBarLayout.
+    Symbian: Provides a styled background for a TabBarLayout.
 
-    The TabBar is a Symbian specific component that you can use as a container
-    for the tab buttons instead of TabBarLayout. It functions the same as the
-    tab bar layout but is themed in a Symbian device style.
+    TabBar is a Symbian-specific component that you can use as a container for
+    the tab buttons instead of TabBarLayout. It has the same functionality as
+    the tab bar layout but its appearance is based on the Symbian style.
 
     \sa TabBarLayout, TabButton
 
-    \section1 Using a tab bar
+    \section1 Using a Tab Bar
 
-    The following code snippet shows a tab bar with three buttons and
-    corresponding tab content pages. The resulting tab bar looks something like
-    the following:
-
-    \image symbian/tabbar.png
+    The code snippet below defines a tab bar with three buttons and
+    corresponding tab content pages.
 
     \snippet src/snippets/symbian/snippet-tabbar.qml 0
+
+    The screenshot below shows the result of the code snippet.
+
+    \image symbian/tabbar.png
 
 */
 
@@ -57,11 +58,13 @@
     \default
 
     This is a short-cut to set the children for the \c layout property.
+    Usually you do not need to directly access this property.
 */
 
 /*!
     \qmlproperty TabBarLayout TabBar::layout
 
-    Layout which is the parent of the TabButton instances.
+    Layout that is the parent of the TabButton instances. Use this as
+    the parent for dynamically created buttons.
 */
 

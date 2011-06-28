@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -55,29 +55,20 @@
         \o \l{ButtonRow}
     \endlist
 
-    \section1 Image and Graphical Components
-    Graphical components add images and icons to applications.
-    \list
-        \o \l{Icon}
-        \o \l{MaskedImage}
-        \o \l{SectionScrollerLabel} - for attaching a label to a \l{SectionScroller}
-    \endlist
-
     \section1 Application and Windowing
     These components provide hardware and system information to the application.
     These also provide the high level application QML containers.
     \list
         \o \l{ApplicationWindow}
         \o \l{Window}
+        \o \l{StatusBar}
         \o \l{Symbian}
-        \o \l{Globals}
-        \o \l{NetworkInfo}
-        \o \l{BatteryInfo}
+        \o \l{PopupManager}
         \o \l{Screen}
-        \o \l{FocusScopeItem}
+        \o \l{Style}
     \endlist
 
-    \section1 Indicators and Status Bar
+    \section1 Indicators
     Indicators provide visual cues and other information to the user.
     \list
         \o \l{BusyIndicator}
@@ -91,8 +82,6 @@
     \list
         \o \l{Page}
         \o \l{PageStack}
-        \o \l{PageOrientation}
-        \o \l{PageStatus}
     \endlist
 
     \section1 Menu and Menu Items
@@ -104,15 +93,14 @@
         \o \l{ContextMenu}
     \endlist
 
-    \section1 Dialog Framework
+    \section1 Dialogs
     Symbian applications utilize dialogs for navigation and for providing
     objects for user interaction.
     \list
         \o \l{Dialog}
-        \o \l{DialogStatus}
-        \o \l{CommonDialog}
         \o \l{SelectionDialog}
         \o \l{QueryDialog}
+        \o \l{CommonDialog}
         \o
     \endlist
 
@@ -123,20 +111,18 @@
         \o \l{ScrollDecorator}
         \o \l{SectionScroller}
         \o \l{ScrollBar}
-        \o \l{ScrollBarSizer}
     \endlist
 
-    \section1 Lists and Choice List
+    \section1 Lists
     Lists provide flexible methods of displaying data.
     \list
         \o \l{ListHeading}
         \o \l{ListItem}
         \o \l{ListItemText}
-        \o \l{ChoiceList}
         \o \l{SelectionListItem}
     \endlist
 
-    \section1 Tab Container
+    \section1 Tab Navigation
     Symbian applications may utilize tabs to navigate between items.
     \list
         \o \l{TabButton}
@@ -145,17 +131,12 @@
         \o \l{TabBar}
     \endlist
 
-    \section1 Tool Bar Container
+    \section1 ToolBar
     A tool bar provides a container for displaying items.
     \list
         \o \l{ToolBar}
         \o \l{ToolButton}
         \o \l{ToolBarLayout}
-    \endlist
-
-    \section1 Models
-    \list
-        \o \l{RangeModel}
     \endlist
 
     \section1 Extras Components

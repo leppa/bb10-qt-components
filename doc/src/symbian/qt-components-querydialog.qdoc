@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
 ** $QT_BEGIN_LICENSE:FDL$
 ** No Commercial Usage
@@ -24,60 +24,55 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
+
 /*!
     \qmlclass QueryDialog
     \inherits Dialog
     \ingroup qt-components
     \since 1.0
 
-    \brief
-    Dialog to query sinmple questions.
+    \brief Provides a dialog to query a simple question from the user.
 
-    This dialog is for proposing a question to the user. It is composed of a
-    title (which consists of a title text, an icon or both), a message, and
+    This dialog is for providing a question to the user. It is composed of a
+    title (that consists of a title text, an icon or both), a message, and
     buttons for accepting and rejecting.
 */
 
 /*!
     \qmlproperty string QueryDialog::acceptButtonText
 
-    Property default is \c ""
-
     Text of the accept button. When no text is given, the button is not
-    displayed.
-*/
+    displayed.The default value is \c "".
+
+    */
 
 /*!
-    \qmlproperty string QueryDialog::icon
+    \qmlproperty url QueryDialog::icon
 
-    Property default is \c ""
+    The URL pointing to an image. If the property value is not empty, an icon is
+    displayed inside the title field. The default value is \c "".
 
-    The URL pointing to an image. When this property is not empty, an icon is
-    displayed inside the title field.
 */
 
 /*!
     \qmlproperty string QueryDialog::message
 
-    Property default is \c ""
+    The message for the user. The default value is \c "".
 
-    Message for the user.
 */
 
 /*!
     \qmlproperty string QueryDialog::rejectButtonText
 
-    Property default is \c ""
+    The reject button's text. If no text is given, the button is not displayed.
+    The default value is \c "".
 
-    Text of the reject button. When no text is given, the button is not
-    displayed.
 */
 
 /*!
     \qmlproperty string QueryDialog::titleText
 
-    Property default is \c ""
+    The title's text. The default value is \c "".
 
-    The text message for the title field.
 */
 

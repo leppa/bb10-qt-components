@@ -4,23 +4,37 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the Qt Components project on Qt Labs.
+** This file is part of the Qt Components project.
 **
-** No Commercial Usage
-** This file contains pre-release code and may not be distributed.
-** You may use this file in accordance with the terms and conditions contained
-** in the Technology Preview License Agreement accompanying this package.
+** $QT_BEGIN_LICENSE:BSD$
+** You may use this file under the terms of the BSD license as follows:
 **
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** "Redistribution and use in source and binary forms, with or without
+** modification, are permitted provided that the following conditions are
+** met:
+**   * Redistributions of source code must retain the above copyright
+**     notice, this list of conditions and the following disclaimer.
+**   * Redistributions in binary form must reproduce the above copyright
+**     notice, this list of conditions and the following disclaimer in
+**     the documentation and/or other materials provided with the
+**     distribution.
+**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
+**     the names of its contributors may be used to endorse or promote
+**     products derived from this software without specific prior written
+**     permission.
 **
-** If you have questions regarding the use of this file, please contact
-** Nokia at qt-info@nokia.com.
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+** $QT_END_LICENSE$
 **
 ****************************************************************************/
 
@@ -38,6 +52,7 @@ private slots:
     void initTestCase();
 
     void existingProperties();
+    void initialProperties();
     void propertiesFunctionality();
     void implicitSize();
 
@@ -64,6 +79,22 @@ void tst_toolbutton::existingProperties()
     QVERIFY(toolButton->property("iconSource").isValid());
     QVERIFY(toolButton->property("flat").isValid());
     QVERIFY(toolButton->property("pressed").isValid());
+    QVERIFY(toolButton->property("platformInverted").isValid());
+}
+
+void tst_toolbutton::initialProperties()
+{
+    QGraphicsObject* toolButton = componentObject->findChild<QGraphicsObject*>("toolButton");
+    QVERIFY(toolButton);
+
+    QCOMPARE(toolButton->property("checkable").toBool(), false);
+    QCOMPARE(toolButton->property("checked").toBool(), false);
+    QCOMPARE(toolButton->property("enabled").toBool(), true);
+    QVERIFY(toolButton->property("text").toString().isNull());
+    QVERIFY(toolButton->property("iconSource").toString().isNull());
+    QCOMPARE(toolButton->property("flat").toBool(), false);
+    QCOMPARE(toolButton->property("pressed").toBool(), false);
+    QCOMPARE(toolButton->property("platformInverted").toBool(), false);
 }
 
 void tst_toolbutton::propertiesFunctionality()
@@ -79,14 +110,12 @@ void tst_toolbutton::propertiesFunctionality()
 
         if (property.name() == QString("checkable")) {
             propertyCount++;
-            QCOMPARE(property.read(toolButton).toBool(), false);
             property.write(toolButton,true);
             QCOMPARE(property.read(toolButton).toBool(), true);
         }
 
         if (property.name() == QString("checked")) {
             propertyCount++;
-            QCOMPARE(property.read(toolButton).toBool(), false);
             property.write(toolButton,true);
             QCOMPARE(property.read(toolButton).toBool(), true);
         }
@@ -94,40 +123,41 @@ void tst_toolbutton::propertiesFunctionality()
         // Enabled is found twice
         if (property.name() == QString("enabled")) {
             propertyCount++;
-            QCOMPARE(property.read(toolButton).toBool(), true);
             property.write(toolButton,false);
             QCOMPARE(property.read(toolButton).toBool(), false);
         }
 
         if (property.name() == QString("text")) {
             propertyCount++;
-            QVERIFY(property.read(toolButton).toString().isNull());
             property.write(toolButton,"toolbutton_text");
             QCOMPARE(property.read(toolButton).toString() , QString("toolbutton_text"));
         }
 
         if (property.name() == QString("iconSource")) {
             propertyCount++;
-            QUrl url = property.read(toolButton).toUrl();
-            QVERIFY(property.read(toolButton).toUrl() == QUrl(""));
             property.write(toolButton,"icon_name");
             QCOMPARE(property.read(toolButton).toUrl() , QUrl("icon_name"));
         }
 
         if (property.name() == QString("flat")) {
             propertyCount++;
-            QCOMPARE(property.read(toolButton).toBool(), false);
             property.write(toolButton,true);
             QCOMPARE(property.read(toolButton).toBool(), true);
         }
 
         if (property.name() == QString("pressed")) {
             propertyCount++;
-            QCOMPARE(property.read(toolButton).toBool(), false);
+            // read-only
+        }
+
+        if (property.name() == QString("platformInverted")) {
+            propertyCount++;
+            property.write(toolButton,true);
+            QCOMPARE(property.read(toolButton).toBool(), true);
         }
     }
 
-    QCOMPARE(propertyCount, 8);
+    QCOMPARE(propertyCount, 9);
 }
 
 void tst_toolbutton::implicitSize()
