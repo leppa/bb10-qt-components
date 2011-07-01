@@ -38,19 +38,46 @@
 **
 ****************************************************************************/
 
-//! [0]
-import QtQuick 1.0
+import QtQuick 1.1
 import Qt.labs.components.native 1.0
 
-Page {
-    id: filePage
-    property alias message: pageText.text
-    Text {
-        id: pageText
-        anchors.centerIn: parent
-        text: "page from file"
-        font.pointSize: 25
-        color: "white"
+Window {
+    id: root
+    PageStack {
+        id: pageStack
+        anchors.top: parent.top
+        anchors.bottom: toolBar.top
+        toolBar: toolBar
     }
+
+    ListsPage {
+        id: listsPage
+        tools: ToolBarLayout {
+            ToolButton {
+                iconSource: "toolbar-back"
+                onClicked: Qt.quit()
+            }
+            ToolButton {
+                iconSource: "toolbar-next"
+                onClicked: pageStack.push(gapsPage)
+            }
+        }
+    }
+
+    GapsPage {
+        id: gapsPage
+        tools: ToolBarLayout {
+            ToolButton {
+                iconSource: "toolbar-back"
+                onClicked: pageStack.pop()
+            }
+        }
+    }
+
+    ToolBar {
+        id: toolBar
+        anchors.bottom: root.bottom
+    }
+
+    Component.onCompleted: pageStack.push(listsPage)
 }
-//! [0]
