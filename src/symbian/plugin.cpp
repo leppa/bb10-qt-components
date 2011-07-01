@@ -43,6 +43,7 @@
 #include "sdeclarativeicon.h"
 #include "sdeclarativefocusscopeitem.h"
 #include "sdeclarativeimplicitsizeitem.h"
+#include "sdeclarativeinputcontext.h"
 #include "sdeclarativeimageprovider.h"
 #include "sdeclarativemaskedimage.h"
 #include "sdeclarativescreen.h"
@@ -91,6 +92,9 @@ public:
         screen = new SDeclarativeScreen(engine, context); // context as parent
         context->setContextProperty("screen", screen);
 
+        inputContext = new SDeclarativeInputContext(screen, context); // context as parent
+        context->setContextProperty("inputContext", inputContext);
+
         style = new SStyleFactory(screen, context);
         context->setContextProperty("platformStyle", style->platformStyle());
         context->setContextProperty("privateStyle", style->privateStyle());
@@ -114,6 +118,11 @@ public:
         QObject::connect(style->platformStyle(), SIGNAL(colorParametersChanged()), this, SLOT(resetPlatformStyle()));
         QObject::connect(style->privateStyle(), SIGNAL(layoutParametersChanged()), this, SLOT(resetPrivateStyle()));
         QObject::connect(style->privateStyle(), SIGNAL(colorParametersChanged()), this, SLOT(resetPrivateStyle()));
+
+#if defined(Q_OS_SYMBIAN) && QT_VERSION >= 0x040704
+        Q_DECL_IMPORT void qt_s60_setPartialScreenInputMode(bool enable);
+        qt_s60_setPartialScreenInputMode(true);
+#endif
     }
 
     void registerTypes(const char *uri) {
@@ -136,6 +145,7 @@ public:
         qmlRegisterUncreatableType<SPageStatus>(uri, 1, 1, "PageStatus", "");
         qmlRegisterUncreatableType<SBatteryInfo>(uri, 1, 1, "BatteryInfo", "");
         qmlRegisterUncreatableType<SNetworkInfo>(uri, 1, 1, "NetworkInfo", "");
+        qmlRegisterUncreatableType<SDeclarativeInputContext>(uri, 1, 1, "InputContext", "");
     }
 
 public slots:
@@ -154,6 +164,7 @@ public slots:
 
 private:
     QDeclarativeContext *context;
+    SDeclarativeInputContext *inputContext;
     SDeclarativeScreen *screen;
     SStyleFactory *style;
 };
