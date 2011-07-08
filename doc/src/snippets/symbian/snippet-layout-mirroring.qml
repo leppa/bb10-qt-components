@@ -38,55 +38,13 @@
 **
 ****************************************************************************/
 
-#ifndef UTILS_H
-#define UTILS_H
+import QtQuick 1.1
+import com.nokia.symbian 1.1
 
-#include <QObject>
-#include <QStringList>
-
-class FileAccess : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit FileAccess(QObject *parent = 0);
-
-    Q_INVOKABLE QStringList qmlFileNames(const QString &path) const;
-    Q_INVOKABLE QStringList qmlFilePaths(const QString &path) const;
-    Q_INVOKABLE QStringList qmlPaths() const;
-};
-
-class Settings : public QObject
-{
-    Q_OBJECT
-    Q_ENUMS(IndicatorIds)
-public:
-
-    enum IndicatorIds {
-        IndicatorEMail = 2,
-        IndicatorSecuredConnection = 6,
-        IndicatorBluetooth = 12,
-        IndicatorUsb = 28
-    };
-
-    explicit Settings(QObject *parent = 0);
-    ~Settings();
-
-    Q_INVOKABLE void clearClipboard() const;
-    Q_INVOKABLE void setOrientation(int orientation);
-    Q_INVOKABLE int orientation() const;
-    Q_INVOKABLE void setIndicatorState(int indicatorId, bool on) const;
-};
-
-class LayoutDirectionSetter : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit LayoutDirectionSetter(QObject *parent = 0);
-
-    Q_INVOKABLE void setLayoutDirection(int direction);
-};
-
-
-#endif // UTILS_H
+Window {
+    id: root
+//! [0]
+    LayoutMirroring.enabled: symbian.rightToLeftDisplayLanguage
+    LayoutMirroring.childrenInherit: true
+//! [0]
+}
