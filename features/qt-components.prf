@@ -2,10 +2,6 @@
     error(Please run configure.)
 }
 
-meego {
-    DEFINES += Q_COMPONENTS_MEEGO
-}
-
 symbian3 {
     DEFINES += Q_COMPONENTS_SYMBIAN
 

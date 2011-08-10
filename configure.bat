@@ -46,8 +46,7 @@ cd /D %SOURCE_TREE%
 set SOURCE_TREE=%CD%
 cd /D %BUILD_TREE%
 
-set BUILD_MEEGO_STYLE=no
-set BUILD_SYMBIAN_STYLE=no
+set BUILD_SYMBIAN_STYLE=yes
 set BUILD_DEMOS=yes
 set BUILD_EXAMPLES=yes
 set BUILD_EXTRAS=yes
@@ -91,9 +90,9 @@ if exist "%QMAKE_CACHE%" del /Q %QMAKE_CACHE%
 goto end
 
 :meego
-set BUILD_MEEGO_STYLE=yes
+echo This is QtQuick components for Symbian 1.1 code release, '-meego' is not supported in this release.
 shift
-goto parse
+goto end
 
 :symbian
 set BUILD_SYMBIAN_STYLE=yes
@@ -186,12 +185,11 @@ goto parse
 
 :help
 echo.
-echo Usage:  configure [-meego] [-symbian] [-config (config)]
+echo Usage:  configure [-symbian] [-config (config)]
 echo         [-make (part)] [-nomake (part)] [-help]
 echo.
 echo Options:
 echo.
-echo    -meego ............ Build MeeGo Style
 echo    -symbian .......... Build Symbian Style
 echo    -config (config) .. Configuration options recognized by qmake
 echo    -make (part) ...... Add part to the list of parts to be built at
@@ -210,7 +208,6 @@ echo.
 goto end
 
 :qmake
-if "%BUILD_MEEGO_STYLE%" == "yes" set QMAKE_CONFIG=%QMAKE_CONFIG% meego
 if "%BUILD_SYMBIAN_STYLE%" == "yes" set QMAKE_CONFIG=%QMAKE_CONFIG% symbian3
 if "%BUILD_DEMOS%" == "yes" set QMAKE_CONFIG=%QMAKE_CONFIG% demos
 if "%BUILD_EXAMPLES%" == "yes" set QMAKE_CONFIG=%QMAKE_CONFIG% examples
@@ -235,7 +232,6 @@ echo.
 echo.
 echo Qt Components build configuration:
 echo Configuration ....................%QMAKE_CONFIG%
-echo MeeGo Style ...................... %BUILD_MEEGO_STYLE%
 echo Symbian Style .................... %BUILD_SYMBIAN_STYLE%
 if "%BUILD_SYMBIAN_STYLE%" == "no" goto nosymbian
   echo   Qt Mobility support ............ %HAVE_MOBILITY%

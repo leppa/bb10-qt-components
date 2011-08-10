@@ -350,7 +350,6 @@ QStringList tst_MakeTestSelfTest::find_subdirs(QString const& pro_file, FindSubd
         << "QT_CONFIG+=svg"
         << "QT_CONFIG+=webkit"
         << "QT_CONFIG+=xmlpatterns"
-        << "CONFIG+=meego"
         << "CONFIG+=symbian3"
     ;
 
