@@ -99,6 +99,8 @@ Item {
             KeyNavigation.down: slider2
             KeyNavigation.left: slider3
             KeyNavigation.right: slider2
+
+            Component.onCompleted: forceActiveFocus()
         }
 
         CheckBox {
