@@ -131,8 +131,6 @@ FocusScope {
         model: checkBoxesModel
         delegate: checkBoxesDelegate
         KeyNavigation.down: switches
-
-        Component.onCompleted: forceActiveFocus()
     }
 
     ListModel {
