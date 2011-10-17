@@ -1,4 +1,4 @@
-This source tree contains the Qt Components project.
+This source tree contains the Qt Quick Components project.
 
 Building
 ========
@@ -19,6 +19,7 @@ The lib will install in QTDIR/lib, while the modules will go to QTDIR/imports.
 Build dependencies
 ==================
 - Qt 4.7.4
+- Symbian components set currently requires Qt 4.7.4
 
 Coding Style
 ==================
