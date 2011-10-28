@@ -39,6 +39,15 @@
     with the Symbian platform style. Symbian-style is exposed as a context
     property named \c {platformStyle}. It is not possible to instantiate a Style
     object in QML, but the style must be accessed through the context property.
+
+    The actual return values of the properties may vary between device
+    configurations. For example, if the resolutions of two devices are
+    different, it is probable that the pixel values of the properties are
+    different.
+
+
+    \section1 Using Style Parameters
+
     The following example illustrates how to use the style parameters.
 
     \code
@@ -71,9 +80,6 @@
     }
     \endcode
 
-    The actual return values of the properties may vary between device
-    configurations. For example, if the resolutions of two devices are different,
-    it is probable that the pixel values of the properties are different.
 */
 
 /*!
@@ -103,25 +109,25 @@
 /*!
     \qmlproperty int Style::graphicSizeLarge
 
-    The size of a large graphical object, for example an \l Image, in pixels.
+    The size of a large graphical object, for example an \l {http://doc.qt.nokia.com/4.8/qml-image.html}{Image}, in pixels.
 */
 
 /*!
     \qmlproperty int Style::graphicSizeMedium
 
-    The size of a medium size graphical object, for example an \l Image, in pixels.
+    The size of a medium size graphical object, for example an \l {http://doc.qt.nokia.com/4.8/qml-image.html}{Image}, in pixels.
 */
 
 /*!
     \qmlproperty int Style::graphicSizeSmall
 
-    The size of a small graphical object, for example an \l Image, in pixels.
+    The size of a small graphical object, for example an \l {http://doc.qt.nokia.com/4.8/qml-image.html}{Image}, in pixels.
 */
 
 /*!
     \qmlproperty int Style::graphicSizeTiny
 
-    The size of a tiny graphical object, for example an \l Image, in pixels.
+    The size of a tiny graphical object, for example an \l {http://doc.qt.nokia.com/4.8/qml-image.html}{Image}, in pixels.
 */
 
 /*!
@@ -146,6 +152,13 @@
     \qmlproperty int Style::borderSizeMedium
 
     The size for medium size border parts of a \l BorderImage in pixels.
+*/
+
+/*!
+    \qmlproperty color Style::colorBackground
+    \since 1.1
+
+    The default application background color.
 */
 
 /*!
@@ -180,8 +193,16 @@
 
 /*!
     \qmlproperty color Style::colorChecked
-
+    
     The foreground color for the checked state.
+    Deprecated since 1.1 - use colorLatched instead.
+*/
+
+/*!
+    \qmlproperty color Style::colorLatched
+    \since 1.1
+
+    The foreground color for the latched or checked state.
 */
 
 /*!
@@ -214,3 +235,98 @@
     The background color for a selected item.
 */
 
+/*!
+    \qmlproperty color Style::colorBackgroundInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorBackground. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorNormalLightInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorNormalLight. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorNormalMidInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorNormalMid. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorNormalDarkInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorNormalDark. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorNormalLinkInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorNormalLink. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorPressedInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorPressed. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorLatchedInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorLatched. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorHighlightedInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorHighlighted. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorDisabledLightInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorDisabled. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorDisabledMidInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorDisabled. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorDisabledDarkInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorDisabledDark. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/
+
+/*!
+    \qmlproperty color Style::colorTextSelectionInverted
+    \since 1.1
+
+    The inverted counterpart of the \c colorTextSelection. For more
+    information, see \l {Using Inverted Style with Symbian Components}.
+*/

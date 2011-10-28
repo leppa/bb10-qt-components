@@ -59,17 +59,15 @@
 #include "mscrolldecoratorsizer.h"
 #include "mdeclarativeimattributeextension.h"
 #include "mdeclarativeimobserver.h"
+#include "mdeclarativeview.h"
 #include "mtoolbarvisibility.h"
 #include <QDeclarativePropertyMap>
 #include <QFont>
 
-#ifdef HAVE_SHADER
 #include "shadereffectitem/shadereffectitem.h"
 #include "shadereffectitem/shadereffectsource.h"
-#else
-#include "shadereffectitem/shadereffectitemnull.h"
-#include "shadereffectitem/shadereffectsourcenull.h"
-#endif
+
+#include "i18n/mlocalewrapper.h"
 
 class MeeGoPlugin : public QDeclarativeExtensionPlugin
 {
@@ -79,33 +77,47 @@ public:
     void initializeEngine(QDeclarativeEngine *engine, const char *uri) {
         Q_ASSERT(uri == QLatin1String("com.meego") || uri == QLatin1String("com.nokia.meego") || uri == QLatin1String("Qt.labs.components.native"));
 
+        if(uri == QLatin1String("com.meego")) {
+            qWarning() << "'import com.meego' is DEPRECATED and may cause 'Error: Cannot assign QObject* to PageStack_QMLTYPE_42*', missing icons, widgets and other problems;"
+                          "use 'import com.nokia.meego' instead";
+        }
+
         QDeclarativeExtensionPlugin::initializeEngine(engine, uri);
 
-        engine->addImageProvider(QLatin1String("theme"), new MDeclarativeImageProvider);
+        // If plugin was initialized once, do not initialize it again
+        if(!engine->imageProvider(QLatin1String("theme"))) {
+            engine->addImageProvider(QLatin1String("theme"), new MDeclarativeImageProvider);
 
-        engine->rootContext()->setContextProperty("screen", MDeclarativeScreen::instance());
-        qmlRegisterUncreatableType<MDeclarativeScreen>(uri, 1, 0, "Screen", "");
+            engine->rootContext()->setContextProperty("screen", MDeclarativeScreen::instance());
+            qmlRegisterUncreatableType<MDeclarativeScreen>(uri, 1, 0, "Screen", "");
 
-        engine->rootContext()->setContextProperty("platformWindow", MWindowState::instance());
-        qmlRegisterUncreatableType<MWindowState>(uri, 1, 0, "WindowState", "");
+            engine->rootContext()->setContextProperty("platformWindow", MWindowState::instance());
+            qmlRegisterUncreatableType<MWindowState>(uri, 1, 0, "WindowState", "");
 
-        engine->rootContext()->setContextProperty("theme", new MThemePlugin);
-        qmlRegisterUncreatableType<MThemePlugin>(uri, 1, 0, "Theme", "");
+            engine->rootContext()->setContextProperty("theme", new MThemePlugin);
+            qmlRegisterUncreatableType<MThemePlugin>(uri, 1, 0, "Theme", "");
 
-        engine->rootContext()->setContextProperty("inputContext", new MDeclarativeInputContext);
-        qmlRegisterUncreatableType<MDeclarativeInputContext>(uri, 1, 0, "InputContext", "");
-        
-        engine->rootContext()->setContextProperty("textTranslator", new MTextTranslator);
-        qmlRegisterUncreatableType<MTextTranslator>(uri, 1, 0, "TextTranslator", "");
+            engine->rootContext()->setContextProperty("inputContext", new MDeclarativeInputContext);
+            qmlRegisterUncreatableType<MDeclarativeInputContext>(uri, 1, 0, "InputContext", "");
 
-        // Disable cursor blinking + make double tapping work the way it is done in lmt.
-        QApplication *app = qobject_cast<QApplication*>(QApplication::instance());
-        if (app) {
-            app->setCursorFlashTime(0);
-            app->setDoubleClickInterval(MEEGOTOUCH_DOUBLETAP_INTERVAL);
-        } 
+            engine->rootContext()->setContextProperty("textTranslator", new MTextTranslator);
+            qmlRegisterUncreatableType<MTextTranslator>(uri, 1, 0, "TextTranslator", "");
 
-        engine->rootContext()->setContextProperty("UiConstants", uiConstants());
+            engine->rootContext()->setContextProperty("declarativeView", new MDeclarativeView());
+            qmlRegisterUncreatableType<MDeclarativeView>(uri, 1, 0, "DeclarativeView", "");
+
+
+            // Disable cursor blinking + make double tapping work the way it is done in lmt.
+            QApplication *app = qobject_cast<QApplication*>(QApplication::instance());
+            if (app) {
+                app->setCursorFlashTime(0);
+                app->setDoubleClickInterval(MEEGOTOUCH_DOUBLETAP_INTERVAL);
+            }
+
+            engine->rootContext()->setContextProperty("UiConstants", uiConstants());
+            engine->rootContext()->setContextProperty("locale", new MLocaleWrapper);
+            qmlRegisterUncreatableType<MLocaleWrapper>(uri, 1, 0, "Locale", "");
+        }
     }
 
     void registerTypes(const char *uri) {
@@ -131,14 +143,9 @@ public:
 
         qmlRegisterType<MScrollDecoratorSizer>(uri, 1, 0, "ScrollDecoratorSizerCPP");
 
-        // shader effect item (to be removed when supported in QML)
-#ifdef HAVE_SHADER
+        // shader effect item (to be removed when fully supported in QML)
         qmlRegisterType<ShaderEffectItem>(uri, 1, 0, "ShaderEffectItem");
         qmlRegisterType<ShaderEffectSource>(uri, 1, 0, "ShaderEffectSource");
-#else
-        qmlRegisterType<ShaderEffectItemNull>(uri, 1, 0, "ShaderEffectItem");
-        qmlRegisterType<ShaderEffectSourceNull>(uri, 1, 0, "ShaderEffectSource");
-#endif
 
         qmlRegisterType<MInverseMouseArea>(uri, 1, 0, "InverseMouseArea");
 
@@ -156,6 +163,9 @@ public:
         uiConstantsData->insert("HeaderDefaultBottomSpacingLandscape", QVariant(14));
         uiConstantsData->insert("ListItemHeightSmall", QVariant(64));
         uiConstantsData->insert("ListItemHeightDefault", QVariant(80));
+
+        uiConstantsData->insert("IndentDefault", QVariant(16)); // For left and right
+        uiConstantsData->insert("GroupHeaderHeight", QVariant(40));
 
         QFont bodyTextFont;
         bodyTextFont.setFamily("Nokia Pure Text Light");
@@ -195,6 +205,11 @@ public:
         subTitleFont.setFamily("Nokia Pure Text Light");
         subTitleFont.setPixelSize(22);
         uiConstantsData->insert("SubtitleFont", QVariant(subTitleFont));
+
+        QFont itemInfoFont;
+        itemInfoFont.setFamily("Nokia Pure Text Light");
+        itemInfoFont.setPixelSize(18);
+        uiConstantsData->insert("InfoFont", QVariant(itemInfoFont));
 
         return uiConstantsData;
     }

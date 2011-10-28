@@ -43,11 +43,11 @@ Style {
     id: root
 
     property real leftMargin: ( (screen.currentOrientation == 1) ||
-                                 (screen.currentOrientation == 4) ) ? 0 : 400
+                                 (screen.currentOrientation == 4) ) ? 0 : 427
     property real rightMargin: ( (screen.currentOrientation == 1) ||
                                  (screen.currentOrientation == 4) ) ? 0 : 0
     property real topMargin: ( (screen.currentOrientation == 1) ||
-                               (screen.currentOrientation == 4) ) ? 16 : 0
+                               (screen.currentOrientation == 4) ) ? 246 : 0
 
     property real bottomMargin: 0
 
@@ -66,5 +66,9 @@ Style {
     property int fadeOutEasingType: Easing.InOutQuint
     property url faderBackground: "image://theme/meegotouch-menu-dimmer"
 
-    property int pressDelay: 200 // ms
+    property int pressDelay: 0 // ms
+
+    property url background: "image://theme/meegotouch-menu-background" + __invertedString
+//    property url pressedBackground: "image://theme/meegotouch-menu" + __invertedString + "-background-pressed"
+//    property url disabledBackground: "image://theme/meegotouch-menu" + __invertedString + "-background-disabled"
 }

@@ -45,6 +45,7 @@
 #include <qglobal.h>
 #include <QDesktopWidget>
 #include <QPointer>
+#include <QVector3D>
 
 #define MEEGOTOUCH_DOUBLETAP_INTERVAL 325
 
@@ -64,6 +65,27 @@ public:
         All = 15
     };
 
+    enum Direction {
+        Clockwise = -1,
+        NoDirection = 0,
+        CounterClockwise = 1
+    };
+#ifdef ___arm___
+    enum OrientationAngle {
+        PortraitAngle = 270,
+        LandscapeAngle = 0,
+        PortraitInvertedAngle = 90,
+        LandscapeInvertedAngle = 180
+    };
+#else
+    enum OrientationAngle {
+        PortraitAngle = 0,
+        LandscapeAngle = 90,
+        PortraitInvertedAngle = 180,
+        LandscapeInvertedAngle = 270
+    };
+#endif
+
     enum DisplayCategory {
         Small,
         Normal,
@@ -78,7 +100,7 @@ public:
         ExtraHigh
     };
 
-    Q_ENUMS(Orientation DisplayCategory Density)
+    Q_ENUMS(Orientation OrientationAngle Direction DisplayCategory Density)
     Q_FLAGS(Orientations)
     Q_DECLARE_FLAGS(Orientations, Orientation)
 
@@ -94,14 +116,22 @@ public:
     Q_PROPERTY(int displayHeight READ displayHeight NOTIFY displayChanged)
 
     Q_PROPERTY(int rotation READ rotation NOTIFY currentOrientationChanged FINAL)
+    Q_PROPERTY(Direction rotationDirection READ rotationDirection NOTIFY rotationDirectionChanged FINAL)
     Q_PROPERTY(bool minimized READ isMinimized WRITE setMinimized NOTIFY minimizedChanged FINAL)
     Q_PROPERTY(bool allowSwipe READ allowSwipe WRITE setAllowSwipe NOTIFY allowSwipeChanged FINAL )
+    Q_PROPERTY(bool isPortrait READ isPortrait NOTIFY currentOrientationChanged FINAL )
 
     Q_PROPERTY(MWindowState * windowState READ windowState CONSTANT FINAL)
 
     Q_PROPERTY(qreal dpi READ dpi NOTIFY displayChanged FINAL)
     Q_PROPERTY(DisplayCategory displayCategory READ displayCategory NOTIFY displayChanged FINAL) // Small, Normal, Large, ExtraLarge
     Q_PROPERTY(Density density READ density NOTIFY displayChanged FINAL) // Low, Medium, High, ExtraHigh
+
+    //this one is the orientation corrected screen resolution. So this values changes depending on orientation
+    Q_PROPERTY(int platformWidth READ platformWidth NOTIFY platformWidthChanged FINAL)
+    Q_PROPERTY(int platformHeight READ platformHeight NOTIFY platformHeightChanged FINAL)
+
+    Q_PROPERTY(bool isDisplayLandscape READ isDisplayLandscape NOTIFY physicalDisplayChanged FINAL)
 
 public:
     static MDeclarativeScreen* instance();
@@ -116,12 +146,16 @@ public:
     QString orientationString() const;
 
     int rotation() const;
+    Direction rotationDirection() const;
 
     bool isCovered() const;
     bool isKeyboardOpen() const;
 
     int width() const;
     int height() const;
+
+    int platformWidth() const;
+    int platformHeight() const;
 
     int displayWidth() const;
     int displayHeight() const;
@@ -130,12 +164,17 @@ public:
     void setMinimized(bool minimized);
     bool allowSwipe() const;
     void setAllowSwipe(bool enabled);
+    bool isPortrait() const;
+
+    bool isDisplayLandscape() const;
 
     int dpi() const;
     DisplayCategory displayCategory() const;
     Density density() const;
 
     MWindowState * windowState() const;
+
+    Orientations platformPhysicalDisplayOrientation() const;
 
     virtual bool eventFilter(QObject *, QEvent *);
 public Q_SLOTS:
@@ -144,6 +183,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void currentOrientationChanged();
     void allowedOrientationsChanged();
+    void rotationDirectionChanged();
     void coveredChanged();
     void minimizedChanged();
     void keyboardOpenChanged();
@@ -151,6 +191,10 @@ Q_SIGNALS:
     void widthChanged();
     void heightChanged();
     void allowSwipeChanged();
+    void isPortraitChanged();
+    void platformWidthChanged();
+    void platformHeightChanged();
+    void physicalDisplayChanged();
 
 private:
     MDeclarativeScreen(QDeclarativeItem *parent = 0);

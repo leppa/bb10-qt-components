@@ -57,8 +57,21 @@ Item {
 
     PageStack {
         id: pageStack
+        objectName: "pageStack"
         onBusyChanged:
             testItem.busyChangedTriggered = true;
+    }
+
+    PageStack {
+        id: pageStackInitComponent
+        objectName: "pageStackInitComponent"
+        initialPage: pageComponent
+    }
+
+    PageStack {
+        id: pageStackInitStatic
+        objectName: "pageStackInitStatic"
+        initialPage: pageStatic
     }
 
     Component {
@@ -66,13 +79,14 @@ Item {
         Page {
             id: page
             objectName: "dynamicpage"
+            property int testparam1: 0
         }
     }
 
     Page {
         id: pageStatic
         objectName: "page1"
-        property int testparam1: 0
+        property int testparam2: 0
     }
 
     Page {
@@ -124,10 +138,20 @@ Item {
     }
 
     function pushPageWithProperties() {
-        pageStack.push(pageStatic, { testparam1: 2 });
+        pageStack.push(pageComponent, { testparam1: 1 });
     }
+
     function checkForPageProperties() {
-        if (pageStack.currentPage.testparam1 == 2) return true;
+        if (pageStack.currentPage.testparam1 == 1) return true;
+        return false;
+    }
+
+    function pushPageStaticWithProperties() {
+        pageStack.push(pageStatic, { testparam2: 2 });
+    }
+
+    function checkForPageStaticProperties() {
+        if (pageStack.currentPage.testparam2 == 2) return true;
         return false;
     }
 

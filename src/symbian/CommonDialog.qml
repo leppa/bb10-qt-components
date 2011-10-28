@@ -71,7 +71,12 @@ Dialog {
             height: privateStyle.toolBarHeightLandscape
             platformInverted: root.platformInverted
 
-            onClicked: { root.buttonClicked(index); root.close() }
+            onClicked: {
+                if (root.status == DialogStatus.Open) {
+                    root.buttonClicked(index)
+                    root.close()
+                }
+            }
         }
     }
 
@@ -161,7 +166,7 @@ Dialog {
                 }
                 onReleased: {
                     if (!pressCancelled)
-                        privateStyle.play(Symbian.PopupClose)
+                        privateStyle.play(Symbian.PopUp)
                 }
                 onExited: pressCancelled = true
             }
@@ -179,6 +184,7 @@ Dialog {
 
         Row {
             id: buttonRow
+            objectName: "buttonRow"
             anchors.centerIn: parent
             spacing: platformStyle.paddingMedium
         }

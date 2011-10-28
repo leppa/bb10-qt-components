@@ -45,63 +45,83 @@ Item {
     id: root
 
     property Item editor: null
-    property real editorScrolledY: 0
     property bool copyEnabled: false
     property bool cutEnabled: false
     property bool platformInverted: false
 
     function show() {
-        // Show menu only if some of the options is available
-        if(root.copyEnabled || root.cutEnabled || editor.canPaste) {
-            parent = AppManager.rootObject();
-            internal.calculatePosition();
-            root.visible = true;
-        }
+        parent = AppManager.rootObject();
+        internal.show = true;
+        calculatePosition();
     }
 
     function hide() {
-        root.visible = false;
+        internal.show = false;
+    }
+
+    function calculatePosition() {
+        if (editor && internal.show) {
+            var rectStart = editor.positionToRectangle(editor.selectionStart);
+            var rectEnd = editor.positionToRectangle(editor.selectionEnd);
+
+            var posStart = editor.mapToItem(parent, rectStart.x, rectStart.y);
+            var posEnd = editor.mapToItem(parent, rectEnd.x, rectEnd.y);
+
+            var selectionCenterX = (posEnd.x + posStart.x) / 2;
+            if (posStart.y != posEnd.y)
+                // we have multiline selection so center to the screen
+                selectionCenterX = parent.width / 2;
+
+            var minVerticalPos = internal.textArea ? internal.textArea.mapToItem(parent, 0, 0).y + platformStyle.paddingLarge : 0
+
+            root.x = Math.max(0, Math.min(selectionCenterX - row.width / 2, parent.width - row.width));
+            root.y = Math.max(0, Math.max(minVerticalPos, posStart.y) - row.height - platformStyle.paddingLarge * 2);
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            internal.editorSceneXChanged.connect(internal.editorMoved)
+            internal.editorSceneYChanged.connect(internal.editorMoved)
+        } else {
+            internal.editorSceneXChanged.disconnect(internal.editorMoved)
+            internal.editorSceneYChanged.disconnect(internal.editorMoved)
+        }
     }
 
     x: 0; y: 0
     visible: false
 
-    // Private
+    Binding { target: internal; property: "editorSceneX"; value: AppManager.sceneX(root.editor); when: root.visible && (root.editor != null) }
+    Binding { target: internal; property: "editorSceneY"; value: AppManager.sceneY(root.editor); when: root.visible && (root.editor != null) }
+
     QtObject {
         id: internal
-        // Reposition the context menu so that it centers on top of the selection
-        function calculatePosition() {
-            if (editor) {
-                var rectStart = editor.positionToRectangle(editor.selectionStart);
-                var rectEnd = editor.positionToRectangle(editor.selectionEnd);
 
-                var posStart = editor.mapToItem(parent, rectStart.x, rectStart.y);
-                var posEnd = editor.mapToItem(parent, rectEnd.x, rectEnd.y);
-
-                var selectionCenterX = (posEnd.x + posStart.x) / 2;
-                if (posStart.y != posEnd.y)
-                    // we have multiline selection so center to the screen
-                    selectionCenterX = parent.width / 2;
-
-                var editorScrolledParent = editor.mapToItem(parent, 0, editorScrolledY);
-                var contextMenuMargin = 10; // the space between the context menu and the line above/below
-                var contextMenuAdjustedRowHeight = row.height + contextMenuMargin;
-
-                var tempY = Math.max(editorScrolledParent.y - contextMenuAdjustedRowHeight,
-                                     posStart.y - contextMenuAdjustedRowHeight);
-                if (tempY < 0)
-                    // it doesn't fit to the top -> try bottom
-                    tempY = Math.min(editorScrolledParent.y + editor.height + contextMenuMargin,
-                                     posEnd.y + rectEnd.height + contextMenuMargin);
-
-                if (tempY + contextMenuAdjustedRowHeight > parent.height)
-                    //it doesn't fit to the bottom -> center
-                    tempY= (editorScrolledParent.y + editor.height) / 2 - row.height / 2;
-
-                root.x = Math.max(0, Math.min(selectionCenterX - row.width / 2, parent.width - row.width));
-                root.y = tempY;
-            }
+        property real editorSceneX
+        property real editorSceneY
+        property Item textArea: null
+        property bool show: false
+        property int animationDuration: 250
+        function editorMoved() {
+            root.calculatePosition()
         }
+		
+        Component.onCompleted: textArea = AppManager.findParent(editor, "errorHighlight")
+    }
+
+    BorderImage {
+        id: dropShadow
+
+        property int borderSize: Math.round(sourceSize.width / 2 - 1)
+        property int paddingSize: sourceSize.width - privateStyle.buttonSize
+
+        anchors { top: row.top; horizontalCenter: row.horizontalCenter }
+        width: row.width + paddingSize
+        height: row.height + paddingSize
+        border { left: borderSize; top: borderSize; right: borderSize; bottom: borderSize }
+        source: privateStyle.imagePath("qtg_fr_pushbutton_segmented_shadow", false)
+        scale: row.scale
     }
 
     ButtonRow {
@@ -109,6 +129,8 @@ Item {
 
         function visibleButtonCount() {
             var count = 0
+            if (selectButton.visible) ++count
+            if (selectAllButton.visible) ++count
             if (copyButton.visible) ++count
             if (cutButton.visible) ++count
             if (pasteButton.visible) ++count
@@ -116,17 +138,40 @@ Item {
         }
 
         exclusive: false
-        width: Math.round(privateStyle.buttonSize * 1.5) * visibleButtonCount()
+        width: Math.round(privateStyle.buttonSize * 2) * visibleButtonCount()
 
-        onWidthChanged: internal.calculatePosition()
-        onHeightChanged: internal.calculatePosition()
+        onWidthChanged: calculatePosition()
+        onHeightChanged: calculatePosition()
 
+        Button {
+            id: selectButton
+            iconSource: privateStyle.imagePath("qtg_toolbar_select_word", root.platformInverted)
+            visible: !root.copyEnabled
+            platformInverted: root.platformInverted
+            onClicked: {
+                editor.selectWord()
+                root.show()
+            }
+        }
+        Button {
+            id: selectAllButton
+            iconSource: privateStyle.imagePath("qtg_toolbar_select_all_text", root.platformInverted)
+            visible: !root.copyEnabled
+            platformInverted: root.platformInverted
+            onClicked: {
+                editor.selectAll()
+                root.show()
+            }
+        }
         Button {
             id: copyButton
             iconSource: privateStyle.imagePath("qtg_toolbar_copy", root.platformInverted)
             visible: root.copyEnabled
             platformInverted: root.platformInverted
-            onClicked: editor.copy()
+            onClicked: {
+                editor.copy()
+                root.hide()
+            }
         }
         Button {
             id: cutButton
@@ -135,7 +180,7 @@ Item {
             platformInverted: root.platformInverted
             onClicked: {
                 editor.cut()
-                root.visible = false
+                root.hide()
             }
         }
         Button {
@@ -145,8 +190,48 @@ Item {
             platformInverted: root.platformInverted
             onClicked: {
                 editor.paste()
-                root.visible = false
+                root.hide()
             }
         }
     }
+
+    transformOrigin: Item.Center
+
+    states: [
+        State {
+            name: "hidden"
+            when: !internal.show
+            PropertyChanges { target: root; visible: false; opacity: 0.0 }
+            PropertyChanges { target: row; scale: 0.6 }
+        },
+        State {
+            name: "visible"
+            when: internal.show
+            PropertyChanges { target: root; visible: true; opacity: 1.0 }
+            PropertyChanges { target: row; scale: 1.0 }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "hidden"; to: "visible"
+            SequentialAnimation {
+                PropertyAction { target: root; property: "visible"; value: "true" }
+                ParallelAnimation {
+                    PropertyAnimation { target: root; properties: "opacity"; duration: internal.animationDuration }
+                    PropertyAnimation { target: row; properties: "scale"; duration: internal.animationDuration; easing.type: Easing.OutQuad }
+                }
+            }
+        },
+        Transition {
+            from: "visible"; to: "hidden"
+            SequentialAnimation {
+                PropertyAction { target: root; property: "visible"; value: "true" }
+                ParallelAnimation {
+                    PropertyAnimation { target: root; properties: "opacity"; duration: internal.animationDuration }
+                    PropertyAnimation { target: row; properties: "scale"; duration: internal.animationDuration; easing.type: Easing.InQuad }
+                }
+            }
+        }
+    ]
 }

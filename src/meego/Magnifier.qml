@@ -39,73 +39,88 @@
 ****************************************************************************/
 
 import QtQuick 1.1
+import "Utils.js" as Utils
 
 Item {
     id: root
 
     property alias sourceItem: effectSource.sourceItem
-    property alias xCenter: magnifier.xCenter
-    property alias yCenter: magnifier.yCenter
-    property alias active: magnifier.active
-    property real yAdjustment: 0
+    property real xCenter: 0 // in source item coordinates
+    property real yCenter: 0 // in source item coordinates
+    
+    // Source rect is not as small as it can be as there is drawing problems
+    // with small source rect/texture size.
+    property real __realScaleFactor: 1.25
+    property real __sourceRectMultiplier: 2
 
-    visible: magnifier.active
+    property variant __rootElement
+
+    property bool active: false
+
+    visible: active
     width: 182
     height: 211
     z: Number.MAX_VALUE
 
-    function __rootElement() {
-        var ret = parent
-        while (ret.parent) {
-            ret = ret.parent
-        }
-        return ret
-    }
-
     Component.onCompleted: {
         sourceItem = parent;
+        declarativeView.setFullViewportMode(root);
     }
 
     ShaderEffectSource {
         id: effectSource
-        textureSize: Qt.size((sourceItem.width) * scaleFactor, (sourceItem.height) * scaleFactor);
-        hideOriginal: false
-        margins: Qt.size(1, 1);
+        sourceRect: Qt.rect(root.xCenter - textureSize.width / 2,
+                            root.yCenter - textureSize.height / 2,
+                            textureSize.width,
+                            textureSize.height);
+        textureSize: Qt.size(root.__sourceRectMultiplier * root.width,
+                             root.__sourceRectMultiplier * root.height);
 
-        property real scaleFactor: 1.25
-        filtering: ShaderEffectSource.Linear
+        hideSource: false
+        smooth: true
+
+        property real scaleFactor: root.__sourceRectMultiplier * root.__realScaleFactor
+    }
+
+    Image {
+        id: magnifierFrameImage
+        source: "/usr/share/themes/blanco/meegotouch/images/theme/basement/meegotouch-virtual-keyboard/meegotouch-seattle-magnifier-frame.png"
     }
 
     ShaderEffectSource {
         id: magnifierFrame
-        sourceImage: "/usr/share/themes/blanco/meegotouch/images/theme/basement/meegotouch-virtual-keyboard/meegotouch-seattle-magnifier-frame.png"
-        filtering: ShaderEffectSource.Linear
+        sourceItem: magnifierFrameImage
+        hideSource: true
+        live: false
+    }
+
+    Image {
+        id: magnifierMaskImage
+        source: "/usr/share/themes/blanco/meegotouch/images/theme/basement/meegotouch-virtual-keyboard/meegotouch-seattle-magnifier-frame-mask.png"
     }
 
     ShaderEffectSource {
         id: magnifierMask
-        sourceImage: "/usr/share/themes/blanco/meegotouch/images/theme/basement/meegotouch-virtual-keyboard/meegotouch-seattle-magnifier-frame-mask.png"
+        sourceItem: magnifierMaskImage
+        hideSource: true
+        live: false
     }
 
     ShaderEffectItem {
         id: magnifier
         anchors.fill:parent
-        active: false
+        visible: root.visible
 
         vertexShader: "
             attribute highp vec4 qt_Vertex;
             attribute highp vec2 qt_MultiTexCoord0;
             uniform highp mat4 qt_ModelViewProjectionMatrix;
-            uniform highp float xCenter;
-            uniform highp float xSize;
-            uniform highp float yCenter;
-            uniform highp float ySize;
             uniform highp float scaleFactor;
             varying highp vec2 qt_TexCoord0;
             varying highp vec2 qt_TexCoord1;
             void main() {
-                qt_TexCoord0.x = xCenter - xSize / (2. * scaleFactor) + xSize * qt_MultiTexCoord0.x / scaleFactor;
-                qt_TexCoord0.y = yCenter - ySize / (2. * scaleFactor) + ySize * qt_MultiTexCoord0.y / scaleFactor;
+                qt_TexCoord0.x = 0.5 - 1. / (2. * scaleFactor) + qt_MultiTexCoord0.x / scaleFactor;
+                qt_TexCoord0.y = 0.5 - 1. / (2. * scaleFactor) + qt_MultiTexCoord0.y / scaleFactor;
                 qt_TexCoord1 = qt_MultiTexCoord0;
                 gl_Position = qt_ModelViewProjectionMatrix * qt_Vertex;
             }";
@@ -131,17 +146,20 @@ Item {
                     color_c = color_c + vec4(1.,1.,1.,1.) * (1.-color_c.a);
                 }
 
-                gl_FragColor = (onGlass) ? color_c : frame_c;
-        }";
-
-        property real xCenter: 0
-        property real yCenter: 0.25
-        property real xSize: width / (root.sourceItem.width)
-        property real ySize: height / (root.sourceItem.height)
-        property real scaleFactor: effectSource.scaleFactor;
+                if ( qt_TexCoord1.y >= 0.98 ) {
+                    // Top part of item above visible magnifier frame is made
+                    // transparent explicitly to prevent showing of wrongly
+                    // colored pixels, which would otherwise appear sometimes
+                    // when using sourceRect functionality.
+                    gl_FragColor = vec4(0.,0.,0.,0.);
+                } else {
+                    gl_FragColor = onGlass ? color_c : frame_c;
+                }
+       }";
 
         property variant source: effectSource
         property variant frame: magnifierFrame
         property variant mask: magnifierMask
+        property real scaleFactor: effectSource.scaleFactor;
     }
 }

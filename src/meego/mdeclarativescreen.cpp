@@ -84,6 +84,8 @@ public:
     void _q_updateIsTvConnected();
     void _q_windowAnimationChanged();
 
+    void updateScreenSize();
+
     qreal dpi() const;
     int rotation() const;
 
@@ -95,6 +97,7 @@ public:
     MDeclarativeScreen::Orientation finalOrientation;
     MDeclarativeScreen::Orientations allowedOrientations;
     MDeclarativeScreen::Orientations allowedOrientationsBackup;
+    MDeclarativeScreen::Direction rotationDirection;
 
     bool isCovered;
     bool keyboardOpen;
@@ -108,10 +111,13 @@ public:
     QSize screenSize;
 
     bool allowSwipe;
+
     void setMinimized(bool);
     bool isMinimized() const;
     bool isRemoteScreenPresent() const;
     QString topEdgeValue() const;
+
+    MDeclarativeScreen::Orientations physicalDisplayOrientation() const { return _physicalDisplayOrientation; }
 
 #ifdef Q_WS_X11
     WId windowId;
@@ -126,7 +132,11 @@ public:
     MServiceListener remoteTopEdgeListener;
 #endif
 private:
+    void initPhysicalDisplayOrientation();
+
+private:
     bool minimized;
+    MDeclarativeScreen::Orientations _physicalDisplayOrientation;
 };
 
 static MDeclarativeScreen *self = 0;
@@ -178,14 +188,21 @@ bool x11EventFilter(void *message, long *result)
 
 MDeclarativeScreenPrivate::MDeclarativeScreenPrivate(MDeclarativeScreen *qq)
     : q(qq)
+#ifdef __ARMEL__
     , orientation(MDeclarativeScreen::Landscape)
     , finalOrientation(MDeclarativeScreen::Landscape)
+#else
+    , orientation(MDeclarativeScreen::Portrait)
+    , finalOrientation(MDeclarativeScreen::Portrait)
+#endif
     , allowedOrientations(MDeclarativeScreen::Landscape | MDeclarativeScreen::Portrait)
+    , rotationDirection(MDeclarativeScreen::NoDirection)
     , isCovered(false)
     , keyboardOpen(false)
     , isTvConnected(false)
     , topLevelWidget(0)
     , oldEventFilter(0)
+    , allowSwipe(true)
 #ifdef Q_WS_X11
     , windowId(0)
 #endif
@@ -195,22 +212,40 @@ MDeclarativeScreenPrivate::MDeclarativeScreenPrivate(MDeclarativeScreen *qq)
     , isCoveredProperty("Screen.IsCovered")
     , keyboardOpenProperty("/maemo/InternalKeyboard/Open")
     , videoRouteProperty("com.nokia.policy.video_route")
-    , remoteTopEdgeListener(remoteTopEdgeProperty.info()->providerDBusType(),
-          remoteTopEdgeProperty.info()->providerDBusName())
+    , remoteTopEdgeListener(remoteTopEdgeProperty.info()->providerDBusType()
+    , remoteTopEdgeProperty.info()->providerDBusName())
 #endif
     , minimized(false)
 {
-    // TODO: Could use QDesktopWidget, but what about on host PC?
+#ifdef __ARMEL__
     displaySize = QSize(854, 480);
-    screenSize = QSize(displaySize.width(), displaySize.height());
-
+#else
+    // TODO: Could use QDesktopWidget, but what about on host PC?
+    displaySize = QSize(480, 854);
+#endif
     oldEventFilter = QCoreApplication::instance()->setEventFilter(x11EventFilter);
     //Q_ASSERT(gScreenPrivate == 0);
     gScreenPrivate = this;
+
+    initPhysicalDisplayOrientation();
 }
 
 MDeclarativeScreenPrivate::~MDeclarativeScreenPrivate()
 {
+}
+
+void MDeclarativeScreenPrivate::initPhysicalDisplayOrientation()
+{
+    if(displaySize.isValid()) {
+        if(displaySize.height() > displaySize.width()) {
+            _physicalDisplayOrientation = MDeclarativeScreen::Portrait;
+            _physicalDisplayOrientation |= MDeclarativeScreen::PortraitInverted;
+        } else {
+            _physicalDisplayOrientation = MDeclarativeScreen::Landscape;
+            _physicalDisplayOrientation |= MDeclarativeScreen::LandscapeInverted;
+        }
+        updateScreenSize();
+    }
 }
 
 void MDeclarativeScreenPrivate::initContextSubscriber()
@@ -246,6 +281,19 @@ void MDeclarativeScreenPrivate::initContextSubscriber()
 
     QObject::connect(MWindowState::instance(), SIGNAL(animatingChanged()),
                      q, SLOT(_q_windowAnimationChanged()));
+}
+
+void MDeclarativeScreenPrivate::updateScreenSize() {
+    // Update screen width / height properties
+    if(orientation & physicalDisplayOrientation()) {
+        screenSize.setWidth(displaySize.width());
+        screenSize.setHeight(displaySize.height());
+    } else {
+        screenSize.setWidth(displaySize.height());
+        screenSize.setHeight(displaySize.width());
+    }
+    emit q->platformWidthChanged();
+    emit q->platformHeightChanged();
 }
 
 void MDeclarativeScreenPrivate::updateX11OrientationAngleProperty()
@@ -312,23 +360,44 @@ int MDeclarativeScreenPrivate::rotation() const
 {
     int angle = 0;
 
-    switch (orientation) {
-    case MDeclarativeScreen::Landscape:
-        angle = 0;
-        break;
-    case MDeclarativeScreen::Portrait:
-    case MDeclarativeScreen::Default:  //handle default as portrait
-        angle = 270;
-        break;
-    case MDeclarativeScreen::LandscapeInverted:
-        angle = 180;
-        break;
-    case MDeclarativeScreen::PortraitInverted:
-        angle = 90;
-        break;
-    default:
-        qCritical() << "MDeclarativeScreen hast invalid orientation set.";
+    if(_physicalDisplayOrientation & MDeclarativeScreen::Landscape) {
+        switch (orientation) {
+        case MDeclarativeScreen::Landscape:
+            angle = 0;
+            break;
+        case MDeclarativeScreen::Portrait:
+        case MDeclarativeScreen::Default:  //handle default as portrait
+            angle = 270;
+            break;
+        case MDeclarativeScreen::LandscapeInverted:
+            angle = 180;
+            break;
+        case MDeclarativeScreen::PortraitInverted:
+            angle = 90;
+            break;
+        default:
+            qCritical() << "MDeclarativeScreen hast invalid orientation set.";
+        }
+    } else {
+        switch (orientation) {
+        case MDeclarativeScreen::Landscape:
+            angle = 90;
+            break;
+        case MDeclarativeScreen::Portrait:
+        case MDeclarativeScreen::Default:  //handle default as portrait
+            angle = 0;
+            break;
+        case MDeclarativeScreen::LandscapeInverted:
+            angle = 270;
+            break;
+        case MDeclarativeScreen::PortraitInverted:
+            angle = 180;
+            break;
+        default:
+            qCritical() << "MDeclarativeScreen hast invalid orientation set.";
+        }
     }
+
     return angle;
 }
 
@@ -428,6 +497,7 @@ MDeclarativeScreen::MDeclarativeScreen(QDeclarativeItem *parent)
     d->initContextSubscriber();
 
     qApp->installEventFilter(this);
+    emit physicalDisplayChanged();
 }
 
 MDeclarativeScreen::~MDeclarativeScreen()
@@ -441,11 +511,18 @@ bool MDeclarativeScreen::eventFilter(QObject *o, QEvent *e) {
         if(d->topLevelWidget && d->topLevelWidget->parent() == NULL) { //it's a toplevelwidget
             d->setMinimized(d->topLevelWidget->windowState() & Qt::WindowMinimized);
             if(d->isMinimized()) {
-                //minimized apps are forced to portrait
                 d->allowedOrientationsBackup = d->allowedOrientations;
+
                 //set allowedOrientations manually, because setAllowedOrientations() will not work while minimized
-                d->allowedOrientations = Portrait;
-                setOrientation(Portrait);
+                //minimized apps are forced to portrait or landscape based on maximized state
+                if (!d->allowedOrientationsBackup || (d->allowedOrientationsBackup & Portrait) || 
+                   (d->allowedOrientationsBackup & PortraitInverted)) {
+                    d->allowedOrientations = Portrait;
+                    setOrientation(Portrait);
+                } else {
+                    d->allowedOrientations = Landscape;
+                    setOrientation(Landscape);
+                }
             } else {
                 if(d->allowedOrientationsBackup != Default) {
                     setAllowedOrientations(d->allowedOrientationsBackup);
@@ -462,12 +539,30 @@ bool MDeclarativeScreen::eventFilter(QObject *o, QEvent *e) {
     return QObject::eventFilter(o, e);
 }
 
+MDeclarativeScreen::Orientations MDeclarativeScreen::platformPhysicalDisplayOrientation() const
+{
+    return d->physicalDisplayOrientation();
+}
+
 void MDeclarativeScreen::setOrientation(Orientation o)
 {
     d->finalOrientation = o;
+    MDeclarativeScreen::Direction oldDirection = d->rotationDirection;
 
     if (d->orientation == o || MWindowState::instance()->animating())
         return;
+
+    if ( (d->orientation == MDeclarativeScreen::LandscapeInverted && o == MDeclarativeScreen::Portrait) ||
+         (d->orientation == MDeclarativeScreen::PortraitInverted && o == MDeclarativeScreen::LandscapeInverted) ||
+         (d->orientation == MDeclarativeScreen::Landscape && o == MDeclarativeScreen::PortraitInverted) ||
+         (d->orientation == MDeclarativeScreen::Portrait && o == MDeclarativeScreen::Landscape) ) {
+         d->rotationDirection = MDeclarativeScreen::CounterClockwise;
+    }
+    else {
+         d->rotationDirection = MDeclarativeScreen::Clockwise;
+    }
+    if (oldDirection != d->rotationDirection)
+        emit rotationDirectionChanged();
 
     Orientation newOrientation = Default;
     //if keyboard is open always set landscape and ignore allowed orientations
@@ -485,20 +580,11 @@ void MDeclarativeScreen::setOrientation(Orientation o)
     d->orientation = newOrientation;
     d->updateX11OrientationAngleProperty();
 
-#ifndef USE_DEPRECATED_SCREEN_WIDTH_HEIGHT
-    // Update screen width / height properties
-    if (newOrientation == MDeclarativeScreen::Landscape ||
-            newOrientation == MDeclarativeScreen::LandscapeInverted) {
-        d->screenSize.setWidth(d->displaySize.width());
-        d->screenSize.setHeight(d->displaySize.height());
-    } else {
-        d->screenSize.setWidth(d->displaySize.height());
-        d->screenSize.setHeight(d->displaySize.width());
-    }
+    d->updateScreenSize();
+
 
     emit widthChanged();
     emit heightChanged();
-#endif
 
     MDeclarativeInputContext::setKeyboardOrientation(o);
     emit currentOrientationChanged();
@@ -574,6 +660,11 @@ int MDeclarativeScreen::rotation() const
     return d->rotation();
 }
 
+MDeclarativeScreen::Direction MDeclarativeScreen::rotationDirection() const
+{
+    return d->rotationDirection;
+}
+
 bool MDeclarativeScreen::isCovered() const
 {
     return d->isCovered;
@@ -623,6 +714,17 @@ int MDeclarativeScreen::height() const
     return d->screenSize.height();
 #endif
 }
+
+int MDeclarativeScreen::platformWidth() const
+{
+    return d->screenSize.width();
+}
+
+int MDeclarativeScreen::platformHeight() const
+{
+    return d->screenSize.height();
+}
+
 
 int MDeclarativeScreen::displayWidth() const
 {
@@ -676,7 +778,16 @@ void MDeclarativeScreen::updatePlatformStatusBarRect(QDeclarativeItem * statusBa
 #ifdef Q_WS_X11
     QWidget * activeWindow = QApplication::activeWindow();
     if(!activeWindow) {
-        return;
+        foreach (QWidget *widget, QApplication::topLevelWidgets()) {
+            if (widget->effectiveWinId() != 0 &&
+                widget->windowType() == Qt::Window) {
+                activeWindow = widget;
+                break;
+            } 
+        }
+
+        if (!activeWindow)
+            return;
     }
 
     QRectF rect(statusBar->mapRectToScene(0, 0, (qreal)statusBar->width(), (qreal)statusBar->height()));
@@ -704,6 +815,15 @@ bool MDeclarativeScreen::allowSwipe() const
     return d->allowSwipe;
 }
 
+bool MDeclarativeScreen::isPortrait() const
+{
+    return platformHeight() > platformWidth();
+}
+
+bool MDeclarativeScreen::isDisplayLandscape() const {
+    return platformPhysicalDisplayOrientation() & Landscape;
+}
+
 void MDeclarativeScreen::setAllowSwipe(bool enabled)
 {
     if (enabled != d->allowSwipe) {
@@ -715,7 +835,8 @@ void MDeclarativeScreen::setAllowSwipe(bool enabled)
         Display       *dpy = QX11Info::display();
         Window w = activeWindow->effectiveWinId();
 
-        unsigned long val = (enabled) ? 1 : 0;
+        unsigned long val = (enabled) ? 0 : 1;
+
         Atom atom = XInternAtom(dpy, "_MEEGOTOUCH_CANNOT_MINIMIZE", false);
         if (!atom) {
             qWarning("Unable to obtain _MEEGOTOUCH_CANNOT_MINIMIZE. This example will only work "

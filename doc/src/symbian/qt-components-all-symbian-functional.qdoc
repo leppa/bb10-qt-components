@@ -59,6 +59,7 @@
     These components provide hardware and system information to the application.
     These also provide the high level application QML containers.
     \list
+        \o \l{PageStackWindow}
         \o \l{ApplicationWindow}
         \o \l{Window}
         \o \l{StatusBar}
@@ -66,6 +67,8 @@
         \o \l{PopupManager}
         \o \l{Screen}
         \o \l{Style}
+        \o \l{Label}
+        \o \l{InputContext}
     \endlist
 
     \section1 Indicators
@@ -145,6 +148,7 @@
     \list
         \o \l{InfoBanner}
         \o \l{RatingIndicator}
+        \o \l{SearchBox}
         \o \l{TimePickerDialog}
         \o \l{DatePickerDialog}
         \o \l{Tumbler}

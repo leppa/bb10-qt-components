@@ -178,7 +178,7 @@ void SDeclarativeStyleInternal::play(int effect)
 int SDeclarativeStyleInternal::textWidth(const QString &text, const QFont &font) const
 {
     QFontMetrics metrics(font);
-    return metrics.width(text);
+    return metrics.width(text) + 1; //Fix QTCOMPONENTS-810
 }
 
 int SDeclarativeStyleInternal::fontHeight(const QFont &font) const
@@ -206,4 +206,15 @@ QString SDeclarativeStyleInternal::imagePath(const QString &path, bool inverted)
 {
     QLatin1String invertedSuffix(inverted ? "_inverse" : "");
     return QLatin1String("image://theme/") + path + invertedSuffix;
+}
+
+bool SDeclarativeStyleInternal::isTabBarIcon(const QUrl &url) const
+{
+    if (url.isEmpty() || url.scheme() == QLatin1String("http"))
+        return false;
+
+    QFileInfo fileInfo = url.path();
+    QString suffix = fileInfo.suffix();
+
+    return suffix.toLower() == QLatin1String("svg") || suffix.isEmpty();
 }

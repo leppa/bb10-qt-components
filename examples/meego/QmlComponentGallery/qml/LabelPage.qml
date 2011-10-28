@@ -39,26 +39,61 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.1
 
 Page {
     id: labelsPage
     anchors.margins: UiConstants.DefaultMargin
     tools: commonTools
-    
-    Flickable {        
-        contentWidth: childrenRect.width
-        contentHeight: childrenRect.height
+
+    Flickable {
+        id: labelFlick
+        contentWidth: col.width
+        contentHeight: col.height
         flickableDirection: Flickable.VerticalFlick
 
         anchors.fill: parent
         Column {
-            Label { text: "Plain label" }
-            Label { text: "Bold label"; font.bold: true }
-            Label { text: "Italic label"; font.italic: true }
-            Label { text: "Large label"; font.pixelSize: 100 }
-            Label { text: "Red label"; color: "red" }
-            Label { text: "Wrapping label with a lot of text"; wrapMode: Text.Wrap; width: 200 }
+            id: col
+            Label { text: "Plain label"; platformSelectable: true; }
+            Label { text: "<a href=\"http://www.nokia.com\">Invert</a> label via link"; platformSelectable: false;
+                    onLinkActivated: platformStyle.inverted = !platformStyle.inverted; }
+            Label { text: "Bold label"; font.bold: true; platformSelectable: true; }
+            Label { text: "Italic label"; font.italic: true; platformSelectable: true; }
+            Label { text: "Large label"; font.pixelSize: 100;  platformSelectable: true; }
+
+            Label {
+                id: coloredLabel
+                text: "Large label with MouseArea"
+                width: parent.width
+                font.pixelSize: 48
+                platformSelectable: true
+                color: Qt.rgba(1.0, 0.5, 0.5, 1.0)
+                wrapMode: Text.WordWrap
+
+                MouseArea {
+                    id: ma
+                    anchors.fill:  parent
+                    onClicked: coloredLabel.color ==  Qt.rgba(1.0, 0.5, 0.5, 1.0) ?
+                                   coloredLabel.color =  Qt.rgba(0.5, 1.0, 0.5, 1.0)
+                                 : coloredLabel.color =  Qt.rgba(1.0, 0.5, 0.5, 1.0)
+                }
+
+            }
+
+            Label { text: "Red label"; color: "red"; platformSelectable: true; }
+            Label { text: "Elided labels are too long"; font.italic: true; width: 200; elide: Text.ElideRight; platformSelectable: true; }
+            Label { text: "Unselectable plain label <br>" }
+            Label {
+                text: "<b>Wrapping label with a lot of text:</b> The quick brown fox jumps over the lazy dog. \
+                The quick brown fox jumps over the lazy dog. <br>The quick brown fox jumps over the lazy dog. \
+                The quick brown fox jumps over the lazy dog."
+                font.pixelSize: 30
+                wrapMode: Text.Wrap
+                width: labelsPage.width
+                platformSelectable: true            
+            }
+
         }
     }
 }

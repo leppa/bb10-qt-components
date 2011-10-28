@@ -51,6 +51,8 @@ Item {
     property bool platformSubItemIndicator: false
     property real platformLeftMargin: platformStyle.paddingLarge
 
+    property bool privateSelectionIndicator: false
+
     signal clicked
 
     width: parent.width; height: privateStyle.menuItemHeight
@@ -68,7 +70,10 @@ Item {
         }
 
         function textColor() {
-            if (activeFocus && symbian.listInteractionMode == Symbian.KeyNavigation)
+            if (!enabled)
+                return root.platformInverted ? platformStyle.colorDisabledLightInverted
+                                             : platformStyle.colorDisabledLight
+            else if (activeFocus && symbian.listInteractionMode == Symbian.KeyNavigation)
                 return root.platformInverted ? platformStyle.colorHighlightedInverted
                                              : platformStyle.colorHighlighted
             else if (mouseArea.pressed && mouseArea.containsMouse)
@@ -103,7 +108,7 @@ Item {
 
     Loader {
         id: iconLoader
-        sourceComponent: root.platformSubItemIndicator ? subItemIcon : undefined
+        sourceComponent: (root.platformSubItemIndicator || root.privateSelectionIndicator) ? iconComponent : undefined
         anchors {
             right: parent.right
             rightMargin: privateStyle.scrollBarThickness
@@ -112,10 +117,15 @@ Item {
     }
 
     Component {
-        id: subItemIcon
+        id: iconComponent
 
         Image {
-            source: privateStyle.imagePath("qtg_graf_drill_down_indicator", root.platformInverted)
+            source: {
+                if (root.privateSelectionIndicator)
+                    privateStyle.imagePath("qtg_graf_single_selection_indicator", platformInverted)
+                else
+                    privateStyle.imagePath("qtg_graf_drill_down_indicator", platformInverted)
+            }
             sourceSize.width: platformStyle.graphicSizeSmall
             sourceSize.height: platformStyle.graphicSizeSmall
             mirror: LayoutMirroring.enabled
@@ -141,7 +151,7 @@ Item {
         }
         onReleased: {
             if (!canceled)
-                privateStyle.play(Symbian.PopupClose)
+                privateStyle.play(Symbian.BasicItem)
         }
         onExited: canceled = true
     }

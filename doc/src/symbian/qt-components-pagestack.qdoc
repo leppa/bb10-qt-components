@@ -53,11 +53,16 @@
     anchor it to a status bar, tool bar, tab bar, or some other similar UI
     component.
 
-    Once you have a page stack, a common way to load the first page in the stack
-    is to call \c PageStack.push() from the application's \c
+    Once you have a page stack, you can set its \l initialPage property to point to
+    the first page:
+    \code
+    pageStack.initialPage: firstPage
+    \endcode
+
+    Optionally, you can call \l push() from the application's \c
     Component.onCompleted() handler.
 
-    \snippet src/snippets/common/snippet-pagestack-toolbar.qml 5
+    \snippet src/snippets/symbian/snippet-pagestack-toolbar.qml 5
 
     \section1 Creating Pages and Pushing them to the Stack
 
@@ -75,7 +80,7 @@
     You push an item-type page to the stack by referencing its id, as shown in
     the following code snippet.
 
-    \snippet src/snippets/common/snippet-pagestack-page.qml 3
+    \snippet src/snippets/symbian/snippet-pagestack-page.qml 3
 
 
     \section2 Pushing a QML Component Page Defined in a Component File
@@ -84,7 +89,7 @@
     that defines the page. When referencing a page by filename, you need to use
     the \c Qt.resolvedUrl() method so that the system can find the file.
 
-    \snippet src/snippets/common/snippet-pagestack-page.qml 4
+    \snippet src/snippets/symbian/snippet-pagestack-page.qml 4
 
 
     \section2 Pushing a QML Component Page
@@ -110,7 +115,7 @@
 
     You push a component page by its id, as shown in the following snippet.
 
-    \snippet src/snippets/common/snippet-pagestack-page.qml 5
+    \snippet src/snippets/symbian/snippet-pagestack-page.qml 5
 
     \section2 Avoiding the "Parent Trap" When Doing a Replace
 
@@ -190,14 +195,14 @@
     The code below gives an example of pushing a page to the page stack and
     setting a property for that page.
 
-    \snippet src/snippets/common/snippet-pagestack-page.qml 7
+    \snippet src/snippets/symbian/snippet-pagestack-page.qml 7
 
     If you want to push multiple pages at once to the stack with parameters for
     each page, you push an array of pages onto the stack and specify a property
     map with each page in the array. The code snippet below gives an example of
     this.
 
-    \snippet src/snippets/common/snippet-pagestack-page.qml 8
+    \snippet src/snippets/symbian/snippet-pagestack-page.qml 8
 
 
     \section1 Page-to-Page Transition Animations
@@ -341,7 +346,7 @@
     null is passed to the \c pop() function which then has the effect of unwinding
     the stack right to the bottom.
 
-    \snippet src/snippets/common/snippet-pagestack-page.qml 6
+    \snippet src/snippets/symbian/snippet-pagestack-page.qml 6
 
     \section1 Improving Performance
 
@@ -391,6 +396,22 @@
 
     This is \c true if there is an ongoing transition between pages on the stack.
     Otherwise \c false.
+
+*/
+
+/*!
+    \qmlproperty variant PageStack::initialPage
+    \since 1.1
+
+    Sets the initial page of the \c PageStack. This can be a \l Page instance,
+    component, or an array. Once the construction is completed, the value
+    will be pushed onto the stack. 
+    
+    Modifying this property at runtime has no effect if the stack has more than one item.
+    On an empty stack, the new value will be pushed. On a one item stack, the existing item
+    will be replaced with the new \c initialPage value.
+    
+    \sa PageStack::push
 
 */
 

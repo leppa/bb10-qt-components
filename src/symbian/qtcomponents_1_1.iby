@@ -8,20 +8,21 @@ define SYMBIAN_PLUGIN_DIR com\nokia\symbian.1.1
 
 REM QT
 
+// Stub SIS
+data=ZSYSTEM\install\qtcomponents_1_1_stub.sis                                            System\Install\qtcomponents_1_1_stub.sis
+
 // Qt components plugin
-file=ABI_DIR\BUILD_DIR\qtcomponentsplugin_1_1.dll                                         SHARED_LIB_DIR\qtcomponentsplugin_1_1.dll
-data=ZRESOURCE\qt\imports\COMPONENTS_PLUGIN_DIR\qtcomponentsplugin_1_1.qtplugin           RESOURCE_FILES_DIR\qt\imports\COMPONENTS_PLUGIN_DIR\qtcomponentsplugin_1_1.qtplugin
+file=ABI_DIR\BUILD_DIR\qtcomponentsplugin_1_1_2.dll                                       SHARED_LIB_DIR\qtcomponentsplugin_1_1_2.dll
+data=ZRESOURCE\qt\imports\COMPONENTS_PLUGIN_DIR\qtcomponentsplugin_1_1_2.qtplugin         RESOURCE_FILES_DIR\qt\imports\COMPONENTS_PLUGIN_DIR\qtcomponentsplugin_1_1_2.qtplugin
 data=ZRESOURCE\qt\imports\COMPONENTS_PLUGIN_DIR\qmldir                                    RESOURCE_FILES_DIR\qt\imports\COMPONENTS_PLUGIN_DIR\qmldir
 data=ZRESOURCE\qt\imports\COMPONENTS_PLUGIN_DIR\Checkable.qml                             RESOURCE_FILES_DIR\qt\imports\COMPONENTS_PLUGIN_DIR\Checkable.qml
 data=ZRESOURCE\qt\imports\COMPONENTS_PLUGIN_DIR\CheckableGroup.qml                        RESOURCE_FILES_DIR\qt\imports\COMPONENTS_PLUGIN_DIR\CheckableGroup.qml
 data=ZRESOURCE\qt\imports\COMPONENTS_PLUGIN_DIR\CheckableGroup.js                         RESOURCE_FILES_DIR\qt\imports\COMPONENTS_PLUGIN_DIR\CheckableGroup.js
-data=ZSYSTEM\install\qtcomponentsplugin_1_1_stub.sis                                      System\Install\qtcomponentsplugin_1_1_stub.sis
 
 // Symbian plugin
-file=ABI_DIR\BUILD_DIR\symbianplugin_1_1.dll                                              SHARED_LIB_DIR\symbianplugin_1_1.dll PAGED
-data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\symbianplugin_1_1.qtplugin                   RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\symbianplugin_1_1.qtplugin
+file=ABI_DIR\BUILD_DIR\symbianplugin_1_1_2.dll                                            SHARED_LIB_DIR\symbianplugin_1_1_2.dll PAGED
+data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\symbianplugin_1_1_2.qtplugin                 RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\symbianplugin_1_1_2.qtplugin
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\qmldir                                       RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\qmldir
-data=ZSYSTEM\install\symbianplugin_1_1_stub.sis                                           System\Install\symbianplugin_1_1_stub.sis
 
 // Symbian QML components
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ApplicationWindow.qml                          RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ApplicationWindow.qml
@@ -36,6 +37,7 @@ data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\CommonDialog.qml                   
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ContextMenu.qml                                RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ContextMenu.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Dialog.qml                                     RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Dialog.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Fader.qml                                      RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Fader.qml
+data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Label.qml                                      RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Label.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ListHeading.qml                                RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ListHeading.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ListItem.qml                                   RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ListItem.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ListItemText.qml                               RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ListItemText.qml
@@ -46,6 +48,7 @@ data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\MenuLayout.qml                     
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Page.qml                                       RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Page.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\PageStack.js                                   RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\PageStack.js
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\PageStack.qml                                  RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\PageStack.qml
+data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\PageStackWindow.qml                            RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\PageStackWindow.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Popup.qml                                      RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Popup.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ProgressBar.qml                                RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ProgressBar.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\QueryDialog.qml                                RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\QueryDialog.qml
@@ -59,6 +62,8 @@ data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\SelectionDialog.qml                
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\SelectionListItem.qml                          RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\SelectionListItem.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Slider.qml                                     RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Slider.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\StatusBar.qml                                  RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\StatusBar.qml
+data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\StatusBarDefault.qml                           RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\StatusBarDefault.qml
+data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\StatusBarShared.qml                            RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\StatusBarShared.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\Switch.qml                                     RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\Switch.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TabBar.qml                                     RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\TabBar.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TabBarLayout.qml                               RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\TabBarLayout.qml
@@ -71,6 +76,7 @@ data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TextMagnifier.qml                  
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TextContextMenu.qml                            RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\TextContextMenu.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TextSelectionHandle.qml                        RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\TextSelectionHandle.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TextTouchController.qml                        RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\TextTouchController.qml
+data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\TextTouchTools.qml                             RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\TextTouchTools.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ToolBar.qml                                    RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ToolBar.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ToolBarLayout.qml                              RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ToolBarLayout.qml
 data=ZRESOURCE\qt\imports\SYMBIAN_PLUGIN_DIR\ToolButton.qml                                 RESOURCE_FILES_DIR\qt\imports\SYMBIAN_PLUGIN_DIR\ToolButton.qml

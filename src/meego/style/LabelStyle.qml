@@ -44,6 +44,8 @@ import "UIConstants.js" as UI
 Style {
     // Color
     property color textColor: inverted? UI.COLOR_INVERTED_FOREGROUND : UI.COLOR_FOREGROUND
+    property color selectedTextColor: UI.COLOR_INVERTED_FOREGROUND
+    property color selectionColor: theme.selectionColor
 
     // Font
     property string fontFamily: UI.FONT_FAMILY

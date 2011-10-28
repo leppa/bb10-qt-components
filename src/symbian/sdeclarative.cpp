@@ -47,10 +47,20 @@
 #include <QDeclarativeEngine>
 #include <QPixmapCache>
 #include <QSysInfo>
+#include <QDeclarativeItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
 
 #ifdef Q_OS_SYMBIAN
 #include <AknUtils.h>
 #include <e32std.h>
+#include "stimeobserver.h"
+
+#ifdef HAVE_SYMBIAN_INTERNAL
+#include "ssharedstatusbarsubscriber.h"
+#include <e32property.h>
+#endif // HAVE_SYMBIAN_INTERNAL
+
 #endif // Q_OS_SYMBIAN
 
 #ifdef Q_OS_WIN
@@ -70,12 +80,19 @@ _LIT(KTimeFormat, "%J%:1%T");
 #endif
 
 class SDeclarativePrivate
+#ifdef Q_OS_SYMBIAN
+    : public MTimeChangeObserver
+#endif
 {
+    Q_DECLARE_PUBLIC(SDeclarative)
 public:
-    SDeclarativePrivate()
-        : mListInteractionMode(SDeclarative::TouchInteraction)
+    SDeclarativePrivate(SDeclarative *qq)
+        : q_ptr(qq)
+        , mListInteractionMode(SDeclarative::TouchInteraction)
         , foreground(true)
-        , rightToLeftDisplayLanguage(false) {
+        , rightToLeftDisplayLanguage(false)
+        , graphicsSharing(false)
+        , sharedStatusBar(false){
 #ifdef Q_OS_SYMBIAN
         // Initialize based on the current UI language - it cannot be changed without a reboot.
         switch (User::Language()) {
@@ -89,15 +106,30 @@ public:
             default:
                 break;
         }
+#ifdef HAVE_SYMBIAN_INTERNAL
+        TInt handleIgnore(0);
+        sharedStatusBar = RProperty::Get(KOffScreenSPaneUid, KOffScreenHandle, handleIgnore) == KErrNone;
+#endif // HAVE_SYMBIAN_INTERNAL
+        QT_TRAP_THROWING(timeChangeNotifier.reset(CTimeChangeObserver::NewL(this)));
 #endif // Q_OS_SYMBIAN
     }
 
-    int allocatedMemory() const;
+    ~SDeclarativePrivate()
+    {
+    }
 
+    int allocatedMemory() const;
+    void TimeChanged(); // overridden Symbian function
+    SDeclarative *q_ptr;
     SDeclarative::InteractionMode mListInteractionMode;
     QTimer timer;
     bool foreground;
     bool rightToLeftDisplayLanguage;
+    bool graphicsSharing;
+    bool sharedStatusBar;
+#ifdef Q_OS_SYMBIAN
+    QScopedPointer<CTimeChangeObserver> timeChangeNotifier;
+#endif
 };
 
 int SDeclarativePrivate::allocatedMemory() const
@@ -116,10 +148,16 @@ int SDeclarativePrivate::allocatedMemory() const
 #endif
 }
 
-SDeclarative::SDeclarative(QObject *parent) :
-    QObject(parent),
-    d_ptr(new SDeclarativePrivate)
+void SDeclarativePrivate::TimeChanged()
 {
+    Q_Q(SDeclarative);
+    emit q->currentTimeChanged();
+}
+
+SDeclarative::SDeclarative(QObject *parent) :
+    QObject(parent)
+{
+    d_ptr.reset(new SDeclarativePrivate(this));
     d_ptr->timer.start(MINUTE_MS);
     connect(&d_ptr->timer, SIGNAL(timeout()), this, SIGNAL(currentTimeChanged()));
 
@@ -130,18 +168,21 @@ SDeclarative::SDeclarative(QObject *parent) :
 
 SDeclarative::~SDeclarative()
 {
-    d_ptr->timer.stop();
+    Q_D(SDeclarative);
+    d->timer.stop();
 }
 
 SDeclarative::InteractionMode SDeclarative::listInteractionMode() const
 {
-    return d_ptr->mListInteractionMode;
+    Q_D(const SDeclarative);
+    return d->mListInteractionMode;
 }
 
 void SDeclarative::setListInteractionMode(SDeclarative::InteractionMode mode)
 {
-    if (d_ptr->mListInteractionMode != mode) {
-        d_ptr->mListInteractionMode = mode;
+    Q_D(SDeclarative);
+    if (d->mListInteractionMode != mode) {
+        d->mListInteractionMode = mode;
         emit listInteractionModeChanged();
     }
 }
@@ -163,12 +204,14 @@ QString SDeclarative::currentTime()
 
 bool SDeclarative::isForeground()
 {
-    return d_ptr->foreground;
+    Q_D(SDeclarative);
+    return d->foreground;
 }
 
 int SDeclarative::privateAllocatedMemory() const
 {
-    return d_ptr->allocatedMemory();
+    Q_D(const SDeclarative);
+    return d->allocatedMemory();
 }
 
 void SDeclarative::privateClearIconCaches()
@@ -206,20 +249,57 @@ SDeclarative::S60Version SDeclarative::s60Version() const
 
 bool SDeclarative::rightToLeftDisplayLanguage() const
 {
-    return d_ptr->rightToLeftDisplayLanguage;
+    Q_D(const SDeclarative);
+    return d->rightToLeftDisplayLanguage;
+}
+
+void SDeclarative::setGraphicsSharing(bool sharingEnabled)
+{
+    Q_D(SDeclarative);
+    d->graphicsSharing = sharingEnabled;
+}
+
+bool SDeclarative::privateGraphicsSharing() const
+{
+    Q_D(const SDeclarative);
+    return d->graphicsSharing;
+}
+
+void SDeclarative::privateSendMouseRelease(QDeclarativeItem *item) const
+{
+    // this is for situations where a press event opens another window (QWidget)
+    // that eats the mouse released event. This method can be used for generating
+    // the released event and 'correcting' the state of MouseArea/Flickable
+    if (item) {
+        QGraphicsSceneMouseEvent releaseEvent(QEvent::GraphicsSceneMouseRelease);
+        item->scene()->sendEvent(item, &releaseEvent);
+    }
+}
+
+bool SDeclarative::privateSharedStatusBar() const
+{
+    Q_D(const SDeclarative);
+    return d->sharedStatusBar;
 }
 
 bool SDeclarative::eventFilter(QObject *obj, QEvent *event)
 {
+    Q_D(SDeclarative);
     if (obj == QCoreApplication::instance()) {
         if (event->type() == QEvent::ApplicationActivate) {
             emit currentTimeChanged();
-            d_ptr->timer.start(MINUTE_MS);
-            d_ptr->foreground = true;
+#ifdef Q_OS_SYMBIAN
+            d->timeChangeNotifier->StartObserving();
+#endif
+            d->timer.start(MINUTE_MS);
+            d->foreground = true;
             emit foregroundChanged();
         } else if (event->type() == QEvent::ApplicationDeactivate) {
-            d_ptr->timer.stop();
-            d_ptr->foreground = false;
+#ifdef Q_OS_SYMBIAN
+            d->timeChangeNotifier->Cancel();
+#endif
+            d->timer.stop();
+            d->foreground = false;
             emit foregroundChanged();
         }
     }

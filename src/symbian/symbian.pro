@@ -2,7 +2,7 @@ include (../../qt-components.pri)
 
 TARGETPATH = com/nokia/symbian.1.1
 TEMPLATE = lib
-TARGET = $$qtLibraryTarget(symbianplugin_1_1)
+TARGET = $$qtLibraryTarget(symbianplugin_1_1_2)
 INCLUDEPATH += $$PWD $$PWD/indicators
 
 win32|mac:!wince*:!win32-msvc:!macx-xcode:CONFIG += debug_and_release build_all
@@ -24,6 +24,7 @@ SOURCES += \
     sdeclarativemagnifier.cpp \
     sdeclarativemaskedimage.cpp \
     sdeclarativescreen.cpp \
+    sdeclarativesharedstatusbar.cpp \
     sdeclarativestyle.cpp \
     sdeclarativestyleinternal.cpp \
     siconpool.cpp \
@@ -33,12 +34,13 @@ SOURCES += \
     sstyleengine.cpp \
     sstylefactory.cpp \
     indicators/sdeclarativeindicatorcontainer.cpp \
-    indicators/sdeclarativenetworkindicator.cpp \
+    indicators/sdeclarativenetworkindicator.cpp
 
 symbian {
     SOURCES += \
         sdeclarativeinputcontext_p_symbian.cpp \
-        sdeclarativetouchinput.cpp
+        sdeclarativetouchinput.cpp \
+        stimeobserver.cpp
 } else {
     SOURCES += \
         sdeclarativeinputcontext_p.cpp
@@ -46,7 +48,10 @@ symbian {
 
 symbian:symbian_internal {
     SOURCES += \
-        sbatteryinfo_symbian.cpp \
+        sbatteryinfo_symbian.cpp  \
+        sdeclarativesharedstatusbar_p_symbian.cpp \
+        ssharedstatusbarsubscriber.cpp \
+        indicators/sdeclarativeincallindicator.cpp \
         indicators/sdeclarativeindicator.cpp \
         indicators/sdeclarativeindicatordata.cpp \
         indicators/sdeclarativeindicatordatahandler.cpp \
@@ -55,6 +60,7 @@ symbian:symbian_internal {
 } else {
     SOURCES += \
         sbatteryinfo.cpp \
+        sdeclarativesharedstatusbar_p.cpp \
         indicators/sdeclarativenetworkindicator_p.cpp
 }
 
@@ -71,6 +77,7 @@ HEADERS += \
     sdeclarativemaskedimage_p.h \
     sdeclarativescreen.h \
     sdeclarativescreen_p.h \
+    sdeclarativesharedstatusbar.h \
     sdeclarativestyle.h \
     sdeclarativestyleinternal.h \
     siconpool.h \
@@ -86,8 +93,8 @@ HEADERS += \
 symbian: {
     HEADERS += \
         sdeclarativeinputcontext_p_symbian.h \
-        sdeclarativetouchinput.h
-
+        sdeclarativetouchinput.h \
+        stimeobserver.h
 } else {
     HEADERS += \
         sdeclarativeinputcontext_p.h
@@ -95,10 +102,16 @@ symbian: {
 
 symbian:symbian_internal {
     HEADERS +=  \
+        sdeclarativesharedstatusbar_p_symbian.h \
+        ssharedstatusbarsubscriber.h \
+        indicators/sdeclarativeincallindicator.h \
         indicators/sdeclarativeindicator.h \
         indicators/sdeclarativeindicatordata.h \
         indicators/sdeclarativeindicatordatahandler.h \
         indicators/sdeclarativestatuspanedatasubscriber.h
+} else {
+    HEADERS += \
+        sdeclarativesharedstatusbar_p.h \
 }
 
 RESOURCES += \
@@ -118,6 +131,7 @@ QML_FILES = \
     ContextMenu.qml \
     Dialog.qml \
     Fader.qml \
+    Label.qml \
     ListHeading.qml \
     ListItem.qml \
     ListItemText.qml \
@@ -128,6 +142,7 @@ QML_FILES = \
     Page.qml \
     PageStack.js \
     PageStack.qml \
+    PageStackWindow.qml \
     Popup.qml \
     ProgressBar.qml \
     QueryDialog.qml \
@@ -141,6 +156,8 @@ QML_FILES = \
     SelectionListItem.qml \
     Slider.qml \
     StatusBar.qml \
+    StatusBarDefault.qml \
+    StatusBarShared.qml \
     Switch.qml \
     TabBar.qml \
     TabBarLayout.qml \
@@ -153,6 +170,7 @@ QML_FILES = \
     TextContextMenu.qml \
     TextSelectionHandle.qml \
     TextTouchController.qml \
+    TextTouchTools.qml \
     ToolBar.qml \
     ToolBarLayout.qml \
     ToolButton.qml \
@@ -163,8 +181,8 @@ symbian {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = ALL -TCB
     TARGET.UID3 = 0x2003DE93
-    MMP_RULES += EXPORTUNFROZEN
     MMP_RULES += SMPSAFE
+    VERSION = 10.1.2
 
     LIBS += -lws32 // For CWsScreenDevice
     LIBS += -lcone // For EikonEnv / CoeEnv
@@ -175,23 +193,18 @@ symbian {
 
     symbian_internal {
         LIBS += -laknicon // For AknIconUtils
+        LIBS += -laknlayout2
         LIBS += -laknnotify // For CAknSmallIndicator
         LIBS += -laknskins // For AknsUtils
         LIBS += -lbafl // For TResourceReader
         LIBS += -lfbscli // For CFbsBitmap
         LIBS += -lcdlengine
         LIBS += -laknlayout2scalable
+        LIBS += -lbitgdi
     }
 
     BLD_INF_RULES.prj_exports += "qtcomponents_1_1.iby $$CORE_MW_LAYER_IBY_EXPORT_PATH(qtcomponents_1_1.iby)"
     BLD_INF_RULES.prj_exports += "qtcomponentsnative.iby $$CORE_MW_LAYER_IBY_EXPORT_PATH(qtcomponentsnative.iby)"
-
-    stubsis = \
-        "START EXTENSION app-services.buildstubsis" \
-        "OPTION SISNAME symbianplugin_1_1_stub" \
-        "OPTION SRCDIR ."\
-        "END"
-    BLD_INF_RULES.prj_extensions = stubsis
 
     vendor_info = \
             " " \
@@ -199,12 +212,10 @@ symbian {
             "%{\"Nokia\"}" \
             " " \
             "; Unique Vendor name" \
-            ":\"Nokia, Qt\"" \
+            ":\"Nokia\"" \
             " "
 
-    # Reminder: SIS UID must remain the same between versions 1.x
-    header = "$${LITERAL_HASH}{\"symbianplugin_1_1\"},(0x200346DD),1,1,0,TYPE=SA,RU"
-    package.pkg_prerules += vendor_info header
+    package.pkg_prerules += vendor_info
     DEPLOYMENT += package
 }
 

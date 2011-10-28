@@ -68,7 +68,7 @@
 
     A list of items in the dialog's button area. For example, you can use \l Row
     or \l Button components but you can also use any number of components that
-    are based on Item component.
+    are based on \l Item component.
 
 */
 
@@ -156,4 +156,16 @@
     the user taps anywhere outside the dialog's area.
 
     \sa visualParent
+*/
+
+/*!
+    \qmlproperty bool Dialog::platformInverted
+    \since 1.1
+
+    \e {Symbian:}
+
+    If platformInverted is \c true, the component is visualized with the
+    inverted style. For more information, see
+    \l {Using Inverted Style with Symbian Components}. By default
+    platformInverted is \c false.
 */

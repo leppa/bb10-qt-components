@@ -51,7 +51,7 @@
     button has a text title and refers to the id of the tab content associated
     with the button.
 
-    \snippet src/snippets/common/snippet-tabgroup.qml 1
+    \snippet src/snippets/symbian/snippet-tabgroup.qml 1
 
     See the \l TabGroup documentation for more information about creating a
     tabbed interface.
@@ -107,7 +107,9 @@
     \qmlproperty url TabButton::iconSource
 
     The URL for an image to be shown on the button. The default value is an empty
-    string.
+    string. Icons are automatically coloured with theme colours. TabButton treats
+    svg images as icons. Other image formats and images with http scheme are not
+    colored.
 */
 
 /*!
@@ -117,3 +119,14 @@
 
 */
 
+/*!
+    \qmlproperty bool TabButton::platformInverted
+    \since 1.1
+
+    \e {Symbian:}
+
+    If platformInverted is \c true, the component is visualized with the
+    inverted style. For more information, see
+    \l {Using Inverted Style with Symbian Components}. By default
+    platformInverted is \c false.
+*/

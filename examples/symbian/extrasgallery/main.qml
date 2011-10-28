@@ -43,10 +43,11 @@ import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import LayoutDirectionSetter 1.0
 
-ApplicationWindow {
+PageStackWindow {
     id: mainWindow
 
     property Menu menu
+    initialPage: pageComponent
 
     // for demonstration and testing purposes each component needs to
     // set its inverted state explicitly
@@ -80,7 +81,6 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        mainWindow.pageStack.push(pageComponent)
         // clear the toolBar pointer, prevents subpages from
         // accidentally removing common application tools
         mainWindow.pageStack.toolBar = null

@@ -53,6 +53,8 @@ Item {
     // Read only property true if window is in portrait
     property alias inPortrait: window.portrait
 
+    objectName: "windowRoot"
+
     signal orientationChangeAboutToStart
     signal orientationChangeStarted
     signal orientationChangeFinished
@@ -67,10 +69,17 @@ Item {
         id: window
         property bool portrait
 
-        width: window.portrait ? screen.displayHeight : screen.displayWidth
-        height: window.portrait ? screen.displayWidth : screen.displayHeight
+        Component.onCompleted: {
+            width = screen.platformWidth;
+            height = screen.platformHeight;
+        }
 
-        anchors.centerIn: parent
+        anchors.centerIn : parent
+        transform: Rotation { id: windowRotation;
+                                origin.x: 0;
+                                origin.y: 0;
+                                angle: 0
+                            }
 
         Item {
             id: windowContent
@@ -120,32 +129,66 @@ Item {
 
         Snapshot {
             id: snapshot
-            anchors.centerIn: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
             width: screen.displayWidth
             height: screen.displayHeight
             snapshotWidth: screen.displayWidth
             snapshotHeight: screen.displayHeight
             opacity: 0
+            transform: Rotation { id: snapshotRotation;
+                                  origin.x: screen.displayHeight / 2; origin.y: screen.displayHeight / 2;
+                                  angle: 0 }
         }
 
         state: screen.orientationString
 
+        onStateChanged: {
+            if (inputContext.softwareInputPanelVisible) {
+                root.orientationChangeAboutToStart();
+                platformWindow.startSipOrientationChange(screen.rotation);
+                root.orientationChangeStarted();
+                relayoutingWaiter.animating = true
+            }
+        }
+
+
         states: [
             State {
                 name: "Landscape"
-                PropertyChanges { target: window; rotation: 0; portrait: false; }
+                PropertyChanges { target: window; rotation: screen.rotation; portrait: screen.isPortrait; explicit: true; }
+                PropertyChanges { target: window; height: screen.platformHeight; width: screen.platformWidth; explicit: true; }
+                PropertyChanges { target: windowRotation;
+                                  origin.x: root.height / 2;
+                                  origin.y: root.height / 2; }
+                PropertyChanges { target: snapshot; anchors.leftMargin: 0; anchors.topMargin: 0 }
             },
             State {
                 name: "Portrait"
-                PropertyChanges { target: window; rotation: 270; portrait: true; }
+                PropertyChanges { target: window; rotation: screen.rotation; portrait: screen.isPortrait; explicit: true; }
+                PropertyChanges { target: window; height: screen.platformHeight; width: screen.platformWidth; explicit: true; }
+                PropertyChanges { target: windowRotation;
+                                  origin.x: root.height - root.width / 2;
+                                  origin.y: root.width / 2; }
+                PropertyChanges { target: snapshot; anchors.leftMargin: 0; anchors.topMargin: 0 }
             },
             State {
                 name: "LandscapeInverted"
-                PropertyChanges { target: window; rotation: 180; portrait: false; }
+                PropertyChanges { target: window; rotation: screen.rotation; portrait: screen.isPortrait; explicit: true; }
+                PropertyChanges { target: window; height: screen.platformHeight; width: screen.platformWidth; explicit: true; }
+                PropertyChanges { target: windowRotation;
+                                  origin.x: root.height / 2;
+                                  origin.y: root.height / 2; }
+                PropertyChanges { target: snapshot; anchors.leftMargin: 374; anchors.topMargin: 0 }
             },
             State {
                 name: "PortraitInverted"
-                PropertyChanges { target: window; rotation: 90; portrait: true; }
+                PropertyChanges { target: window; rotation: screen.rotation; portrait: screen.isPortrait; explicit: true; }
+                PropertyChanges { target: window; height: screen.platformHeight; width: screen.platformWidth; explicit: true; }
+                PropertyChanges { target: windowRotation;
+                                  origin.x: root.height - root.width / 2;
+                                  origin.y: root.width / 2; }
+                PropertyChanges { target: snapshot; anchors.leftMargin: 0; anchors.topMargin: 374 }
             }
         ]
 
@@ -155,22 +198,11 @@ Item {
             from: (inputContext.softwareInputPanelVisible ?  "*" : "disabled")
             to:   (inputContext.softwareInputPanelVisible ?  "*" : "disabled")
             PropertyAction { target: window; properties: "rotation"; }
-            ScriptAction {
-                script: {
-                    root.orientationChangeAboutToStart();
-                    platformWindow.startSipOrientationChange(window.rotation);
-                    // note : we should really connect these signals to MInputMethodState
-                    // signals so that they are emitted at the appropriate time
-                    // but there aren't any
-                    root.orientationChangeStarted();
-                    root.orientationChangeFinished();
-                }
-            }
         },
         Transition {
             // use this transition when sip is not visible
-            from: (screen.minimized ? "disabled" : (inputContext.softwareInputPanelVisible ? "disabled" : "*"))
-            to:   (screen.minimized ? "disabled" : (inputContext.softwareInputPanelVisible ? "disabled" : "*"))
+            from: (screen.minimized || !screen.isDisplayLandscape ? "disabled" : (inputContext.softwareInputPanelVisible ? "disabled" : "*"))
+            to:   (screen.minimized || !screen.isDisplayLandscape ? "disabled" : (inputContext.softwareInputPanelVisible ? "disabled" : "*"))
             SequentialAnimation {
                 alwaysRunToEnd: true
 
@@ -178,13 +210,15 @@ Item {
                     script: {
                         snapshot.take();
                         snapshot.opacity = 1.0;
-                        snapshot.rotation = -window.rotation;
+                        snapshotRotation.angle = -window.rotation;
                         snapshot.smooth = false; // Quick & coarse rotation consistent with MTF
                         platformWindow.animating = true;
                         root.orientationChangeAboutToStart();
                     }
                 }
                 PropertyAction { target: window; properties: "portrait"; }
+                PropertyAction { target: window; properties: "width"; }
+                PropertyAction { target: window; properties: "height"; }
                 ScriptAction {
                     script: {
                         windowContent.opacity = 0.0;
@@ -193,15 +227,20 @@ Item {
                 }
                 ParallelAnimation {
                     NumberAnimation { target: windowContent; property: "opacity";
-                                      to: 1.0; easing.type: Easing.InOutExpo; duration: 800; }
+                                      to: 1.0; easing.type: Easing.InOutExpo; duration: 600; }
                     NumberAnimation { target: snapshot; property: "opacity";
-                                      to: 0.0; easing.type: Easing.InOutExpo; duration: 800; }
-                    RotationAnimation { target: window; property: "rotation";
+                                      to: 0.0; easing.type: Easing.InOutExpo; duration: 600; }
+                    PropertyAction { target: windowRotation; properties: "origin.x"; }
+                    PropertyAction { target: windowRotation; properties: "origin.y"; }
+                    RotationAnimation { target: windowRotation; property: "angle";
+                                        from: -screen.rotationDirection * 90;
+                                        to: 0;
                                         direction: RotationAnimation.Shortest;
-                                        easing.type: Easing.InOutExpo; duration: 800; }
+                                        easing.type: Easing.InOutExpo; duration: 600; }
                 }
                 ScriptAction {
                     script: {
+                        windowRotation.angle = 0
                         snapshot.free();
                         root.orientationChangeFinished();
                         platformWindow.animating = false;
@@ -225,6 +264,45 @@ Item {
                     screen.allowedOrientations = Screen.PortraitInverted;
                 } else if(screen.currentOrientation == Screen.PortraitInverted) {
                     screen.allowedOrientations = Screen.Landscape;
+                }
+            }
+            if (event.key == Qt.Key_E && event.modifiers == Qt.ControlModifier ) {
+                if(screen.currentOrientation == Screen.Portrait) {
+                    screen.allowedOrientations = Screen.Landscape;
+                } else if(screen.currentOrientation == Screen.LandscapeInverted) {
+                    screen.allowedOrientations = Screen.Portrait;
+                } else if(screen.currentOrientation == Screen.PortraitInverted) {
+                    screen.allowedOrientations = Screen.LandscapeInverted;
+                } else if(screen.currentOrientation == Screen.Landscape) {
+                    screen.allowedOrientations = Screen.PortraitInverted;
+                }
+            }
+        }
+
+        Item {
+            // Item for requesting finish of orientation change animation, when
+            // VKB is open.
+            id: relayoutingWaiter
+
+            property bool animating: false
+            property variant softwareInputPanelRect : inputContext.softwareInputPanelRect
+
+            onSoftwareInputPanelRectChanged: {
+                if (animating) {
+                    animating = false
+                    relayoutingTimer.running = true
+                }
+            }
+
+            Timer {
+                // Timer is triggered after window's contents have been
+                // relayouted.
+                id: relayoutingTimer;
+                interval: 10
+                onTriggered: {
+                    inputContext.update();
+                    platformWindow.finishSipOrientationChange(window.rotation);
+                    root.orientationChangeFinished();
                 }
             }
         }

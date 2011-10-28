@@ -44,7 +44,7 @@ import FileAccess 1.0
 import Settings 1.0
 import LayoutDirectionSetter 1.0
 
-ApplicationWindow {
+PageStackWindow {
     id: mainWindow
 
     objectName: "mainWindow"
@@ -116,13 +116,12 @@ ApplicationWindow {
     Component.onCompleted: {
         internal.qmlPaths = fileAccess.qmlPaths()
         screen.allowedOrientations = settings.orientation()
-        mainWindow.pageStack.push(component)
         // clear the toolBar pointer, prevents subpages from
         // accidentally removing common application tools
         mainWindow.pageStack.toolBar = null
     }
 
-    Component {
+    initialPage: Component {
         id: component
 
         Page {
@@ -167,7 +166,6 @@ ApplicationWindow {
                             width: parent.buttonWidth
 
                             onClicked: {
-                                startupOrientationButton.orientation = Screen.Portrait
                                 screen.allowedOrientations = Screen.Portrait
                             }
                         }
@@ -178,7 +176,6 @@ ApplicationWindow {
                             width: parent.buttonWidth
 
                             onClicked: {
-                                startupOrientationButton.orientation = Screen.Landscape
                                 screen.allowedOrientations = Screen.Landscape
                             }
                         }
@@ -189,7 +186,6 @@ ApplicationWindow {
                             width: parent.buttonWidth
 
                             onClicked: {
-                                startupOrientationButton.orientation = Screen.Default
                                 screen.allowedOrientations = Screen.Default
                             }
                         }
@@ -200,7 +196,10 @@ ApplicationWindow {
 
                         width: mainWindow.width
                         text: "Toggle Fullscreen"
-                        onClicked: mainWindow.fullScreen = mainWindow.fullScreen ? false : true
+                        onClicked: {
+                            mainWindow.showStatusBar = !mainWindow.showStatusBar
+                            mainWindow.showToolBar = !mainWindow.showToolBar
+                        }
                     }
 
                     Repeater {

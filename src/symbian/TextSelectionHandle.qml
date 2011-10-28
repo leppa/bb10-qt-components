@@ -46,11 +46,10 @@ Item {
 
     property alias imageSource: image.source
     property int editorPos: 0 //character position of the handle in the editor document
-    property Item editor: parent.editor
+    property Item editor
     // the default size of the touch area should come from some style constant
     property variant touchAreaSize: Qt.size(platformStyle.graphicSizeMedium, platformStyle.graphicSizeMedium)
     property alias showImage: image.visible
-    property bool showTouchArea: false // for debugging purposes
     property variant viewPortRect: Qt.rect(0, 0, 0, 0) // item's coordinates
     //parent's coordinate system
     property variant center: Qt.point(root.x + root.width / 2, root.y + root.height / 2)
@@ -82,56 +81,37 @@ Item {
     }
 
     function updateGeometry() {
-        var geometry = internal.geometryFromEditorPos(root.editorPos);
-        root.x = geometry.x;
-        root.y = geometry.y;
-        root.width = geometry.width;
-        root.height = geometry.height;
+        var rect = root.editor.positionToRectangle(editorPos);
+        var pos = root.editor.mapToItem(root.parent, rect.x, rect.y);
+        root.x = pos.x;
+        root.y = pos.y;
+        root.width = rect.width;
+        root.height = rect.height;
     }
 
     onEditorPosChanged: root.updateGeometry()
 
-    // Private
-    QtObject {
-        id: internal
-
-        // Returns handle geometry from editor position
-        function geometryFromEditorPos(editorPos) {
-            var rect = root.editor.positionToRectangle(editorPos);
-            var pos = root.editor.mapToItem(root.parent,rect.x,rect.y);
-            return Qt.rect(pos.x,pos.y,rect.width,rect.height);
-        }
-    }
-
-    // This could be an Item, but it’s a Rectangle for debugging purposes.
-    Rectangle {
+    Item {
         id: touchArea
 
-        visible: root.showTouchArea
+        visible: false
         anchors.centerIn: root
         width: root.touchAreaSize.width
         height: Math.max(root.touchAreaSize.height, root.height)
-        border.width: 1
-        border.color: "white"
-        color: "#00000000"
     }
 
-    // This could be an Item, but it’s a Rectangle for debugging purposes.
-    Rectangle {
+    Item {
         id: effectiveTouchArea
 
-        visible: root.showTouchArea
+        visible: false
         width: root.touchAreaSize.width
         height: Math.max(root.touchAreaSize.height, root.height)
-        border.width: 1
-        border.color: "yellow"
-        color: "#00000000"
     }
 
     BorderImage {
         id: image
 
-        property real tiny: Math.round(platformStyle.graphicSizeTiny / 2)
+        property real tiny: Math.round(platformStyle.borderSizeMedium / 2)
 
         anchors {
             left: root.objectName == "SelectionEnd" ? root.right : undefined

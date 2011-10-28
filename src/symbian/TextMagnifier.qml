@@ -51,27 +51,25 @@ Magnifier {
     property bool platformInverted: false
 
     function show() {
+        internal.show = true;
         parent = AppManager.rootObject();
         sourceRect = internal.calculateSourceGeometry();
         internal.calculatePosition();
-        root.visible = true;
     }
 
     function hide() {
-        root.visible = false;
+        internal.show = false;
     }
 
     sourceRect: Qt.rect(0, 0, 0, 0)
     visible: false
-    scaleFactor: 1.5
-    maskFileName: root.platformInverted ? ":/graphics/qtg_graf_magnifier_mask_inverse.svg"
-                                        : ":/graphics/qtg_graf_magnifier_mask.svg"
-    overlayFileName: root.platformInverted ? ":/graphics/qtg_graf_magnifier_inverse.svg"
-                                           : ":/graphics/qtg_graf_magnifier.svg"
+    scaleFactor: 1.2
+    maskFileName: ":/graphics_1_1_2/qtg_graf_magnifier_mask.svg"
+    overlayFileName: ":/graphics_1_1_2/qtg_graf_magnifier.svg"
 
     onContentCenterChanged: internal.updateSourceRect()
 
-    onSourceRectChanged: if (visible) internal.calculatePosition()
+    onSourceRectChanged: if (internal.show) internal.calculatePosition()
 
     Connections {
         target: editor
@@ -83,7 +81,7 @@ Magnifier {
         id: internal
 
         function updateSourceRect () {
-            if (visible)
+            if (internal.show)
                 sourceRect = internal.calculateSourceGeometry();
         }
 
@@ -91,10 +89,9 @@ Magnifier {
             width = sourceRect.width * scaleFactor;
             height = sourceRect.height * scaleFactor;
 
-            var magnifierMargin = -platformStyle.paddingLarge; // the offset between the magnifier and top of the line
             var pos = parent.mapFromItem(editor,
                                          contentCenter.x - width/2,
-                                         contentCenter.y - sourceRect.height/2 - height - magnifierMargin);
+                                         contentCenter.y - height - platformStyle.paddingLarge*2);
 
             root.x = pos.x;
             root.y = pos.y;
@@ -111,5 +108,48 @@ Magnifier {
                                sourceSize.width, sourceSize.height);
             return rect;
         }
+
+        property bool show: false
+        property int animationDuration: 250
     }
+
+    transformOrigin: Item.Center
+
+    states: [
+        State {
+            name: "hidden"
+            when: !internal.show
+            PropertyChanges { target: root; visible: false; opacity: 0.0 }
+            PropertyChanges { target: magnifier; scale: 0.6 }
+        },
+        State {
+            name: "visible"
+            when: internal.show
+            PropertyChanges { target: root; visible: true; opacity: 1.0 }
+            PropertyChanges { target: magnifier; scale: 1.0 }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "hidden"; to: "visible"
+            SequentialAnimation {
+                PropertyAction { target: root; property: "visible"; value: "true" }
+                ParallelAnimation {
+                    PropertyAnimation { target: root; properties: "opacity"; duration: internal.animationDuration }
+                    PropertyAnimation { target: magnifier; properties: "scale"; duration: internal.animationDuration; easing.type: Easing.OutQuad }
+                }
+            }
+        },
+        Transition {
+            from: "visible"; to: "hidden"
+            SequentialAnimation {
+                PropertyAction { target: root; property: "visible"; value: "true" }
+                ParallelAnimation {
+                    PropertyAnimation { target: root; properties: "opacity"; duration: internal.animationDuration }
+                    PropertyAnimation { target: magnifier; properties: "scale"; duration: internal.animationDuration; easing.type: Easing.InQuad }
+                }
+            }
+        }
+    ]
 }

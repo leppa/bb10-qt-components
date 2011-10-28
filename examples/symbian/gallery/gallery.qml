@@ -60,41 +60,56 @@ Window {
 
     StatusBar {
         id: statusBar
-        anchors.top: root.top
+        anchors.top: parent.top
         platformInverted: root.childrenInverted
     }
 
-    Flickable {
-        id: flickable
-        clip: true
+    Label {
+        id: waitText
+
+        anchors.centerIn: parent
+        opacity: contentLoader.status != Loader.Ready ? 1 : 0
+        text: "Loading Gallery components ..."
+    }
+
+    Loader {
+        id: contentLoader
+
+        property bool columnEnabled: true
+
+        scale: 0.3
+        opacity: 0.8
         anchors {
-            left: root.left
-            right: root.right
-            top: statusBar.visible ? statusBar.bottom: root.top
-            bottom: toolBar.visible ? toolBar.top: root.bottom
+            left: parent.left
+            right: parent.right
+            top: statusBar.bottom
+            bottom: toolBar.top
         }
-        contentHeight: column.height
 
-        SampleColumn {
-            id: column
-            anchors {
-                left: parent.left
-                right: parent.right
-                margins: column.spacing
-            }
-            childrenInverted: root.childrenInverted
-            windowInverted: root.platformInverted
+        onStatusChanged: {
+            if (status == Loader.Ready) {
+                scaleAnimation.restart()
+                opacityAnimation.restart()
+            } else if (status == Loader.Error)
+                waitText.text = "Syntax error"
         }
+
+        PropertyAnimation { id: scaleAnimation; target: contentLoader; properties: "scale"; to: 1.0; duration: 800 }
+        PropertyAnimation { id: opacityAnimation; target: contentLoader; properties: "opacity"; to: 1; duration: 800 }
     }
 
-    ScrollDecorator {
-        flickableItem: flickable
-        platformInverted: root.childrenInverted
+    Component.onCompleted: timer.restart()
+
+    Timer {
+        id: timer
+        interval: 1
+        repeat: false
+        onTriggered: contentLoader.source = Qt.resolvedUrl("galleryContent.qml")
     }
 
     ToolBar {
         id: toolBar
-        anchors.bottom: root.bottom
+        anchors.bottom: parent.bottom
         platformInverted: root.childrenInverted
         tools: ToolBarLayout {
             id: toolBarlayout
@@ -126,9 +141,9 @@ Window {
 
             content: MenuLayout {
                 MenuItem {
-                    text: column.enabled ? "Disable" : "Enable"
+                    text: contentLoader.columnEnabled ? "Disable" : "Enable"
                     platformInverted: root.childrenInverted
-                    onClicked: column.enabled = !column.enabled
+                    onClicked: contentLoader.columnEnabled = !contentLoader.columnEnabled
                 }
                 MenuItem {
                     text: root.childrenInverted ? "Revert components" : "Invert components"

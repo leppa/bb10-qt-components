@@ -54,8 +54,8 @@ Item {
 
     property int depth: Engine.getDepth()
     property Item currentPage: null
-
     property ToolBar toolBar
+    property variant initialPage
 
     // Indicates whether there is an ongoing page transition.
     property bool busy: internal.ongoingTransitionCount > 0
@@ -114,6 +114,22 @@ Item {
         }
     }
 
+    onInitialPageChanged: {
+        if (initialPage) {
+            if (depth == 0)
+                push(initialPage, null, true)
+            else if (depth == 1)
+                replace(initialPage, null, true)
+            else
+                console.log("Cannot update PageStack.initialPage")
+        }
+    }
+
+    Component.onCompleted: {
+        if (initialPage && depth == 0)
+            push(initialPage, null, true)
+    }
+
     QtObject {
         id: internal
 
@@ -158,7 +174,7 @@ Item {
             property int screenWidth: Math.max(screen.width, screen.height)
 
             // Duration of transition animation (in ms)
-            property int transitionDuration: 200
+            property int transitionDuration: 250
 
             // Flag that indicates the container should be cleaned up after the transition has ended.
             property bool cleanupAfterTransition: false

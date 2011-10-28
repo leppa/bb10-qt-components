@@ -39,7 +39,7 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.1
 import com.nokia.extras 1.1
 
 Page {
@@ -92,7 +92,6 @@ Page {
                 width:  buttonText == "x" ? 150 : implicitWidth
             }
 
-            subtitleColor: "#cc6633"
             onClicked: { openFile(model.page); }
         }
     }

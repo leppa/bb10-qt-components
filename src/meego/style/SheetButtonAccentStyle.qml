@@ -51,7 +51,7 @@ ButtonStyle {
     fontWeight: Font.Bold
     horizontalAlignment: Text.AlignHCenter
 
-    property color textColor: inverted ? UI.COLOR_BUTTON_FOREGROUND : UI.COLOR_BUTTON_INVERTED_FOREGROUND
+    property color textColor: UI.COLOR_BUTTON_INVERTED_FOREGROUND
 
     // Background
     backgroundMarginRight: 22
@@ -59,7 +59,7 @@ ButtonStyle {
     backgroundMarginTop: 21
     backgroundMarginBottom: 21
     
-    background: "image://theme/meegotouch-sheet-button-accent"+__invertedString+"-background"
-    pressedBackground: "image://theme/meegotouch-sheet-button-accent"+__invertedString+"-background-pressed"
-    disabledBackground: "image://theme/meegotouch-sheet-button-accent"+__invertedString+"-background-disabled"
+    background: "image://theme/" + __colorString + "meegotouch-sheet-button-accent"+__invertedString+"-background"
+    pressedBackground: "image://theme/" + __colorString + "meegotouch-sheet-button-accent"+__invertedString+"-background-pressed"
+    disabledBackground: "image://theme/" + __colorString + "meegotouch-sheet-button-accent"+__invertedString+"-background-disabled"
 }

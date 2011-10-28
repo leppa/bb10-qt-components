@@ -50,6 +50,7 @@ class CSDeclarativeStatusPaneSubscriber;
 class CSDeclarativeIndicatorData;
 class SDeclarativeIndicator;
 class SDeclarativeIndicatorContainer;
+class CSDeclarativeIncallIndicator;
 
 class CSDeclarativeIndicatorDataHandler: public CBase, public MSDeclarativeStatusPaneSubscriberObverver
 {
@@ -77,6 +78,7 @@ private:
     QHash<TInt, CSDeclarativeIndicatorData*> iIndicatorsData;
     QList<SDeclarativeIndicator*> iIndicatorItems;
     CAsyncCallBack* iInitializer;
+    CSDeclarativeIncallIndicator* iIncallIndicator;
 };
 
 #endif // SDECLARATIVEINDICATORDATAHANDLER_H

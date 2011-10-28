@@ -51,9 +51,9 @@ Style {
     property int height: 80
 
     // Text Color
-    property color textColor: "black"
-    property color pressedTextColor: UI.COLOR_INVERTED_FOREGROUND
-    property color disabledTextColor: UI.COLOR_DISABLED_FOREGROUND
+    property color textColor: inverted ? UI.COLOR_BUTTON_INVERTED_FOREGROUND : UI.COLOR_BUTTON_FOREGROUND
+    property color pressedTextColor: inverted ? UI.COLOR_BUTTON_INVERTED_FOREGROUND : UI.COLOR_BUTTON_FOREGROUND
+    property color disabledTextColor: "#797979"
     property color checkedTextColor: UI.COLOR_INVERTED_FOREGROUND
 
     property real leftMargin: 24
@@ -61,4 +61,11 @@ Style {
     property real topMargin: 0
     property real bottomMargin: 0
     property bool centered: true
+
+    property string position: ""
+
+    property url background: "image://theme/meegotouch-list" + __invertedString + "-background" + (position ? "-" + position : "")
+    property url pressedBackground: "image://theme/meegotouch-list" + __invertedString + "-background-pressed" + (position ? "-" + position : "")
+//    TODO: Add disabled state once the graphics are available
+//    property url disabledBackground: "image://theme/meegotouch-list" + __invertedString + "-background-disabled" + (position ? "-" + position : "")
 }

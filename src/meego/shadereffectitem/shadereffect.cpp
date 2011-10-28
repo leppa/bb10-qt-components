@@ -39,11 +39,14 @@
 ****************************************************************************/
 
 #include "shadereffect.h"
+#include "shadereffectbuffer.h"
+#include "shadereffectsource.h"
 
-#include <QDebug>
-#include <QPixmap>
+#include <QDeclarativeItem>
 #include <QPainter>
+#include <QtOpenGL>
 
+static QTransform savedWorldTransform;
 
 ShaderEffect::ShaderEffect(QObject *parent)
     : QGraphicsEffect(parent)
@@ -55,47 +58,76 @@ ShaderEffect::~ShaderEffect()
 {
 }
 
-void ShaderEffect::draw (QPainter* painter)
+void ShaderEffect::prepareBufferedDraw(QPainter *painter)
 {
-    QGLContext* context = const_cast<QGLContext*>(QGLContext::currentContext());
+    // This workaround needed because QGraphicsEffect seems to always utilize default painters worldtransform
+    // instead of the active painters worldtransform.
+    const ShaderEffectBuffer *effectBuffer = dynamic_cast<ShaderEffectBuffer*> (painter->device());
+    if (effectBuffer) {
+        savedWorldTransform = painter->worldTransform() * savedWorldTransform;
+        painter->setWorldTransform(savedWorldTransform);
+    } else {
+        savedWorldTransform = painter->worldTransform();
+    }
+}
 
-    if (context){
+void ShaderEffect::draw (QPainter *painter)
+{
+    const QGLContext *context = QGLContext::currentContext();
+
+    prepareBufferedDraw(painter);
+
+    if (context) {
         updateRenderTargets();
-    } else if(m_renderTargets.count() > 0) {
-        qWarning() << "ShaderEffect::draw - OpenGL not available";
     }
 
-    if (m_renderTargets.count() == 0 || !hideOriginal()){
+    if (!context || m_renderTargets.count() == 0 || !hideOriginal())
         drawSource(painter);
-    }
 }
 
 void ShaderEffect::updateRenderTargets()
 {
-    if (!m_changed) return;
+    if (!m_changed)
+        return;
 
     m_changed = false;
 
     int count = m_renderTargets.count();
-    for (int i=0; i < count; i++){
-        if (m_renderTargets[i]->isLive() || m_renderTargets[i]->isDirtyTexture()){
-            m_renderTargets[i]->update();
-            QGLFramebufferObject* target = m_renderTargets[i]->fbo();
+    for (int i = 0; i < count; i++) {
+        if (m_renderTargets[i]->isLive() || m_renderTargets[i]->isDirtyTexture()) {
+            m_renderTargets[i]->updateBackbuffer();
+            ShaderEffectBuffer* target = m_renderTargets[i]->fbo();
             if (target && target->isValid() && target->width() > 0 && target->height() > 0) {
                 QPainter p(target);
+                p.setClipRect(0,0,target->size().width(),target->size().height());
                 p.setCompositionMode(QPainter::CompositionMode_Clear);
-                p.fillRect(QRect(QPoint(0,0), target->size()), Qt::transparent);
+                p.fillRect(QRect(QPoint(0, 0), target->size()), Qt::transparent);
                 p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
-                QSize textureSize = m_renderTargets[i]->textureSize();
-                if (!textureSize.isEmpty()){
-                    qreal xscale = qreal(textureSize.width()) / qreal(m_renderTargets[i]->sourceItem()->width());
-                    qreal yscale = qreal(textureSize.height()) / qreal(m_renderTargets[i]->sourceItem()->height());
-                    p.scale(xscale, yscale);
+                QRectF sourceRect = m_renderTargets[i]->sourceRect();
+                qreal yflip = m_renderTargets[i]->isMirrored() ? -1.0 : 1.0; // flip y to match scenegraph, it also flips texturecoordinates
+
+                qreal textureWidth = m_renderTargets[i]->fbo()->size().width();
+                qreal textureHeight = m_renderTargets[i]->fbo()->size().height();
+
+                qreal sourceWidth = m_renderTargets[i]->sourceItem()->width();
+                qreal sourceHeight = m_renderTargets[i]->sourceItem()->height();
+
+                if (!sourceRect.isEmpty() > 0) {
+                    sourceWidth = sourceRect.width();
+                    sourceHeight = sourceRect.height();
                 }
 
-                drawSource(&p);
+                if (sourceWidth > 0 && sourceHeight > 0) {
+                    qreal xscale = textureWidth / sourceWidth;
+                    qreal yscale = textureHeight / sourceHeight;
+                    p.scale(xscale, yscale * yflip);
+                    p.translate(-sourceRect.left(), -sourceRect.top());
+                    drawSource(&p);
+                 }
+
                 p.end();
+                m_renderTargets[i]->markSceneGraphDirty();
             }
         }
     }
@@ -104,23 +136,16 @@ void ShaderEffect::updateRenderTargets()
 void ShaderEffect::sourceChanged (ChangeFlags flags)
 {
     Q_UNUSED(flags);
-    int count = m_renderTargets.count();
-    for (int i=0; i < count; i++){
-        if (m_renderTargets[i]->isLive()) {
-            m_renderTargets[i]->markSceneGraphDirty();
-        }
-    }
     m_changed = true;
 }
 
-void ShaderEffect::addRenderTarget(ShaderEffectSource* target)
+void ShaderEffect::addRenderTarget(ShaderEffectSource *target)
 {
-    if (!m_renderTargets.contains(target)){
+    if (!m_renderTargets.contains(target))
         m_renderTargets.append(target);
-    }
 }
 
-void ShaderEffect::removeRenderTarget(ShaderEffectSource* target)
+void ShaderEffect::removeRenderTarget(ShaderEffectSource *target)
 {
     int index = m_renderTargets.indexOf(target);
     if (index >= 0)
@@ -134,12 +159,11 @@ bool ShaderEffect::hideOriginal() const
     if (m_renderTargets.count() == 0)
         return false;
 
-    // Hmm, if there is even one source that says "do not hide original" we don't hide it.
+    // Just like scenegraph version, if there is even one source that says "hide original" we hide it.
     int count = m_renderTargets.count();
-    for (int i=0; i < count; i++){
-        if (!m_renderTargets[i]->hideOriginal()){
-            return false;
-        }
+    for (int i = 0; i < count; i++) {
+        if (m_renderTargets[i]->hideSource())
+            return true;
     }
-    return true;
+    return false;
 }

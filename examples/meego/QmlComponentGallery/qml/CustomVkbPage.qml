@@ -38,8 +38,8 @@
 **
 ****************************************************************************/
 
-import Qt 4.7
-import com.nokia.meego 1.0
+import QtQuick 1.1
+import com.nokia.meego 1.1
 
 Page {
     id: root
@@ -51,7 +51,7 @@ Page {
             anchors.left: parent.left
             anchors.top: parent.top
 
-            onClicked: { myMenu.close(); pageStack.pop(); } 
+            onClicked: { myMenu.close(); pageStack.pop(); }
         }
 
         ToolIcon {
@@ -134,6 +134,15 @@ Page {
 
             TextField {
                 anchors {left: parent.left; right: parent.right;}
+            }
+
+            Label {
+                text: "Default VKB with numbers only:"
+            }
+
+            TextField {
+                anchors {left: parent.left; right: parent.right;}
+                inputMethodHints: Qt.ImhDigitsOnly | Qt.ImhNoPredictiveText
             }
 
             Label {

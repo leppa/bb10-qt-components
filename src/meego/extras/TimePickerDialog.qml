@@ -130,7 +130,7 @@ Dialog {
         id: title
         objectName: "title"
         visible: text.length > 0
-        color: "#1080DD"
+        color: theme.selectionColor
         font { pixelSize: 32; family: C.FONT_FAMILY_BOLD }
         elide: Text.ElideRight
     }
@@ -192,12 +192,14 @@ Dialog {
         spacing: 6
         Button {
             id: acceptButton
+            text: textTranslator.translate("qtn_comm_command_accept");
             onClicked: accept()
             width: (root.width / 2) - 3
             style: ButtonStyle { inverted: true }
         }
         Button {
             id: rejectButton
+            text: textTranslator.translate("qtn_comm_cancel");
             onClicked: reject()
             width: (root.width / 2) - 3
             style: ButtonStyle { inverted: true }

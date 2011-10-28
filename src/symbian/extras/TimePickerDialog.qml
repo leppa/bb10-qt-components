@@ -52,8 +52,8 @@ CommonDialog {
     property int second: 0
     property int fields: DateTime.Hours | DateTime.Minutes // Seconds not shown by default
     property int hourMode: dateTime.hourMode()
-    property alias acceptButtonText: acceptButton.text
-    property alias rejectButtonText: rejectButton.text
+    property string acceptButtonText
+    property string rejectButtonText
 
     // TODO do not dismiss the dialog when empty area is clicked
 
@@ -83,7 +83,7 @@ CommonDialog {
                 items: ListModel {
                     id: hourList
                 }
-                selectedIndex: root.hour - ((root.hourMode == DateTime.TwelveHours && root.hour > 11) ? 12 : 0)
+                selectedIndex: 0
                 visible: fields & DateTime.Hours
             }
 
@@ -92,7 +92,7 @@ CommonDialog {
                 items: ListModel {
                     id: minuteList
                 }
-                selectedIndex: root.minute
+                selectedIndex: 0
                 visible: fields & DateTime.Minutes
             }
 
@@ -101,7 +101,7 @@ CommonDialog {
                 items: ListModel {
                     id: secondList
                 }
-                selectedIndex: root.second
+                selectedIndex: 0
                 visible: fields & DateTime.Seconds
             }
 
@@ -110,42 +110,25 @@ CommonDialog {
                 items: ListModel {
                     id: meridiemList
                 }
-                selectedIndex: root.hour > 11 ? 1: 0
+                selectedIndex: 0
                 visible: root.hourMode == DateTime.TwelveHours
                 privateLoopAround: false
             }
         }
     }
-    buttons: ToolBar {
-        id: buttons
-        width: parent.width
-        height: privateStyle.toolBarHeightLandscape + 2 * platformStyle.paddingSmall
-        platformInverted: root.platformInverted
-        Row {
-            anchors.centerIn: parent
-            spacing: platformStyle.paddingMedium
 
-            ToolButton {
-                id: acceptButton
-                width: (buttons.width - 3 * platformStyle.paddingMedium) / 2
-                platformInverted: root.platformInverted
-                onClicked: accept()
-                visible: text != ""
-            }
-            ToolButton {
-                id: rejectButton
-                width: (buttons.width - 3 * platformStyle.paddingMedium) / 2
-                platformInverted: root.platformInverted
-                onClicked: reject()
-                visible: text != ""
-            }
-        }
-    }
+    onAcceptButtonTextChanged: internal.updateButtonTexts()
+    onRejectButtonTextChanged: internal.updateButtonTexts()
+
     onStatusChanged: {
         if (status == DialogStatus.Opening) {
-            TH.saveIndex(tumbler);
             if (!internal.initialised)
                 internal.initializeDataModels();
+            internal.resetHour()
+            internal.resetMinute()
+            internal.resetSecond()
+            TH.saveIndex(tumbler);
+            TH.restoreIndex(tumbler);
         }
     }
     onAccepted: {
@@ -158,6 +141,10 @@ CommonDialog {
         root.second = secondColumn.selectedIndex;
     }
     onRejected: {
+        internal.resetHour()
+        internal.resetMinute()
+        internal.resetSecond()
+        TH.saveIndex(tumbler);
         TH.restoreIndex(tumbler);
     }
     onHourModeChanged: {
@@ -177,18 +164,16 @@ CommonDialog {
         hourColumn.selectedIndex = tmp;
     }
     onHourChanged: {
-        internal.validateTime()
-        hourColumn.selectedIndex = root.hour - ((root.hourMode == DateTime.TwelveHours && root.hour > 11) ? 12 : 0)
-        meridiemColumn.selectedIndex = root.hour > 11 ? 1: 0
+        internal.resetHour()
     }
     onMinuteChanged: {
-        internal.validateTime()
-        minuteColumn.selectedIndex = root.minute
+        internal.resetMinute()
     }
     onSecondChanged: {
-        internal.validateTime()
-        secondColumn.selectedIndex = root.second
+        internal.resetSecond()
     }
+
+    onButtonClicked: (acceptButtonText && index == 0) ? accept() : reject()
 
     QtObject {
         id: internal
@@ -213,6 +198,31 @@ CommonDialog {
             root.hour = Math.max(0, Math.min(23, root.hour))
             root.minute = Math.max(0, Math.min(59, root.minute))
             root.second = Math.max(0, Math.min(59, root.second))
+        }
+
+        function updateButtonTexts() {
+            var newButtonTexts = []
+            if (acceptButtonText)
+                newButtonTexts.push(acceptButtonText)
+            if (rejectButtonText)
+                newButtonTexts.push(rejectButtonText)
+            root.buttonTexts = newButtonTexts
+        }
+
+        function resetHour() {
+            internal.validateTime()
+            hourColumn.selectedIndex = root.hour - ((root.hourMode == DateTime.TwelveHours && root.hour > 11) ? 12 : 0)
+            meridiemColumn.selectedIndex = root.hour > 11 ? 1: 0
+        }
+
+        function resetMinute() {
+            internal.validateTime()
+            minuteColumn.selectedIndex = root.minute
+        }
+
+        function resetSecond() {
+            internal.validateTime()
+            secondColumn.selectedIndex = root.second
         }
     }
 }

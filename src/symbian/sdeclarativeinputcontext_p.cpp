@@ -47,7 +47,7 @@
 SDeclarativeInputContextPrivate::SDeclarativeInputContextPrivate(SDeclarativeInputContext *qq, SDeclarativeScreen *screen)
     : q_ptr(qq)
     , m_screen(screen)
-    , m_visible(false)
+    , m_visible(0)
 {
     Q_Q(SDeclarativeInputContext);
     qApp->installEventFilter(this);
@@ -73,10 +73,10 @@ bool SDeclarativeInputContextPrivate::eventFilter(QObject *obj, QEvent *event)
     Q_Q(SDeclarativeInputContext);
     Q_UNUSED(obj);
     if (event->type() == QEvent::CloseSoftwareInputPanel && m_visible) {
-        m_visible = false;
+        m_visible = 0;
         q->emit visibleChanged();
     } else if (event->type() == QEvent::RequestSoftwareInputPanel && !m_visible) {
-        m_visible = true;
+        m_visible = 1;
         q->emit visibleChanged();
     }
     return QObject::eventFilter(obj, event);

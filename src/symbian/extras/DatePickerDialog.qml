@@ -51,8 +51,8 @@ CommonDialog {
     property int day: 1
     property int minimumYear: 0
     property int maximumYear: 0
-    property alias acceptButtonText: confirmButton.text
-    property alias rejectButtonText: rejectButton.text
+    property string acceptButtonText
+    property string rejectButtonText
 
     // TODO do not dismiss the dialog when empty area is clicked
 
@@ -102,7 +102,7 @@ CommonDialog {
                 items: ListModel {
                     id: dayList
                 }
-                selectedIndex: root.day - (root.day > 0 ?  1 : 0)
+                selectedIndex: 0
             }
 
             TumblerColumn {
@@ -111,7 +111,7 @@ CommonDialog {
                 items: ListModel {
                     id: monthList
                 }
-                selectedIndex: root.month - (root.month > 0 ?  1 : 0)
+                selectedIndex: 0
             }
 
             TumblerColumn {
@@ -119,37 +119,17 @@ CommonDialog {
                 items: ListModel {
                     id: yearList
                 }
-                selectedIndex: yearList.length > 0 ? root.year - yearList.get(0).value : 0
+                selectedIndex: 0
                 privateResizeToFit: true
             }
         }
     }
-    buttons: ToolBar {
-        id: buttons
-        width: parent.width
-        height: privateStyle.toolBarHeightLandscape + 2 * platformStyle.paddingSmall
-        platformInverted: root.platformInverted
-        Row {
-            id: buttonRow
-            anchors.centerIn: parent
-            spacing: platformStyle.paddingMedium
 
-            ToolButton {
-                id: confirmButton
-                width: (buttons.width - 3 * platformStyle.paddingMedium) / 2
-                platformInverted: root.platformInverted
-                onClicked: accept()
-                visible: text != ""
-            }
-            ToolButton {
-                id: rejectButton
-                width: (buttons.width - 3 * platformStyle.paddingMedium) / 2
-                platformInverted: root.platformInverted
-                onClicked: reject()
-                visible: text != ""
-            }
-        }
-    }
+    onAcceptButtonTextChanged: internal.updateButtonTexts()
+    onRejectButtonTextChanged: internal.updateButtonTexts()
+
+    onButtonClicked: (acceptButtonText && index == 0) ? accept() : reject()
+
     onMinimumYearChanged: {
         internal.updateYearList()
     }
@@ -160,23 +140,21 @@ CommonDialog {
         if (status == DialogStatus.Opening) {
             if (!internal.initialised)
                 internal.initializeDataModels();
-            if (year > 0)
-                yearColumn.selectedIndex = root.year - yearList.get(0).value;
-            tumbler._handleTumblerChanges(2);
-            TH.saveIndex(tumbler);
-            dayColumn.selectedIndex = root.day - 1;
+            internal.resetYear()
+            internal.resetMonth()
+            internal.resetDay()
+            TH.saveIndex(tumbler)
+            TH.restoreIndex(tumbler)
         }
     }
     onDayChanged: {
-        if (dayColumn.items.length > root.day - 1)
-            dayColumn.selectedIndex = root.day - 1
+        internal.resetDay()
     }
     onMonthChanged: {
-        monthColumn.selectedIndex = root.month - 1
+        internal.resetMonth()
     }
     onYearChanged: {
-        if (internal.initialised)
-            yearColumn.selectedIndex = root.year - yearList.get(0).value
+        internal.resetYear()
     }
     onAccepted: {
         tumbler.privateForceUpdate();
@@ -185,7 +163,11 @@ CommonDialog {
         root.day = dayColumn.selectedIndex + 1;
     }
     onRejected: {
-        TH.restoreIndex(tumbler);
+        internal.resetYear()
+        internal.resetMonth()
+        internal.resetDay()
+        TH.saveIndex(tumbler)
+        TH.restoreIndex(tumbler)
     }
 
     QtObject {
@@ -212,6 +194,10 @@ CommonDialog {
                 monthList.append({"value" : dateTime.longMonthName(m)});
 
             tumbler.privateInitialize()
+
+            if (year < minimumYear) year = minimumYear;
+            if (year > maximumYear) year = maximumYear;
+
             internal.initialised = true;
         }
 
@@ -223,6 +209,33 @@ CommonDialog {
                     yearList.append({"value" : i})
                 yearColumn.selectedIndex = tmp;
             }
+        }
+
+        function updateButtonTexts() {
+            var newButtonTexts = []
+            if (acceptButtonText)
+                newButtonTexts.push(acceptButtonText)
+            if (rejectButtonText)
+                newButtonTexts.push(rejectButtonText)
+            root.buttonTexts = newButtonTexts
+        }
+
+        function resetDay() {
+            if (internal.initialised)
+                dayColumn.selectedIndex = root.day - (root.day > 0 ?  1 : 0);
+            tumbler._handleTumblerChanges(1);
+        }
+
+        function resetMonth() {
+            if (internal.initialised)
+                monthColumn.selectedIndex = root.month - (root.month > 0 ?  1 : 0)
+            tumbler._handleTumblerChanges(0);
+        }
+
+        function resetYear() {
+            if (internal.initialised)
+                yearColumn.selectedIndex = root.year - yearList.get(0).value
+            tumbler._handleTumblerChanges(2);
         }
     }
 }

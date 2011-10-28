@@ -45,6 +45,7 @@
 #include <QtDeclarative/qdeclarative.h>
 
 class SDeclarativePrivate;
+QT_FORWARD_DECLARE_CLASS(QDeclarativeItem)
 
 class SDeclarative : public QObject
 {
@@ -54,6 +55,8 @@ class SDeclarative : public QObject
     Q_PROPERTY(bool foreground READ isForeground NOTIFY foregroundChanged)
     Q_PROPERTY(S60Version s60Version READ s60Version CONSTANT)
     Q_PROPERTY(bool rightToLeftDisplayLanguage READ rightToLeftDisplayLanguage CONSTANT)
+    Q_PROPERTY(bool privateGraphicsSharing READ privateGraphicsSharing CONSTANT)
+    Q_PROPERTY(bool privateSharedStatusBar READ privateSharedStatusBar CONSTANT)
 
     Q_ENUMS(InteractionMode S60Version ScrollBarVisibility SourceSize EffectType Feedback)
 
@@ -129,7 +132,7 @@ public:
         QString fileName = iconName;
         if (fileName.startsWith(QLatin1String("qtg")) ||
                 fileName.startsWith(QLatin1String("toolbar-")))
-            fileName.prepend(QLatin1String(":/graphics/"));
+            fileName.prepend(QLatin1String(":/graphics_1_1_2/"));
 
         if (fileName.lastIndexOf(QLatin1Char('.')) == -1)
             fileName.append(QLatin1String(".svg"));
@@ -144,22 +147,28 @@ public:
     bool isForeground();
     S60Version s60Version() const;
     bool rightToLeftDisplayLanguage() const;
+    void setGraphicsSharing(bool sharingEnabled);
 
     Q_INVOKABLE int privateAllocatedMemory() const;
     Q_INVOKABLE void privateClearIconCaches();
     Q_INVOKABLE void privateClearComponentCache();
+    Q_INVOKABLE bool privateGraphicsSharing() const;
+    Q_INVOKABLE void privateSendMouseRelease(QDeclarativeItem *item) const;
+    Q_INVOKABLE bool privateSharedStatusBar() const;
 
 Q_SIGNALS:
     void listInteractionModeChanged();
     void currentTimeChanged();
     void foregroundChanged();
+    void privateListItemKeyNavigation(QVariant listView);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
-
+    QScopedPointer<SDeclarativePrivate> d_ptr;
 private:
     Q_DISABLE_COPY(SDeclarative)
-    QScopedPointer<SDeclarativePrivate> d_ptr;
+    Q_DECLARE_PRIVATE(SDeclarative)
+
 };
 
 class SDialogStatus : public QObject

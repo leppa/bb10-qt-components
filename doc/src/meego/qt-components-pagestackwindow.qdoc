@@ -43,9 +43,9 @@
     \ingroup qt-components
     \since 4.7
     \brief
-    Default window for all MeeGo applciations
+    Default window for all MeeGo 1.2 Harmattan applications
     
-    Applications are constructed using the MeeGo specific PageStackWindow that 
+    Applications are constructed using the MeeGo 1.2 Harmattan-specific PageStackWindow that 
     brings the page navigation, toolbar, statusbar and platform common 
     look and feel. 
     
@@ -56,7 +56,7 @@
 
     \code
     import QtQuick 1.1
-    import com.nokia.meego 1.0
+    import com.nokia.meego 1.1
 
     PageStackWindow {
         showStatusBar: false
@@ -64,11 +64,11 @@
     }
     \endcode
     
-    A good example how PageStackWindow is used is found from the MeeGo example
+    A good example how PageStackWindow is used is found from the MeeGo 1.2 Harmattan example
     QmlComponentGallery or the Simple tutorial application that is found from
     front page of API documentation.
     
-    Note that the PageStackWindow as it is now defined is a MeeGo specific element.
+    Note that the PageStackWindow as it is now defined is a MeeGo 1.2 Harmattan-specific element.
 */
 
 /*!
@@ -105,4 +105,13 @@
 
     \sa PageStackWindowStyle
 */
+
+/*!
+    \qmlproperty real PageStackWindow::platformToolBarHeight
+
+    \l This read-only property provides height of \l ToolBar. Can be used e.g.
+    to set page's bottom margin, when toolbar is not shown, to prevent toolbar
+    from hiding content (e.g. when unfocusing \l TextField in bottom of page).
+*/
+
 

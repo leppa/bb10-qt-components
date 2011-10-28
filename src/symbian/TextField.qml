@@ -163,7 +163,7 @@ FocusScope {
         Flickable {
             id: flick
 
-            property real tiny: Math.round(platformStyle.graphicSizeTiny / 2)
+            property real tiny: Math.round(platformStyle.borderSizeMedium / 2)
 
             function ensureVisible(rect) {
                 if (rect.x >= 0 && Math.round(contentX) > Math.round(rect.x))
@@ -193,20 +193,20 @@ FocusScope {
                 // TODO: See TODO: Refactor implicit size...
                 property variant model: Text {
                     font: textInput.font
-                    text: textInput.text
+                    text: textInput.displayText
                     horizontalAlignment: textInput.horizontalAlignment
                     visible: false
                     opacity: 0
                 }
 
                 activeFocusOnPress: false
-                cursorVisible: activeFocus && !selectedText
+                cursorVisible: activeFocus && selectionStart == selectionEnd
                 enabled: root.enabled
                 color: root.platformInverted ? platformStyle.colorNormalLightInverted
                                              : platformStyle.colorNormalDark
                 focus: true
                 font { family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeMedium }
-                selectedTextColor: root.platformInverted ? platformStyle.colorNormalLightInverted
+                selectedTextColor: root.platformInverted ? platformStyle.colorNormalDarkInverted
                                                          : platformStyle.colorNormalLight
                 selectionColor: root.platformInverted ? platformStyle.colorTextSelectionInverted
                                                       : platformStyle.colorTextSelection
@@ -214,7 +214,7 @@ FocusScope {
 
                 onEnabledChanged: {
                     if (!enabled) {
-                        select(0, 0)
+                        deselect()
                         // De-focusing requires setting focus elsewhere, in this case editor's parent
                         if (root.parent)
                             root.parent.forceActiveFocus()
@@ -223,9 +223,12 @@ FocusScope {
 
                 onCursorPositionChanged: flick.ensureVisible(textInput.cursorRectangle)
 
+                Keys.forwardTo: touchController
+
                 TextTouchController {
                     id: touchController
 
+                    //  selection handles require touch area geometry to differ from TextInput's geometry
                     anchors {
                         left: parent.left;
                         leftMargin: -flick.tiny
@@ -233,10 +236,10 @@ FocusScope {
                     }
                     height: root.height
                     width: Math.max(root.width, flick.contentWidth + flick.tiny * 2)
-                    editorScrolledX: flick.contentX
-                    editorScrolledY: flick.contentY
-                    copyEnabled: textInput.selectedText
-                    cutEnabled: !textInput.readOnly && textInput.selectedText
+                    editorScrolledX: flick.contentX - container.anchors.leftMargin - flick.tiny
+                    editorScrolledY: 0
+                    copyEnabled: textInput.selectionStart != textInput.selectionEnd
+                    cutEnabled: !textInput.readOnly && textInput.selectionStart != textInput.selectionEnd
                     platformInverted: root.platformInverted
                     Component.onCompleted: flick.movementEnded.connect(touchController.flickEnded)
                     Connections { target: screen; onCurrentOrientationChanged: touchController.updateGeometry() }

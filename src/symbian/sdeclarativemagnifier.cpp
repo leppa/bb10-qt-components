@@ -42,7 +42,8 @@
 #include <QGraphicsItem>
 #include <QPainter>
 #include <QDebug>
-
+#include <QImageReader>
+#include <QPixmapCache>
 
 class SDeclarativeMagnifierPrivate
 {
@@ -55,22 +56,27 @@ public:
     ~SDeclarativeMagnifierPrivate() {}
 
     void init();
-    QPixmap ovelay();
-    void drawOverlay(QPainter *painter);
-    QPixmap mask();
-    void drawMask(QPainter *painter);
-    void drawContent(QPainter *painter);
+    void preparePixmaps();
 
     QRectF mSourceRect;
     qreal mScaleFactor;
     QPixmap mMask;
     QPixmap mOverlay;
-    QString mOverlayFileName;
-    QString mMaskFileName;
+
+    static QPixmap *mSource;
+    static QString mOverlayFileName;
+    static QString mMaskFileName;
+    static const QString mMaskKey;
+    static const QString mOverlayKey;
 
     SDeclarativeMagnifier *q_ptr;
 };
 
+QPixmap *SDeclarativeMagnifierPrivate::mSource = 0;
+QString SDeclarativeMagnifierPrivate::mOverlayFileName = QString();
+QString SDeclarativeMagnifierPrivate::mMaskFileName = QString();
+const QString SDeclarativeMagnifierPrivate::mMaskKey = "sdmagnifierprivate_mmask";
+const QString SDeclarativeMagnifierPrivate::mOverlayKey = "sdmagnifierprivate_moverlay";
 
 void SDeclarativeMagnifierPrivate::init()
 {
@@ -78,65 +84,39 @@ void SDeclarativeMagnifierPrivate::init()
     q->setFlag(QGraphicsItem::ItemHasNoContents, false);
 }
 
-QPixmap SDeclarativeMagnifierPrivate::ovelay()
+void SDeclarativeMagnifierPrivate::preparePixmaps()
 {
-    Q_Q(SDeclarativeMagnifier);
-    QSize magnifierSize = q->boundingRect().size().toSize();
+    QSize sourceSize = mSourceRect.size().toSize();
 
-    if (mOverlay.size() == magnifierSize)
-        return mOverlay;
+    if (mOverlay.size() != sourceSize
+        && !mOverlayFileName.isEmpty()
+        && (!QPixmapCache::find(mOverlayKey, &mOverlay) || mOverlay.size() != sourceSize))
+    {
+        QImageReader overlayReader(mOverlayFileName);
+        overlayReader.setScaledSize(sourceSize);
+        if (overlayReader.canRead())
+            mOverlay = QPixmap::fromImage(overlayReader.read());
+        QPixmapCache::insert(mOverlayKey, mOverlay);
+    }
 
-    mOverlay = mOverlay.scaled(magnifierSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    return mOverlay;
+    if (mMask.size() != sourceSize
+        && !mMaskFileName.isEmpty()
+        && (!QPixmapCache::find(mMaskKey, &mMask) || mMask.size() != sourceSize))
+    {
+        QImageReader maskReader(mMaskFileName);
+        maskReader.setScaledSize(sourceSize);
+        if (maskReader.canRead())
+            mMask = QPixmap::fromImage(maskReader.read());
+        QPixmapCache::insert(mMaskKey, mMask);
+    }
+
+    if (!mSource || mSource->size() != sourceSize)
+    {
+        delete mSource;
+        mSource = new QPixmap(sourceSize);
+        mSource->fill(Qt::transparent);
+    }
 }
-
-void SDeclarativeMagnifierPrivate::drawOverlay(QPainter *painter)
-{
-    painter->setCompositionMode(QPainter::CompositionMode_Darken);
-    painter->drawPixmap(0, 0, ovelay());
-}
-
-QPixmap SDeclarativeMagnifierPrivate::mask()
-{
-    Q_Q(SDeclarativeMagnifier);
-    QSize magnifierSize = q->boundingRect().size().toSize();
-
-    if (mMask.size() == magnifierSize)
-        return mMask;
-
-    mMask = mMask.scaled(magnifierSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    return mMask;
-}
-
-void SDeclarativeMagnifierPrivate::drawMask(QPainter *painter)
-{
-    painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    painter->drawPixmap(0, 0, mask());
-}
-
-void SDeclarativeMagnifierPrivate::drawContent(QPainter *painter)
-{
-    Q_Q(SDeclarativeMagnifier);
-
-    QPixmap sourcePixmap(mSourceRect.size().toSize());
-    sourcePixmap.fill(Qt::black);
-    QPainter sourcePainter(&sourcePixmap);
-
-    QRectF targetRect = QRectF(QPointF(0, 0), mSourceRect.size());
-    q->scene()->render(&sourcePainter, targetRect, mSourceRect);
-    sourcePainter.end();
-
-    painter->save();
-    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter->setRenderHints(QPainter::SmoothPixmapTransform);
-
-    QTransform transform;
-    transform.scale(mScaleFactor, mScaleFactor);
-    painter->setTransform(transform);
-    painter->drawPixmap(0, 0, sourcePixmap);
-    painter->restore();
-}
-
 
 SDeclarativeMagnifier::SDeclarativeMagnifier(QDeclarativeItem *parent) :
     QDeclarativeItem(parent),
@@ -148,6 +128,9 @@ SDeclarativeMagnifier::SDeclarativeMagnifier(QDeclarativeItem *parent) :
 
 SDeclarativeMagnifier::~SDeclarativeMagnifier()
 {
+    Q_D(SDeclarativeMagnifier);
+    delete d->mSource;
+    d->mSource = 0;
 }
 
 void SDeclarativeMagnifier::setSourceRect(const QRectF &rect)
@@ -191,7 +174,8 @@ void SDeclarativeMagnifier::setOverlayFileName(const QString &overlayFileName)
 
     if (overlayFileName != d->mOverlayFileName) {
         d->mOverlayFileName = overlayFileName;
-        d->mOverlay.load(d->mOverlayFileName);
+        d->mOverlay = QPixmap();
+        QPixmapCache::remove(d->mOverlayKey);
         update();
         emit overlayFileNameChanged();
     }
@@ -210,7 +194,8 @@ void SDeclarativeMagnifier::setMaskFileName(const QString &maskFileName)
 
     if (maskFileName != d->mMaskFileName) {
         d->mMaskFileName = maskFileName;
-        d->mMask.load(d->mMaskFileName);
+        d->mMask = QPixmap();
+        QPixmapCache::remove(d->mMaskKey);
         update();
         emit maskFileNameChanged();
     }
@@ -230,20 +215,24 @@ void SDeclarativeMagnifier::paint(QPainter *painter, const QStyleOptionGraphicsI
 
     Q_D(SDeclarativeMagnifier);
 
+    // Do not paint a magnifier inside a magnifier
     static bool inPaint = false;
     if (!inPaint) {
         inPaint = true;
+        d->preparePixmaps();
 
-        QPixmap contentPixmap(boundingRect().size().toSize());
-        contentPixmap.fill(Qt::transparent);
-        QPainter pixmapPainter(&contentPixmap);
+        QPainter sourcePainter(d->mSource);
+        QRectF targetRect = QRectF(QPointF(0, 0), d->mSourceRect.size());
 
-        d->drawContent(&pixmapPainter);
-        d->drawMask(&pixmapPainter);
-        d->drawOverlay(&pixmapPainter);
+        scene()->render(&sourcePainter, targetRect, d->mSourceRect);
+        sourcePainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        sourcePainter.drawPixmap(0, 0, d->mMask);
+        sourcePainter.setCompositionMode(QPainter::CompositionMode_Multiply);
+        sourcePainter.drawPixmap(0, 0, d->mOverlay);
+        sourcePainter.end();
 
-        pixmapPainter.end();
-        painter->drawPixmap(0, 0, contentPixmap);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        painter->drawPixmap(0, 0, boundingRect().width(), boundingRect().height(), *d->mSource);
         inPaint = false;
     }
 }

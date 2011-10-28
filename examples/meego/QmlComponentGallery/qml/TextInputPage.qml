@@ -39,7 +39,7 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.1
 
 Page {
     id: root
@@ -65,7 +65,7 @@ Page {
                 Column {
                     id: col
                     spacing: 10
-                    width: container.width                    
+                    width: container.width
 
                     Label {
                         font: UiConstants.FieldLabelFont
@@ -76,6 +76,8 @@ Page {
                         anchors {left: parent.left; right: parent.right;}
                         placeholderText: "Default text"
                         maximumLength: 80
+
+                        onAccepted: { console.log("accepted signal triggered") }
 
                         Keys.onReturnPressed: {
                             text = "Return key pressed";
@@ -128,7 +130,7 @@ Page {
                                     anchors.fill: parent
                                     onClicked: {
                                         inputContext.reset();
-                                        custom.text = "";                                        
+                                        custom.text = "";
                                     }
                                 }
                             }
@@ -189,15 +191,24 @@ Page {
                         anchors.right: parent.right
                         text: "Inline text input"
                     }
-                    
+
                     Label {
                         font: UiConstants.FieldLabelFont
                         color: UiConstants.FieldLabelColor
-                        text: "Default text field as bottom:"
+                        text: "Bottom text field:"
                     }
                     TextField {
                         anchors {left: parent.left; right: parent.right;}
-                    }                   
+                    }
+                    TextEdit {
+                        height: 400;
+                        width: 800;
+                    }
+                    Label {
+                        font: UiConstants.FieldLabelFont
+                        color: UiConstants.FieldLabelColor
+                        text: "Page ends here"
+                    }
                 }
             }
             ScrollDecorator {
@@ -209,6 +220,11 @@ Page {
         Item {
             id: specialFieldsTab
             anchors.fill: parent
+            property int toolBarHeight: rootWindow.platformToolBarHeight
+            onToolBarHeightChanged: {
+                anchors.bottomMargin = toolBarHeight
+                ? toolBarHeight: anchors.bottomMargin
+            }
             Flickable {
                 id: specialFieldsContainer
                 anchors.fill: parent
@@ -324,7 +340,7 @@ Page {
                         anchors {left: parent.left; right: parent.right;}
                         inputMethodHints: Qt.ImhUppercaseOnly
                     }
-                    
+
                     Label {
                         font: UiConstants.FieldLabelFont
                         color: UiConstants.FieldLabelColor
@@ -332,7 +348,7 @@ Page {
                     }
                     TextField {
                         anchors {left: parent.left; right: parent.right;}
-                        platformEnableEditBubble: false  
+                        platformEnableEditBubble: false
                     }
                 }
             }

@@ -60,6 +60,31 @@ Item {
     // Deprecated, TODO remove
     property alias style: root.platformStyle
 
+    // Shadows:
+    Image {
+        anchors.top : bgImage.top
+        anchors.right: bgImage.left
+        anchors.bottom : bgImage.bottom
+        source: "image://theme/meegotouch-menu-shadow-left"
+    }
+    Image {
+        anchors.bottom : bgImage.top
+        anchors.left: bgImage.left
+        anchors.right : bgImage.right
+        source: "image://theme/meegotouch-menu-shadow-top"
+    }
+    Image {
+        anchors.top : bgImage.top
+        anchors.left: bgImage.right
+        anchors.bottom : bgImage.bottom
+        source: "image://theme/meegotouch-menu-shadow-right"
+    }
+    Image {
+        anchors.top : bgImage.bottom
+        anchors.left: bgImage.left
+        anchors.right : bgImage.right
+        source: "image://theme/meegotouch-menu-shadow-bottom"
+    }
     // Toolbar background.
     BorderImage {
         id: bgImage

@@ -7,13 +7,16 @@ sourcedirs =    $QTCOMPONENTS/src \
                 $QTCOMPONENTS/doc/src/meego \
                 $QTCOMPONENTS/doc/src/examples
 
+excludedirs = $QTCOMPONENTS/doc/src/meego/extras
+                
 outputdir  =    $QTCOMPONENTS/doc/html
 outputformats = HTML
 sources.fileextensions = "*.cpp *.doc *.qdoc *.h *.qml"
 exampledirs =   $QTCOMPONENTS \
                 $QTCOMPONENTS/doc
 imagedirs =     $QTCOMPONENTS/doc/src/examples/images \
-                $QTCOMPONENTS/doc/src/meego/images 
+                $QTCOMPONENTS/doc/src/meego/images \
+                $QTCOMPONENTS/doc/src/meego/template/images
 
 indexes += $QTDIR/doc/html/qt.index
 

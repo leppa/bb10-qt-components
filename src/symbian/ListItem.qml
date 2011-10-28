@@ -144,7 +144,10 @@ Item {
         id: subItemIcon
 
         Image {
-            source: privateStyle.imagePath("qtg_graf_drill_down_indicator", root.platformInverted)
+            source: privateStyle.imagePath(
+                root.enabled ? "qtg_graf_drill_down_indicator"
+                             : "qtg_graf_drill_down_indicator_disabled",
+                root.platformInverted)
             mirror: LayoutMirroring.enabled
             sourceSize.width: platformStyle.graphicSizeSmall
             sourceSize.height: platformStyle.graphicSizeSmall
@@ -152,7 +155,7 @@ Item {
     }
 
     Keys.onReleased: {
-        if (!event.isAutoRepeat && root.enabled) {
+        if (!event.isAutoRepeat && root.enabled && ListView.view) {
             if (event.key == Qt.Key_Select || event.key == Qt.Key_Return || event.key == Qt.Key_Enter) {
                 event.accepted = true
                 internal.state = "Focused"
@@ -163,24 +166,25 @@ Item {
     Keys.onPressed: {
         if (!event.isAutoRepeat) {
             switch (event.key) {
-                case Qt.Key_Select:
-                case Qt.Key_Enter:
-                case Qt.Key_Return: {
-                    if (symbian.listInteractionMode != Symbian.KeyNavigation)
-                        symbian.listInteractionMode = Symbian.KeyNavigation
-                    else
-                        if (root.enabled) {
-                            highlight.source = privateStyle.imagePath("qtg_fr_list_pressed",
-                                                                      root.platformInverted)
-                            highlight.opacity = 1
-                            releasedEffect.restart()
-                            root.clicked()
-                        }
-                    event.accepted = true
-                    break
-                }
 
-                case Qt.Key_Up: {
+            case Qt.Key_Select:
+            case Qt.Key_Enter:
+            case Qt.Key_Return:
+                if (ListView.view && symbian.listInteractionMode != Symbian.KeyNavigation)
+                    symbian.listInteractionMode = Symbian.KeyNavigation
+                else
+                    if (root.enabled) {
+                        highlight.source = privateStyle.imagePath("qtg_fr_list_pressed",
+                                                                  root.platformInverted)
+                        highlight.opacity = 1
+                        releasedEffect.restart()
+                        root.clicked()
+                    }
+                event.accepted = true
+                break
+
+            case Qt.Key_Up:
+                if (ListView.view) {
                     if (symbian.listInteractionMode != Symbian.KeyNavigation) {
                         symbian.listInteractionMode = Symbian.KeyNavigation
                         internal.state = "Focused"
@@ -188,10 +192,12 @@ Item {
                     } else
                         ListView.view.decrementCurrentIndex()
                     event.accepted = true
-                    break
+                    symbian.privateListItemKeyNavigation(ListView.view)
                 }
+                break
 
-                case Qt.Key_Down: {
+            case Qt.Key_Down:
+                if (ListView.view) {
                     if (symbian.listInteractionMode != Symbian.KeyNavigation) {
                         symbian.listInteractionMode = Symbian.KeyNavigation
                         ListView.view.positionViewAtIndex(index, ListView.Beginning)
@@ -199,12 +205,14 @@ Item {
                     } else
                         ListView.view.incrementCurrentIndex()
                     event.accepted = true
-                    break
+                    symbian.privateListItemKeyNavigation(ListView.view)
                 }
-                default: {
-                    event.accepted = false
-                    break
-                }
+                break
+
+            default:
+                event.accepted = false
+                break
+
             }
         }
     }
@@ -218,7 +226,7 @@ Item {
                     target: root
                     property: "height"
                     to: 0
-                    duration: 200
+                    duration: 150
                     easing.type: Easing.OutQuad
                 }
             }
@@ -227,7 +235,7 @@ Item {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: 200
+                duration: 100
                 easing.type: Easing.Linear
             }
         }
@@ -241,7 +249,7 @@ Item {
                 target: root
                 property: "height"
                 to: root.height
-                duration: 250
+                duration: 150
                 easing.type: Easing.OutQuad
             }
             NumberAnimation {
@@ -249,7 +257,7 @@ Item {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: 250
+                duration: 150
                 easing.type: Easing.Linear
             }
         }

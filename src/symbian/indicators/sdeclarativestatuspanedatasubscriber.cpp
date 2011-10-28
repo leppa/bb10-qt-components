@@ -158,6 +158,12 @@ TBool IndicatorStatesEqual( const TAknIndicatorState& state1, const TAknIndicato
                 }
             }
         }
+
+    if (state1.iIncallBubbleFlags != state2.iIncallBubbleFlags)
+        {
+        same = EFalse;
+        }
+
     return same;
     }
 
@@ -178,7 +184,7 @@ void CSDeclarativeStatusPaneSubscriber::RunL()
     if ( iStatus != KErrNone )
         {
 #ifdef Q_DEBUG_SUBSCRIBER
-        qDebug() << "CSDeclarativeStatusPaneSubscriber::RunL error in status pane data change, iStatus: " << iStatus;
+        qDebug() << "CSDeclarativeStatusPaneSubscriber::RunL error in status pane data change, iStatus: " << (int)iStatus.Int();
 #endif // Q_DEBUG_SUBSCRIBER
         return;
         }
@@ -187,7 +193,16 @@ void CSDeclarativeStatusPaneSubscriber::RunL()
     DoSubscribe();
 
     TAknStatusPaneStateData::TAknStatusPaneStateDataPckg statusPaneStateDataPckg( iStateData );
-    iProperty.Get( KPSUidAvkonInternal, KAknStatusPaneSystemData, statusPaneStateDataPckg );
+    TInt err = iProperty.Get( KPSUidAvkonInternal, KAknStatusPaneSystemData, statusPaneStateDataPckg );
+    if (err != KErrNone)
+        {
+#ifdef Q_DEBUG_SUBSCRIBER
+        qDebug() << "CSDeclarativeStatusPaneSubscriber::RunL error in iProperty.Get: " << (int)err;
+#endif // Q_DEBUG_SUBSCRIBER
+
+        // work-around for err -9: mark the incall status to 0 (=not visible) because we cannot read the correct state
+        iStateData.iIndicatorState.iIncallBubbleFlags = 0;
+        }
 
     int changeFlags = MSDeclarativeStatusPaneSubscriberObverver::EStatusPaneUndefined;
     if ( !iInitialized || !IndicatorStatesEqual( iStateData.iIndicatorState, iIndicatorState ) )

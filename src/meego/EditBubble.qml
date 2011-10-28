@@ -53,10 +53,14 @@ Item {
 
     property Style platformStyle: EditBubbleStyle {}
 
+    property variant position: Qt.point(0,0)
+
     anchors.fill: parent
 
-    Item {
+    Flickable {
         id: rect
+        flickableDirection: Flickable.HorizontalAndVerticalFlick
+        boundsBehavior: Flickable.StopAtBounds
         visible: false
         width: row.width
         height: row.height
@@ -75,6 +79,8 @@ Item {
         property bool canPaste: validInput && (textInput.canPaste && !textInput.readOnly)
         property bool textSelected: validInput && (textInput.selectedText != "")
 
+        property Item bannerInstance: null
+
         z: 1020
 
         onWidthChanged: {
@@ -87,12 +93,24 @@ Item {
                 Private.adjustPosition(bubble);
         }
 
+        onVisibleChanged: {                                                         
+            if (visible == true &&                                                  
+                buttonPaste.visible == true &&                                      
+                buttonCut.visible == false &&                                       
+                buttonCopy.visible == false) {                                      
+                autoHideoutTimer.running = true                                     
+            } else if (autoHideoutTimer.running == true) {                                                                
+                autoHideoutTimer.running = false                                    
+            }                                                                       
+        }            
+
         BasicRow {
             id: row
             Component.onCompleted: Private.updateButtons(row);
 
             EditBubbleButton {
                 id: buttonCut
+                objectName: "cutButton";
                 text: textTranslator.translate("qtn_comm_cut");
                 visible: rect.canCut
                 onClicked: {
@@ -106,6 +124,7 @@ Item {
 
             EditBubbleButton {
                 id: buttonCopy
+                objectName: "copyButton";
                 text: textTranslator.translate("qtn_comm_copy");
                 visible: rect.canCopy
                 onClicked: {
@@ -117,6 +136,7 @@ Item {
 
             EditBubbleButton {
                 id: buttonPaste
+                objectName: "pasteButton";
                 text: textTranslator.translate("qtn_comm_paste");
                 visible: rect.canPaste
                 onClicked: {
@@ -131,12 +151,13 @@ Item {
                     textInput.paste();
                     // PastingText is set to false and clipboard is cleared if we catch onTextChanged
                     if (rect.pastingText && text == textInput.text) {
-                        var root = Utils.findRootItemNotificationBanner(textInput);
-
-                        // create notification banner
-                        var bannerInstance = notificationBanner.createObject(root);
-                        bannerInstance.show();
-                        bannerInstance.timerEnabled = true;
+                        if (rect.bannerInstance === null) {
+                            // create new notification banner
+                            var root = Utils.findRootItemNotificationBanner(textInput);
+                            rect.bannerInstance = notificationBanner.createObject(root);
+                        }
+                        rect.bannerInstance.show();
+                        rect.bannerInstance.timerEnabled = true;
                         rect.pastingText = false;
                     }
                     rect.changingText = false;
@@ -179,31 +200,53 @@ Item {
         }
     }
 
+    Timer {                                                                 
+        id: autoHideoutTimer                                                
+        interval: 5000                                                      
+        onTriggered: {                                                      
+            running = false                                                 
+            state = "hidden"                                                
+        }                                                                   
+    }       
+
     state: "closed"
 
     states: [
         State {
             name: "opened"
             ParentChange { target: rect; parent: Utils.findRootItem(textInput); }
-            PropertyChanges { target: rect; visible: true; opacity: 1.0; }
+            PropertyChanges { target: rect; visible: true; opacity: 1.0 }
+        },
+        State {
+            name: "hidden"
+            ParentChange { target: rect; parent: Utils.findRootItem(textInput); }
+            PropertyChanges { target: rect; visible: true; opacity: 0.0; }
         },
         State {
             name: "closed"
             ParentChange { target: rect; parent: bubble; }
-            PropertyChanges { target: rect; visible: false; opacity: 0.0; }
+            PropertyChanges { target: rect; visible: false; }
         }
     ]
 
-    transitions: Transition {
-        from: "closed"; to: "opened";
-        SequentialAnimation {
-            PauseAnimation { duration: 100; }
-            ParentAnimation { target: rect; }
-            ScriptAction { script: Private.adjustPosition(bubble); }
-            NumberAnimation { target: rect; properties: "opacity,scale";
-                duration: 280; easing.type: Easing.OutQuad; }
-        }
-    }
+    transitions: [                                                          
+        Transition {                                                        
+            from: "opened"; to: "hidden";                                         
+            reversible: false                                               
+            SequentialAnimation {                                           
+                NumberAnimation {                                           
+                    target: rect                                            
+                    properties: "opacity"                                   
+                    duration: 1000                                          
+                }                                                           
+                ScriptAction {                                              
+                    script: {                                               
+                        Private.closePopup(bubble);                         
+                    }                                                       
+                }                                                           
+            }                                                               
+        }                                                                   
+    ]  
 
     Connections {
         target: Utils.findFlickable(textInput)
@@ -213,6 +256,21 @@ Item {
     Connections {
         target: screen
         onCurrentOrientationChanged: Private.adjustPosition(bubble)
+    }
+
+    function findWindowRoot() {
+        var item = Utils.findRootItem(bubble, "windowRoot");
+        if (item.objectName != "windowRoot")
+            item = Utils.findRootItem(bubble, "pageStackWindow");
+        return item;
+    }
+
+    Connections {
+       target: findWindowRoot();
+       ignoreUnknownSignals: true
+       onOrientationChangeFinished: {
+           Private.adjustPosition(bubble)
+       }
     }
 
     Connections {

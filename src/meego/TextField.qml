@@ -44,6 +44,8 @@ import "UIConstants.js" as UI
 import "EditBubble.js" as Popup
 import "TextAreaHelper.js" as TextAreaHelper
 import "Magnifier.js" as MagnifierPopup
+import "SelectionHandles.js" as SelectionHandles
+
 FocusScope {
     id: root
 
@@ -84,6 +86,8 @@ FocusScope {
 
     property alias platformPreedit: inputMethodObserver.preedit
 
+    signal accepted
+
     onPlatformSipAttributesChanged: {
         platformSipAttributes.registerInputElement(textInput)
     }
@@ -97,9 +101,59 @@ FocusScope {
         textInput.activeFocusOnPress = platformCustomSoftwareInputPanel == null
     }
 
+
+
     function copy() {
         textInput.copy()
     }
+
+    Connections {
+        target: platformWindow
+
+        onActiveChanged: {
+            if(platformWindow.active) {
+                if (__hadFocusBeforeMinimization) {                                                                                                         
+                    __hadFocusBeforeMinimization = false                                                                                                      
+                    if (root.parent)                                                                                                                          
+                        root.focus = true                                                                                                                     
+                    else                                                                                                                                      
+                        textInput.focus = true                                                                                                                
+                }
+                
+                if (!readOnly) {
+                    if (activeFocus) {
+                        if (platformCustomSoftwareInputPanel != null) {
+                            platformOpenSoftwareInputPanel();
+                        } else {
+                            inputContext.simulateSipOpen();
+                        }
+                        repositionTimer.running = true;
+                    }
+                }
+            } else {
+                if (activeFocus) {
+                    platformCloseSoftwareInputPanel();
+                    Popup.close(textInput);
+                    SelectionHandles.close(textInput);
+                    if (textInput.selectionStart != textInput.selectionEnd)
+                        textInput.deselect();
+                      
+                    __hadFocusBeforeMinimization = true                                                                                                                                                                                           
+                    if (root.parent)                                                                                     
+                        root.parent.focus = true                                           
+                    else                                                                       
+                        textInput.focus = false
+                }
+            }
+        }
+
+        onAnimatingChanged: {
+            if (!platformWindow.animating && root.activeFocus) {
+                TextAreaHelper.repositionFlickable(contentMovingAnimation);
+            }
+        }
+    }
+
 
     function paste() {
         textInput.paste()
@@ -171,7 +225,16 @@ FocusScope {
 
     // private
     property bool __expanding: true // Layout hint used but ToolBarLayout
+    property int __preeditDisabledMask: Qt.ImhHiddenText|
+                                        Qt.ImhNoPredictiveText|
+                                        Qt.ImhDigitsOnly|
+                                        Qt.ImhFormattedNumbersOnly|
+                                        Qt.ImhDialableCharactersOnly|
+                                        Qt.ImhEmailCharactersOnly|
+                                        Qt.ImhUrlCharactersOnly 
 
+    property bool __hadFocusBeforeMinimization: false
+    
     implicitWidth: platformStyle.defaultWidth
     implicitHeight: UI.FIELD_DEFAULT_HEIGHT
 
@@ -188,8 +251,12 @@ FocusScope {
             } else {                
                 platformCloseSoftwareInputPanel();
                 Popup.close(textInput);
+                SelectionHandles.close(textInput);
             }
         }
+
+        if (!activeFocus)
+            MagnifierPopup.close();
     }
 
 
@@ -268,12 +335,18 @@ FocusScope {
                 textInput.forceActiveFocus();
 
                 // activate to preedit and/or move the cursor
+                var preeditDisabled = root.inputMethodHints &
+                                      root.__preeditDisabledMask                         
                 var injectionSucceeded = false;
                 var newCursorPosition = textInput.positionAt(mapToItem(textInput, mouseX, mouseY).x,TextInput.CursorOnCharacter);
-                if (!TextAreaHelper.atSpace(newCursorPosition)
-                        && newCursorPosition != textInput.text.length
-                        && !(newCursorPosition == 0 || TextAreaHelper.atSpace(newCursorPosition - 1))) {
-                    injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition);
+                if (!preeditDisabled) {
+                    var beforeText = textInput.text
+                    if (!TextAreaHelper.atSpace(newCursorPosition, beforeText)
+                        && newCursorPosition != beforeText.length
+                        && !(newCursorPosition == 0 || TextAreaHelper.atSpace(newCursorPosition - 1, beforeText))) {
+
+                        injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition, beforeText);
+                    }
                 }
                 if (!injectionSucceeded) {
                     textInput.cursorPosition=newCursorPosition;
@@ -302,7 +375,10 @@ FocusScope {
         mouseSelectionMode: TextInput.SelectWords
         focus: true
 
+        onAccepted: { root.accepted() } 
+
         Component.onDestruction: {
+            SelectionHandles.close(textInput);
             Popup.close(textInput);
         }
 
@@ -312,16 +388,6 @@ FocusScope {
             onContentYChanged: if (root.activeFocus) TextAreaHelper.filteredInputContextUpdate();
             onContentXChanged: if (root.activeFocus) TextAreaHelper.filteredInputContextUpdate();
             onMovementEnded: inputContext.update();
-        }
-
-        Connections {
-            target: platformWindow
-
-            onAnimatingChanged: {
-                if (!platformWindow.animating && root.activeFocus) {
-                    TextAreaHelper.repositionFlickable(contentMovingAnimation);
-                }
-            }
         }
 
         Connections {
@@ -341,25 +407,37 @@ FocusScope {
 
             if (Popup.isOpened(textInput) && !Popup.isChangingInput())
                 Popup.close(textInput);
+            SelectionHandles.close(textInput);
         }
 
         onCursorPositionChanged: {
-            var magnifier = MagnifierPopup.popup;
-            if (magnifier) {
-                var mappedPos =  mapToItem(magnifier.parent,positionToRectangle(cursorPosition).x - magnifier.width / 2, 0);
-                magnifier.xCenter = positionToRectangle(cursorPosition).x / root.width;
-                magnifier.x = mappedPos.x;
-            }
-            if (Popup.isOpened(textInput) && !Popup.isChangingInput()) {
+            if (MagnifierPopup.isOpened() &&
+                Popup.isOpened()) {
                 Popup.close(textInput);
-                Popup.open(textInput);
+            } else if (!mouseFilter.attemptToActivate ||
+                textInput.cursorPosition == textInput.text.length) {
+                if ( Popup.isOpened(textInput) &&
+                !Popup.isChangingInput()) {
+                    Popup.close(textInput);
+                    Popup.open(textInput,
+                        textInput.positionToRectangle(textInput.cursorPosition));
+                }
+                if ( SelectionHandles.isOpened(textInput) && textInput.selectedText == "") {
+                    SelectionHandles.close( textInput );
+                }
+                if ( !SelectionHandles.isOpened(textInput) && textInput.selectedText != "") {
+                    SelectionHandles.open( textInput );
+                }
+                SelectionHandles.adjustPosition();
             }
-
         }
 
         onSelectedTextChanged: {
             if (Popup.isOpened(textInput) && !Popup.isChangingInput()) {
                 Popup.close(textInput);
+            }
+            if ( SelectionHandles.isOpened(textInput) && textInput.selectedText == "") {
+                SelectionHandles.close( textInput )
             }
         }
 
@@ -393,6 +471,7 @@ FocusScope {
         }
 
         MouseFilter {
+            id: mouseFilter
             anchors.fill: parent
             anchors.leftMargin:  UI.TOUCH_EXPANSION_MARGIN - root.platformStyle.paddingLeft
             anchors.rightMargin:  UI.TOUCH_EXPANSION_MARGIN - root.platformStyle.paddingRight
@@ -401,25 +480,26 @@ FocusScope {
 
             property bool attemptToActivate: false
             property bool pressOnPreedit: false
+            property int oldCursorPosition: 0
+
+            property variant editBubblePosition: null
 
             onPressed: {
                 var mousePosition = textInput.positionAt(mouse.x,TextInput.CursorOnCharacter);
                 pressOnPreedit = textInput.cursorPosition==mousePosition
-                var preeditDisabled = (
-                        root.inputMethodHints&
-                        (
-                                Qt.ImhHiddenText|
-                                Qt.ImhNoPredictiveText|
-                                Qt.ImhDigitsOnly|
-                                Qt.ImhFormattedNumbersOnly|
-                                Qt.ImhDialableCharactersOnly|
-                                Qt.ImhEmailCharactersOnly|
-                                Qt.ImhUrlCharactersOnly
-                )
-                );
+                oldCursorPosition = textInput.cursorPosition;
+                var preeditDisabled = root.inputMethodHints &
+                                      root.__preeditDisabledMask
 
-                attemptToActivate = !pressOnPreedit && !root.readOnly && !preeditDisabled && root.activeFocus && !(mousePosition == 0 || TextAreaHelper.atSpace(mousePosition - 1));
+                attemptToActivate = !pressOnPreedit && !root.readOnly && !preeditDisabled && root.activeFocus &&
+                                    !(mousePosition == 0 || TextAreaHelper.atSpace(mousePosition - 1) || TextAreaHelper.atSpace(mousePosition));
                 mouse.filtered = true;
+            }
+
+            onDelayedPressSent: {
+                if (textInput.preedit) {
+                    textInput.cursorPosition = oldCursorPosition;
+                }
             }
 
             onHorizontalDrag: {
@@ -438,36 +518,45 @@ FocusScope {
                     attemptToActivate = false
                     MagnifierPopup.open(root);
                     var magnifier = MagnifierPopup.popup;
-                    magnifier.xCenter = positionToRectangle(cursorPosition).x / root.width
-                    var mappedPos =  mapToItem(magnifier.parent, positionToRectangle(cursorPosition).x - magnifier.width / 2,
+                    var cursorPos = textInput.positionToRectangle(0);
+                    var mappedPosMf = mapFromItem(parent,mouse.x,cursorPos.y+cursorPos.height/2+4);
+                    magnifier.xCenter = mapToItem(magnifier.sourceItem,mappedPosMf.x,0).x;
+                    var mappedPos =  mapToItem(magnifier.parent, mappedPosMf.x - magnifier.width / 2,
                                                textInput.y - 120 - UI.MARGIN_XLARGE - (height / 2));
-                    var yAdjustment = -mapFromItem(magnifier.__rootElement(), 0, 0).y < magnifier.height / 2.5 ? magnifier.height / 2.5 + mapFromItem(magnifier.__rootElement(), 0,0).y : 0
+                    var yAdjustment = -mapFromItem(magnifier.__rootElement, 0, 0).y < magnifier.height / 2.5 ? magnifier.height / 2.5 + mapFromItem(magnifier.__rootElement, 0,0).y : 0
                     magnifier.x = mappedPos.x;
                     magnifier.y = mappedPos.y + yAdjustment;
-                    magnifier.yCenter = 0.25;
+                    magnifier.yCenter = mapToItem(magnifier.sourceItem,0,mappedPosMf.y).y;
                     parent.cursorPosition = textInput.positionAt(mouse.x)                    
                 }
             }
 
-            onReleased: {                
+            onReleased: {
                 if (MagnifierPopup.isOpened()) {
                     MagnifierPopup.close();
                 }
 
-                if (attemptToActivate) {
+                if (attemptToActivate)
                     inputContext.reset();
+
+                var newCursorPosition = textInput.positionAt(mouse.x,TextInput.CursorOnCharacter); 
+                if (textInput.preedit.length == 0)
+                    editBubblePosition = textInput.positionToRectangle(newCursorPosition);
+
+                if (attemptToActivate) {
                     var beforeText = textInput.text;
 
-                    var newCursorPosition = textInput.positionAt(mouse.x,TextInput.CursorOnCharacter);
-
+                    textInput.cursorPosition = newCursorPosition;
                     var injectionSucceeded = false;
 
-                    if (!TextAreaHelper.atSpace(newCursorPosition)                             
-                             && newCursorPosition != textInput.text.length) {
-                        injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition);
+                    if (!TextAreaHelper.atSpace(newCursorPosition, beforeText)
+                             && newCursorPosition != beforeText.length) {
+                        injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition, beforeText);
                     }
                     if (injectionSucceeded) {
                         mouse.filtered=true;
+                        if (textInput.preedit.length >=1 && textInput.preedit.length <= 4)
+                            editBubblePosition = textInput.positionToRectangle(textInput.cursorPosition+1)
                     } else {
                         textInput.text=beforeText;
                         textInput.cursorPosition=newCursorPosition;
@@ -476,19 +565,34 @@ FocusScope {
                     if (!pressOnPreedit) inputContext.reset();
                     textInput.cursorPosition = textInput.positionAt(mouse.x,TextInput.CursorOnCharacter);
                 }
-
                 parent.selectByMouse = false;
             }
 
             onFinished: {
-                if (root.activeFocus && platformEnableEditBubble)
-                    Popup.open(textInput);
+                if (root.activeFocus && platformEnableEditBubble) {
+                    if (textInput.preedit.length == 0)
+                        editBubblePosition = textInput.positionToRectangle(textInput.cursorPosition);
+                    if (editBubblePosition != null) {
+                        Popup.open(textInput,editBubblePosition);
+                        editBubblePosition = null
+                    }
+                    if (textInput.selectedText != "")
+                        SelectionHandles.open( textInput );
+                    SelectionHandles.adjustPosition();
+                }
+                attemptToActivate = false
             }
 
             onMousePositionChanged: {
                 if (MagnifierPopup.isOpened() && !parent.selectByMouse) {
-                    parent.cursorPosition = textInput.positionAt(mouse.x)
+                    textInput.cursorPosition = textInput.positionAt(mouse.x)
+                    var magnifier = MagnifierPopup.popup;
+                    var mappedPosMf = mapFromItem(parent,mouse.x,0);
+                    var mappedPos =  mapToItem(magnifier.parent,mappedPosMf.x - magnifier.width / 2.0, 0);
+                    magnifier.xCenter = mapToItem(magnifier.sourceItem,mappedPosMf.x,0).x;
+                    magnifier.x = mappedPos.x;
                 }
+                SelectionHandles.adjustPosition();
             }
 
             onDoubleClicked: {
@@ -509,8 +613,6 @@ FocusScope {
                                            (mouseY > Popup.geometry().top && mouseY < Popup.geometry().bottom))) {
                 return;
             }
-
-            root.platformCloseSoftwareInputPanel();
             root.parent.focus = true;
         }
     }

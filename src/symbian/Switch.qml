@@ -113,87 +113,106 @@ Item {
                                        root.platformInverted)
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        sourceSize.width: Symbian.UndefinedSourceDimension
-        sourceSize.height: privateStyle.switchButtonHeight
+        sourceSize {
+            width: Math.round(privateStyle.switchButtonHeight * 3/2)
+            height: privateStyle.switchButtonHeight
+        }
+        scale: root.LayoutMirroring.enabled ? -1 : 1
+    }
 
-        MouseArea {
-            id: mouseArea
+    MouseArea {
+        id: mouseArea
 
-            property real lastX
+        property real lastX
 
-            function isChecked() {
+        function isChecked() {
+            if (root.LayoutMirroring.enabled)
+                return (handle.x + handle.width / 2 < track.x + (track.width / 2))
+            else
                 return (handle.x + handle.width / 2 > track.x + (track.width / 2))
-            }
-            function updateHandlePos() {
-                // The middle of the handle follows mouse, the handle is bound to the track
-                handle.x = Math.max(track.x, Math.min(mouseArea.lastX - handle.width / 2,
-                                                      track.x + track.width - handle.width))
-            }
+        }
+        function updateHandlePos() {
+            // The middle of the handle follows mouse, the handle is bound to the track
+            handle.x = Math.max(track.x, Math.min(mouseArea.lastX - handle.width / 2,
+                                                  track.x + track.width - handle.width))
+            //factoring the handle position on the track to a sensible opacity value
+            if (root.LayoutMirroring.enabled)
+                fill.opacity = 1 - (3 * handle.x/track.width)
+            else
+                fill.opacity = 3 * handle.x/track.width
+        }
 
-            anchors.fill: parent
-            onPressed: stateGroup.state = "Pressed"
-            onReleased: stateGroup.state = "Released" // releasing doesn't toggle yet, it is intermediate state
-            onClicked: stateGroup.state = ""
-            onCanceled: stateGroup.state = "Canceled"
-            onPositionChanged: {
-                mouseArea.lastX = mouse.x
-                if (mouseArea.drag.active)
+        anchors.fill: track
+        onPressed: stateGroup.state = "Pressed"
+        onReleased: stateGroup.state = "Released" // releasing doesn't toggle yet, it is intermediate state
+        onClicked: stateGroup.state = ""
+        onCanceled: stateGroup.state = "Canceled"
+        onPositionChanged: {
+            mouseArea.lastX = mouse.x
+            if (mouseArea.drag.active)
+                updateHandlePos()
+        }
+        drag {
+            // The handle is moved manually but MouseArea can be used to decide when dragging
+            // should start (QApplication::startDragDistance). A dummy target needs to be bound or
+            // dragging won't get activated.
+            target: Item { visible: false }
+
+            axis: Drag.XandYAxis
+            minimumY: 0; maximumY: 0 // keep dragging active eventhough only x axis switches
+            minimumX: track.x; maximumX: mouseArea.drag.minimumX + track.width - handle.width
+            onActiveChanged: {
+                if (mouseArea.drag.active) {
                     updateHandlePos()
-            }
-            drag {
-                // The handle is moved manually but MouseArea can be used to decide when dragging
-                // should start (QApplication::startDragDistance). A dummy target needs to be bound or
-                // dragging won't get activated.
-                target: Item { visible: false }
-
-                axis: Drag.XandYAxis
-                minimumY: 0; maximumY: 0 // keep dragging active eventhough only x axis switches
-                minimumX: track.x; maximumX: mouseArea.drag.minimumX + track.width - handle.width
-                onActiveChanged: {
-                    if (mouseArea.drag.active) {
-                        updateHandlePos()
-                        stateGroup.state = "Dragging"
-                    }
-                    else {
-                        stateGroup.state = (root.checked != isChecked()) ? "" : "Canceled"
-                    }
+                    stateGroup.state = "Dragging"
+                }
+                else {
+                    stateGroup.state = (root.checked != isChecked()) ? "" : "Canceled"
                 }
             }
         }
     }
 
-    Item {
+    Image {
         id: fill
 
-        LayoutMirroring.enabled: false
-        LayoutMirroring.childrenInherit: true
-        clip: true
-        anchors.left: track.left
-        anchors.verticalCenter: parent.verticalCenter
-        height: privateStyle.switchButtonHeight
-        width: handle.x + handle.width / 2 - mouseArea.drag.minimumX
-        visible: root.enabled
-
-        Image {
-            source: privateStyle.imagePath("qtg_graf_switchbutton_fill",
-                                           root.platformInverted)
-            anchors.left: parent.left
-            anchors.top: parent.top
-            height: parent.height
+        anchors.centerIn: parent
+        source: privateStyle.imagePath("qtg_graf_switchbutton_fill",
+                                       root.platformInverted)
+        sourceSize {
+            width: Math.round(privateStyle.switchButtonHeight * 3/2)
+            height: privateStyle.switchButtonHeight
         }
+        visible: root.enabled
+        opacity: 0
+
+        states: [
+            State {
+                name: "Off"
+                when: !mouseArea.drag.active && !checked
+                PropertyChanges { target: fill; opacity: 0 }
+            },
+            State {
+                name: "on"
+                when: !mouseArea.drag.active && checked
+                PropertyChanges { target: fill; opacity: 1 }
+            }
+        ]
+
+        Behavior on opacity { PropertyAnimation { duration: 200 } }
     }
 
     Image {
         id: handle
 
-        LayoutMirroring.enabled: false
-        LayoutMirroring.childrenInherit: true
         source: privateStyle.imagePath("qtg_graf_switchbutton_"
                                        + (root.pressed ? "handle_pressed" : "handle_normal"),
                                        root.platformInverted)
         anchors.verticalCenter: root.verticalCenter
-        sourceSize.width: privateStyle.switchButtonHeight
-        sourceSize.height: privateStyle.switchButtonHeight
+        sourceSize {
+            width: privateStyle.switchButtonHeight
+            height: privateStyle.switchButtonHeight
+        }
         visible: root.enabled
 
         states: [
@@ -203,7 +222,7 @@ Item {
                 PropertyChanges {
                     target: handle
                     restoreEntryValues: false
-                    x: mouseArea.drag.minimumX
+                    x: root.LayoutMirroring.enabled ? mouseArea.drag.maximumX : mouseArea.drag.minimumX
                 }
             },
             State {
@@ -212,7 +231,7 @@ Item {
                 PropertyChanges {
                     target: handle
                     restoreEntryValues: false
-                    x: mouseArea.drag.maximumX
+                    x: root.LayoutMirroring.enabled ? mouseArea.drag.minimumX : mouseArea.drag.maximumX
                 }
             }
         ]
@@ -220,11 +239,11 @@ Item {
         transitions: [
             Transition {
                 to: "Off"
-                SmoothedAnimation {properties: "x"; easing.type: Easing.InOutQuad; duration: 200 }
+                SmoothedAnimation { properties: "x"; easing.type: Easing.InOutQuad; duration: 200 }
             },
             Transition {
                 to: "On"
-                SmoothedAnimation {properties: "x"; easing.type: Easing.InOutQuad; duration: 200 }
+                SmoothedAnimation { properties: "x"; easing.type: Easing.InOutQuad; duration: 200 }
             }
         ]
     }
@@ -237,8 +256,6 @@ Item {
             event.accepted = true
         }
     }
-
-
     Keys.onReleased: {
         if (!event.isAutoRepeat && (event.key == Qt.Key_Select
                                     || event.key == Qt.Key_Return

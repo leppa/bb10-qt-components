@@ -39,12 +39,14 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.1
 
 PageStackWindow {
     id: rootWindow
 
     platformStyle: defaultStyle;
+
+    property bool enableSwipe: true
 
     PageStackWindowStyle { id: defaultStyle }
     PageStackWindowStyle {
@@ -67,25 +69,31 @@ PageStackWindow {
     Menu {
         id: myMenu
 //        visualParent: pageStack
+        onStatusChanged: {
+            if (status === DialogStatus.Closing) {
+                screen.allowSwipe = enableSwipe;
+            }
+        }
         MenuLayout {
-            MenuItem { text: "List title #1" }
-            MenuItem { text: "List title #2" }
-            MenuItem { text: "List title #3" }
-            MenuItem { text: "List title #4" }
-            MenuItem { text: "List title #5" }
-            MenuItem { text: "List title #6" }
-            MenuItem { text: "List title #7" }
-            MenuItem { text: "List title #8" }
-            MenuItem { text: "List title #9" }
-            MenuItem { text: "List title #10" }
-            MenuItem { text: "List title #11" }
-            MenuItem { text: "List title #12" }
-            MenuItem { text: "List title #14" }
-            MenuItem { text: "List title #15" }
-            MenuItem { text: "List title #16" }
-            MenuItem { text: "List title #17" }
-            MenuItem { text: "List title #18" }
-            MenuItem { text: "List title #19" }
+            MenuItem { text: "Theme color default"; onClicked: theme.colorScheme = 1 }
+            MenuItem { text: "Theme color lightGreen"; onClicked: theme.colorScheme = 2 }
+            MenuItem { text: "Theme color green"; onClicked: theme.colorScheme = 3 }
+            MenuItem { text: "Theme color darkGreen"; onClicked: theme.colorScheme = 4 }
+            MenuItem { text: "Theme color darkestGreen"; onClicked: theme.colorScheme = 5 }
+            MenuItem { text: "Theme color lightBlue"; onClicked: theme.colorScheme = 6 }
+            MenuItem { text: "Theme color blue"; onClicked: theme.colorScheme = 7 }
+            MenuItem { text: "Theme color darkBlue"; onClicked: theme.colorScheme = 8 }
+            MenuItem { text: "Theme color darkestBlue"; onClicked: theme.colorScheme = 9 }
+            MenuItem { text: "Theme color darkPurple"; onClicked: theme.colorScheme = 10 }
+            MenuItem { text: "Theme color purple"; onClicked: theme.colorScheme = 11 }
+            MenuItem { text: "Theme color pink"; onClicked: theme.colorScheme = 12 }
+            MenuItem { text: "Theme color lightPink"; onClicked: theme.colorScheme = 13 }
+            MenuItem { text: "Theme color lightOrange"; onClicked: theme.colorScheme = 14 }
+            MenuItem { text: "Theme color orange"; onClicked: theme.colorScheme = 15 }
+            MenuItem { text: "Theme color darkOrange"; onClicked: theme.colorScheme = 16 }
+            MenuItem { text: "Theme color darkYellow"; onClicked: theme.colorScheme = 17 }
+            MenuItem { text: "Theme color yellow"; onClicked: theme.colorScheme = 18 }
+            MenuItem { text: "Theme color lightYellow"; onClicked: theme.colorScheme = 19 }
             MenuItem { text: "Very long and extremely verbose ListTitle #20" }
         }
     }

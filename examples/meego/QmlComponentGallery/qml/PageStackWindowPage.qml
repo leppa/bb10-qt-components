@@ -39,8 +39,7 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import Qt.labs.components 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.1
 
 Page {
     id: pageStackWindowPage
@@ -50,8 +49,8 @@ Page {
     ToolBarLayout {
         id: pageStackWindowTools
         visible: false
-        ToolIcon { iconId: "toolbar-back"; onClicked: { myMenu.close(); pageStack.pop(); } }
-        ToolIcon { iconId: "toolbar-view-menu"; onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close() }
+        ToolIcon { iconId: "toolbar-back"; onClicked: { enableSwipe = true; screen.allowSwipe = enableSwipe; myMenu.close(); pageStack.pop(); } }
+        ToolIcon { iconId: "toolbar-view-menu"; onClicked: { if (myMenu.status == DialogStatus.Closed) { myMenu.open(); enableSwipe = screen.allowSwipe; screen.allowSwipe = true; } else { myMenu.close(); } } }
     }
 
     Flickable {
@@ -63,7 +62,7 @@ Page {
 
         Column {
             id: col
-            spacing: 30   
+            spacing: 30
             width:  flickable.width
 
             Component.onCompleted: {
@@ -82,11 +81,12 @@ Page {
 
             Button { text: "Toggle ToolBar"; checkable: true; checked: rootWindow.showToolBar; onClicked: { rootWindow.showToolBar = !rootWindow.showToolBar } }
 
-            Button { text: "Toggle Swipe"; checkable: true; checked: !screen.allowSwipe; onClicked: { screen.allowSwipe = !screen.allowSwipe } }
+            Button { text: "Toggle Swipe"; checkable: true; checked: enableSwipe; onClicked: { enableSwipe = !enableSwipe; screen.allowSwipe = enableSwipe } }
           }
 
     }
     ScrollDecorator {
         flickableItem: flickable
     }
+
 }

@@ -39,7 +39,7 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.1
 
 PageStackWindow {
     id: rootWindow
@@ -66,9 +66,26 @@ PageStackWindow {
         MenuLayout {
             MenuItem {id: b1; text: "Landscape"; onClicked: screen.allowedOrientations = Screen.Landscape}
             MenuItem {id: b2; text: "Portrait"; onClicked: screen.allowedOrientations = Screen.Portrait}
-            MenuItem {id: b3; text: "Item 3"; onClicked: myMenu.accept()}
-            MenuItem {id: b4; text: "Item 4"; onClicked: myMenu.accept()}
-        }
+            MenuItem { text: "Theme color default"; onClicked: theme.colorScheme = 1 }
+            MenuItem { text: "Theme color lightGreen"; onClicked: theme.colorScheme = 2 }
+            MenuItem { text: "Theme color green"; onClicked: theme.colorScheme = 3 }
+            MenuItem { text: "Theme color darkGreen"; onClicked: theme.colorScheme = 4 }
+            MenuItem { text: "Theme color darkestGreen"; onClicked: theme.colorScheme = 5 }
+            MenuItem { text: "Theme color lightBlue"; onClicked: theme.colorScheme = 6 }
+            MenuItem { text: "Theme color blue"; onClicked: theme.colorScheme = 7 }
+            MenuItem { text: "Theme color darkBlue"; onClicked: theme.colorScheme = 8 }
+            MenuItem { text: "Theme color darkestBlue"; onClicked: theme.colorScheme = 9 }
+            MenuItem { text: "Theme color darkPurple"; onClicked: theme.colorScheme = 10 }
+            MenuItem { text: "Theme color purple"; onClicked: theme.colorScheme = 11 }
+            MenuItem { text: "Theme color pink"; onClicked: theme.colorScheme = 12 }
+            MenuItem { text: "Theme color lightPink"; onClicked: theme.colorScheme = 13 }
+            MenuItem { text: "Theme color lightOrange"; onClicked: theme.colorScheme = 14 }
+            MenuItem { text: "Theme color orange"; onClicked: theme.colorScheme = 15 }
+            MenuItem { text: "Theme color darkOrange"; onClicked: theme.colorScheme = 16 }
+            MenuItem { text: "Theme color darkYellow"; onClicked: theme.colorScheme = 17 }
+            MenuItem { text: "Theme color yellow"; onClicked: theme.colorScheme = 18 }
+            MenuItem { text: "Theme color lightYellow"; onClicked: theme.colorScheme = 19 }
+       }
     }
 }
 

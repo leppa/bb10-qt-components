@@ -54,6 +54,7 @@
 #include "spopupmanager.h"
 #include "smousegrabdisabler.h"
 #include "sdeclarativemagnifier.h"
+#include "sdeclarativesharedstatusbar.h"
 
 #include <QCoreApplication>
 #include <QtDeclarative>
@@ -77,7 +78,7 @@ public:
         if (versionMajor > VERSION_MAJOR ||
             (versionMajor == VERSION_MAJOR && versionMinor >= VERSION_MINOR)) {
             // Either newer or this version of plugin already initialized.
-            // The same plugin might initialized twice: once from 
+            // The same plugin might initialized twice: once from
             // "import com.nokia.symbian", and another time from
             // "import Qt.labs.components.native".
             return;
@@ -86,8 +87,6 @@ public:
             context->setProperty("symbianComponentsVersionMajor", VERSION_MAJOR);
             context->setProperty("symbianComponentsVersionMinor", VERSION_MINOR);
         }
-
-        engine->addImageProvider(QLatin1String("theme"), new SDeclarativeImageProvider);
 
         screen = new SDeclarativeScreen(engine, context); // context as parent
         context->setContextProperty("screen", screen);
@@ -101,6 +100,13 @@ public:
 
         SDeclarative *declarative = new SDeclarative(context);
         context->setContextProperty("symbian", declarative);
+
+        SDeclarativeImageProvider *imageProvider = new SDeclarativeImageProvider;
+        engine->addImageProvider(QLatin1String("theme"), imageProvider);
+
+        // make status of graphics sharing available for 'symbian' -context property
+        if (imageProvider->graphicsSharing())
+            declarative->setGraphicsSharing(true);
 
         SPopupManager *popupManager = new SPopupManager(context);
         context->setContextProperty("platformPopupManager", popupManager);
@@ -122,6 +128,9 @@ public:
 #if defined(Q_OS_SYMBIAN) && QT_VERSION >= 0x040704
         Q_DECL_IMPORT void qt_s60_setPartialScreenInputMode(bool enable);
         qt_s60_setPartialScreenInputMode(true);
+
+        Q_DECL_IMPORT void qt_s60_setPartialScreenAutomaticTranslation(bool enable);
+        qt_s60_setPartialScreenAutomaticTranslation(false);
 #endif
     }
 
@@ -138,6 +147,7 @@ public:
         qmlRegisterType<SDeclarativeNetworkIndicator>(uri, 1, 1, "NetworkIndicator");
         qmlRegisterType<SMouseGrabDisabler>(uri, 1, 1, "MouseGrabDisabler");
         qmlRegisterType<SDeclarativeMagnifier>(uri, 1, 1, "Magnifier");
+        qmlRegisterType<SDeclarativeSharedStatusBar>(uri, 1, 1, "SharedStatusBar");
         qmlRegisterUncreatableType<SDeclarative>(uri, 1, 1, "Symbian", "");
         qmlRegisterUncreatableType<SDeclarativeScreen>(uri, 1, 1, "Screen", "");
         qmlRegisterUncreatableType<SDialogStatus>(uri, 1, 1, "DialogStatus", "");

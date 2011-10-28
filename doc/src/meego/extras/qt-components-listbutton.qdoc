@@ -42,6 +42,7 @@
     \inherits Item
     \ingroup qt-components-extras
     \since 4.7
+    \brief ListButton is similar to Button except that ListButton resizes according to the content size
 
     The ListButton component has a label and click event handling. It is similar to a
     Button except that ListButton resizes according to the content size.
@@ -64,7 +65,7 @@
     then \c checked is true. The \c checkable and \l Button::checked properties are set
     to \c false by default.
 
-    \snippet src/snippets/MeeGo/snippet-button.qml 3
+    \snippet src/snippets/meego/snippet-button.qml 3
 */
 
 /*!

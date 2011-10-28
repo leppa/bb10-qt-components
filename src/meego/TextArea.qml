@@ -45,6 +45,7 @@ import "UIConstants.js" as UI
 import "EditBubble.js" as Popup
 import "TextAreaHelper.js" as TextAreaHelper
 import "Magnifier.js" as MagnifierPopup
+import "SelectionHandles.js" as SelectionHandles
 
 FocusScope {
     id: root
@@ -128,7 +129,6 @@ FocusScope {
     }
 
     function closeSoftwareInputPanel() {
-        console.log("TextArea's function closeSoftwareInputPanel is deprecated. Use function platformCloseSoftwareInputPanel instead.")
         platformCloseSoftwareInputPanel()
     }
 
@@ -138,7 +138,6 @@ FocusScope {
     }
 
     function openSoftwareInputPanel() {
-        console.log("TextArea's function openSoftwareInputPanel is deprecated. Use function platformOpenSoftwareInputPanel instead.")
         platformOpenSoftwareInputPanel()
     }
 
@@ -147,6 +146,57 @@ FocusScope {
         textEdit.openSoftwareInputPanel();
     }
 
+    Connections {
+        target: platformWindow
+
+        onActiveChanged: {
+            if(platformWindow.active) {
+                if (__hadFocusBeforeMinimization) {                                                                                                         
+                    __hadFocusBeforeMinimization = false                                                                                                      
+                    if (root.parent)                                                                                                                          
+                        root.focus = true                                                                                                                     
+                    else                                                                                                                                      
+                        textInput.focus = true                                                                                                                
+                }
+                if (!readOnly) {
+                    if (activeFocus) {
+                        platformOpenSoftwareInputPanel();
+                        repositionTimer.running = true;
+                    }
+                }
+            } else {
+                if (activeFocus) {
+                    platformCloseSoftwareInputPanel();
+                    Popup.close(textEdit);
+                    SelectionHandles.close(textEdit);
+
+                    __hadFocusBeforeMinimization = true                                                                                                                                                                                           
+                    if (root.parent)                                                                                     
+                        root.parent.focus = true                                           
+                    else                                                                       
+                        textInput.focus = false
+                }
+            }
+        }
+
+        onAnimatingChanged: {
+            if (!platformWindow.animating && root.activeFocus) {
+                TextAreaHelper.repositionFlickable(contentMovingAnimation);
+            }
+        }
+    }
+
+    // private
+    property int __preeditDisabledMask: Qt.ImhHiddenText|                       
+                                        Qt.ImhNoPredictiveText|                
+                                        Qt.ImhDigitsOnly|                      
+                                        Qt.ImhFormattedNumbersOnly|             
+                                        Qt.ImhDialableCharactersOnly|           
+                                        Qt.ImhEmailCharactersOnly|              
+                                        Qt.ImhUrlCharactersOnly 
+    
+    property bool __hadFocusBeforeMinimization: false
+    
     implicitWidth: platformStyle.defaultWidth
     implicitHeight: Math.max (UI.FIELD_DEFAULT_HEIGHT,
                               textEdit.height + (UI.FIELD_DEFAULT_HEIGHT - font.pixelSize))
@@ -159,8 +209,9 @@ FocusScope {
         } else if (!activeFocus) {
             if (!readOnly)
                 platformCloseSoftwareInputPanel();
-
-            Popup.close(textEdit);            
+            Popup.close(textEdit);
+            SelectionHandles.close(textEdit);
+            MagnifierPopup.close(); 
         }
     }
 
@@ -240,13 +291,19 @@ FocusScope {
                 textEdit.forceActiveFocus();
 
                 // activate to preedit and/or move the cursor
+                var preeditDisabled = root.inputMethodHints &                   
+                                      root.__preeditDisabledMask
                 var injectionSucceeded = false;
                 var mappedMousePos = mapToItem(textEdit, mouseX, mouseY);
                 var newCursorPosition = textEdit.positionAt(mappedMousePos.x, mappedMousePos.y, TextInput.CursorOnCharacter);
-                if (!TextAreaHelper.atSpace(newCursorPosition)
-                        && newCursorPosition != textEdit.text.length
-                        && !(newCursorPosition == 0 || TextAreaHelper.atSpace(newCursorPosition - 1))) {
-                    injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition);
+                if (!preeditDisabled) {
+                    var beforeText = textEdit.text;
+                    if (!TextAreaHelper.atSpace(newCursorPosition, beforeText)
+                        && newCursorPosition != beforeText.length
+                        && !(newCursorPosition == 0 || TextAreaHelper.atSpace(newCursorPosition - 1, beforeText))) {
+
+                        injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition, beforeText);
+                    }
                 }
                 if (!injectionSucceeded) {
                     textEdit.cursorPosition=newCursorPosition;
@@ -276,24 +333,27 @@ FocusScope {
         persistentSelection: false
         focus: true
 
-        function updateMagnifierPosition() {
+        function updateMagnifierPosition(posX, posY) {
+            var yAdjustment = 0
             var magnifier = MagnifierPopup.popup;
-            var mappedPos =  mapToItem(magnifier.parent, positionToRectangle(cursorPosition).x - magnifier.width / 2,
-                                       positionToRectangle(cursorPosition).y - magnifier.height / 2 - 70);
+            var cursorHeight = textEdit.positionToRectangle(0,0).height;
+            var mappedPos =  mapToItem(magnifier.parent, posX - magnifier.width / 2,
+                                       posY - magnifier.height / 2 - cursorHeight - 70);
 
-            magnifier.xCenter = positionToRectangle(cursorPosition).x / root.width;
+            magnifier.xCenter = mapToItem(magnifier.sourceItem, posX, 0).x;
             magnifier.x = mappedPos.x;
-            if (-root.mapFromItem(magnifier.__rootElement(), 0,0).y - positionToRectangle(cursorPosition).y < (magnifier.height / 1.5)) {
-                magnifier.yAdjustment = Math.max(0,(magnifier.height / 1.5) + root.mapFromItem(magnifier.__rootElement(), 0,0).y - positionToRectangle(cursorPosition).y);
+            if (-root.mapFromItem(magnifier.__rootElement, 0,0).y - posY < (magnifier.height / 1.5)) {
+                yAdjustment = Math.max(0,(magnifier.height / 1.5) + root.mapFromItem(magnifier.__rootElement, 0,0).y - posY);
             } else {
-                magnifier.yAdjustment = 0;
+                yAdjustment = 0;
             }
-            magnifier.yCenter = 1.0 - ((50 + (positionToRectangle(cursorPosition).y)) / root.height);
-            magnifier.y = mappedPos.y + magnifier.yAdjustment;
+            magnifier.yCenter = mapToItem(magnifier.sourceItem, 0, posY - cursorHeight + 50).y
+            magnifier.y = mappedPos.y + yAdjustment;
         }
 
         Component.onDestruction: {
             Popup.close(textEdit);
+            SelectionHandles.close(textEdit);
         }
 
         onTextChanged: {
@@ -303,6 +363,8 @@ FocusScope {
 
             if (textEdit.preedit == "" && Popup.isOpened(textEdit) && !Popup.isChangingInput())
                 Popup.close(textEdit);
+            if (SelectionHandles.isOpened(textEdit) && textEdit.selectedText == "")
+                SelectionHandles.close(textEdit);
         }
 
         Connections {
@@ -311,15 +373,6 @@ FocusScope {
             onContentYChanged: if (root.activeFocus) TextAreaHelper.filteredInputContextUpdate();
             onContentXChanged: if (root.activeFocus) TextAreaHelper.filteredInputContextUpdate();
             onMovementEnded: inputContext.update();
-        }
-
-        Connections {
-            target: platformWindow
-
-            onAnimatingChanged: {
-                if (!platformWindow.animating && root.activeFocus)
-                    TextAreaHelper.repositionFlickable(contentMovingAnimation);
-            }
         }
 
         Connections {
@@ -337,21 +390,33 @@ FocusScope {
         }
 
         onCursorPositionChanged: {
-            if (MagnifierPopup.isOpened()) {
-                updateMagnifierPosition();
-            } else if(activeFocus) {
+            if(!MagnifierPopup.isOpened() && activeFocus) {
                 TextAreaHelper.repositionFlickable(contentMovingAnimation)
             }
 
-            if (Popup.isOpened(textEdit)) {
-                Popup.close(textEdit);
-                Popup.open(textEdit);
+           if (MagnifierPopup.isOpened()) {
+               if (Popup.isOpened(textEdit)) {
+                   Popup.close(textEdit);
+               }
+               if (SelectionHandles.isOpened(textEdit)) {
+                   SelectionHandles.close(textEdit);
+               }
+           } else if (!mouseFilter.attemptToActivate ||
+                textEdit.cursorPosition == textEdit.text.length) {
+                if ( Popup.isOpened(textEdit) ) {
+                    Popup.close(textEdit);
+                    Popup.open(textEdit,
+                           textEdit.positionToRectangle(textEdit.cursorPosition));
+                }
             }
         }
 
         onSelectedTextChanged: {
             if (Popup.isOpened(textEdit) && !Popup.isChangingInput()) {
                 Popup.close(textEdit);
+            }
+            if (SelectionHandles.isOpened(textEdit)) {
+                SelectionHandles.close(textEdit);
             }
         }
 
@@ -361,6 +426,9 @@ FocusScope {
             onPreeditChanged: {
                 if (Popup.isOpened(textEdit) && !Popup.isChangingInput()) {
                     Popup.close(textEdit);
+                }
+                if (SelectionHandles.isOpened(textEdit)) {
+                    SelectionHandles.close(textEdit);
                 }
             }
 
@@ -380,30 +448,26 @@ FocusScope {
         }
 
         MouseFilter {
+            id: mouseFilter
             anchors.fill: parent
             anchors.leftMargin:  UI.TOUCH_EXPANSION_MARGIN - UI.PADDING_XLARGE
             anchors.rightMargin:  UI.TOUCH_EXPANSION_MARGIN - UI.PADDING_MEDIUM
             anchors.topMargin: UI.TOUCH_EXPANSION_MARGIN - (UI.FIELD_DEFAULT_HEIGHT - font.pixelSize) / 2
             anchors.bottomMargin:  UI.TOUCH_EXPANSION_MARGIN - (UI.FIELD_DEFAULT_HEIGHT - font.pixelSize) / 2
+
             property bool attemptToActivate: false
             property bool pressOnPreedit
+
+            property variant editBubblePosition: null
 
             onPressed: {
                 var mousePosition = textEdit.positionAt(mouse.x,mouse.y,TextEdit.CursorOnCharacter);
                 pressOnPreedit = textEdit.cursorPosition==mousePosition
-                var preeditDisabled = (
-                        root.inputMethodHints&
-                        (
-                                Qt.ImhHiddenText|
-                                Qt.ImhNoPredictiveText|
-                                Qt.ImhDigitsOnly|
-                                Qt.ImhFormattedNumbersOnly|
-                                Qt.ImhDialableCharactersOnly|
-                                Qt.ImhEmailCharactersOnly|
-                                Qt.ImhUrlCharactersOnly
-                )
-                );
-                attemptToActivate = !pressOnPreedit && !root.readOnly && !preeditDisabled && root.activeFocus && !(mousePosition == 0 || TextAreaHelper.atSpace(mousePosition - 1));
+                var preeditDisabled = root.inputMethodHints &                  
+                                      root.__preeditDisabledMask
+
+                attemptToActivate = !pressOnPreedit && !root.readOnly && !preeditDisabled && root.activeFocus &&
+                                    !(mousePosition == 0 || TextAreaHelper.atSpace(mousePosition - 1) || TextAreaHelper.atSpace(mousePosition));
                 mouse.filtered = true;
             }
 
@@ -424,8 +488,8 @@ FocusScope {
                     parent.selectByMouse = false
                     MagnifierPopup.open(root);
                     var magnifier = MagnifierPopup.popup;
-                    parent.updateMagnifierPosition()
-                    parent.cursorPosition = textEdit.positionAt(mouse.x, mouse.y)
+                    parent.cursorPosition = parent.positionAt(mouse.x,mouse.y)
+                    parent.updateMagnifierPosition(mouse.x,mouse.y)
                     root.z = Number.MAX_VALUE
                 }
             }
@@ -436,19 +500,27 @@ FocusScope {
                     TextAreaHelper.repositionFlickable(contentMovingAnimation);
                 }
 
-                if (attemptToActivate) {
+                if (attemptToActivate)
                     inputContext.reset();
+
+                var newCursorPosition = textEdit.positionAt(mouse.x,mouse.y,TextEdit.CursorOnCharacter);
+                if (textEdit.preedit.length == 0)                   
+                    editBubblePosition = textEdit.positionToRectangle(newCursorPosition);
+
+                if (attemptToActivate) {
                     var beforeText = textEdit.text;
 
-                    var newCursorPosition = textEdit.positionAt(mouse.x,mouse.y,TextInput.CursorOnCharacter);
+                    textEdit.cursorPosition = newCursorPosition;
                     var injectionSucceeded = false;
 
-                    if (!TextAreaHelper.atSpace(newCursorPosition)                             
-                             && newCursorPosition != textEdit.text.length) {
-                        injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition);
+                    if (!TextAreaHelper.atSpace(newCursorPosition, beforeText)
+                             && newCursorPosition != beforeText.length) {
+                        injectionSucceeded = TextAreaHelper.injectWordToPreedit(newCursorPosition, beforeText);
                     }
                     if (injectionSucceeded) {
                         mouse.filtered=true;
+                        if (textEdit.preedit.length >=1 && textEdit.preedit.length <= 4)
+                            editBubblePosition = textEdit.positionToRectangle(textEdit.cursorPosition);
                     } else {
                         textEdit.text=beforeText;
                         textEdit.cursorPosition=newCursorPosition;
@@ -456,22 +528,27 @@ FocusScope {
                     attemptToActivate = false;
                 } else if (!parent.selectByMouse) {
                     if (!pressOnPreedit) inputContext.reset();
-                    textEdit.cursorPosition = textEdit.positionAt(mouse.x,mouse.y,TextInput.CursorOnCharacter);
+                    textEdit.cursorPosition = textEdit.positionAt(mouse.x,mouse.y,TextEdit.CursorOnCharacter);
                 }
                 parent.selectByMouse = false;
             }
             onFinished: {
-                if (root.activeFocus && platformEnableEditBubble)
-                    Popup.open(textEdit);
+                if (root.activeFocus && platformEnableEditBubble) {
+                    if (textEdit.preedit.length == 0)
+                        editBubblePosition = textEdit.positionToRectangle(textEdit.cursorPosition);
+                    if (editBubblePosition != null) {
+                        Popup.open(textEdit,editBubblePosition);
+                        editBubblePosition = null;
+                    }
+                    if (textEdit.selectedText != "")
+                        SelectionHandles.open(textEdit);
+                }
             }
             onMousePositionChanged: {
                if (MagnifierPopup.isOpened() && !parent.selectByMouse) {
                     var pos = textEdit.positionAt (mouse.x,mouse.y)
-                    var posNextLine = textEdit.positionAt (mouse.x, mouse.y + 1)
-                    var posPrevLine = textEdit.positionAt (mouse.x, mouse.y - 1)
-                    if (!(Math.abs(posNextLine - pos) > 1 || Math.abs(posPrevLine - pos) > 1)) {
-                        parent.cursorPosition = pos
-                    }
+                    parent.cursorPosition = pos
+                    parent.updateMagnifierPosition(mouse.x,mouse.y);
                 }
             }
             onDoubleClicked: {

@@ -49,12 +49,12 @@ Text {
     // Also role "Heading" taken into account although not explicitely used in evaluations below
     font {
         family: platformStyle.fontFamilyRegular
-        pixelSize: (role == "Title" || role == "SelectionTitle") ? platformStyle.fontSizeLarge : platformStyle.fontSizeSmall
-        weight: (role == "SubTitle" || role == "SelectionSubTitle") ? Font.Light : Font.Normal
+        pixelSize: (role == "Title" || role == "SelectionSubTitle") ? platformStyle.fontSizeLarge : platformStyle.fontSizeSmall
+        weight: (role == "SubTitle" || role == "SelectionTitle") ? Font.Light : Font.Normal
     }
     color: internal.normalColor
     elide: Text.ElideRight
-    horizontalAlignment: Text.AlignLeft
+    horizontalAlignment: root.role != "Heading" ? Text.AlignLeft : Text.AlignRight
 
     // Performance optimization:
     // Use value assignment when property changes instead of binding to js function
@@ -69,7 +69,7 @@ Text {
                                                        : platformStyle.colorNormalMid
         property color colorLight: root.platformInverted ? platformStyle.colorNormalLightInverted
                                                          : platformStyle.colorNormalLight
-        property color normalColor: (root.role == "SelectionSubTitle" || root.role == "SubTitle")
+        property color normalColor: (root.role == "SelectionTitle" || root.role == "SubTitle")
                                     ? colorMid : colorLight
 
         function getColor() {

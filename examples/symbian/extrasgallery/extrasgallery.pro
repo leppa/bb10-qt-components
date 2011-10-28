@@ -18,6 +18,7 @@ symbian {
     gallery_images.path = assets
     DEPLOYMENT += gallery_qmls gallery_images
     BLD_INF_RULES.prj_exports += "qmlextrasgallery.iby $$CORE_APP_LAYER_IBY_EXPORT_PATH(qmlextrasgallery.iby)"
+    VERSION = 10.1.2
 
     stubsis = \
         "START EXTENSION app-services.buildstubsis" \
@@ -32,10 +33,10 @@ symbian {
             "%{\"Nokia\"}" \
             " " \
             "; Unique Vendor name" \
-            ":\"Nokia, Qt\"" \
+            ":\"Nokia\"" \
             " "
 
-    header = "$${LITERAL_HASH}{\"qmlextrasgallery\"},(0x2003A914),1,0,0,TYPE=SA,RU"
+    header = "$${LITERAL_HASH}{\"qmlextrasgallery\"},(0x2003A914),1,1,2,TYPE=SA,RU"
     package.pkg_prerules += vendor_info header
     DEPLOYMENT += package
 }

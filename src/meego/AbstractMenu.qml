@@ -118,8 +118,8 @@ Popup {
                  && __findItem( "pageStackWindow") != null && __findItem( "pageStackWindow").platformStyle.cornersVisible
         anchors.left: parent.left
         anchors.right: parent.right
-        height: parent.height - __statusBarDelta - 2
         anchors.bottom: parent.bottom
+        height: parent.height - __statusBarDelta - 2
         z: 10001
 
         // compensate for the widening of the edges of the fader (which avoids artefacts during rotation)
@@ -189,15 +189,17 @@ Popup {
                 /* Portrait  */ titleBar.height + flickableContent.height + footerBar.height :
                 /* Landscape */ parent.height - platformStyle.topMargin - platformStyle.bottomMargin - __statusBarDelta
         anchors.bottom: parent.bottom
+        anchors.right: parent.right
 
         state: __statesWrapper.state
 
         BorderImage {
            id: backgroundImage
-           source: "image://theme/meegotouch-menu-background"
+           source: // !enabled ? root.platformStyle.disabledBackground :
+                   root.platformStyle.background
            anchors.fill : parent
-           border { left: 22; top: 22;
-                    right: 22; bottom: 22 }
+           border { left: 22; top: theme.inverted ? 124 : 22;
+                    right: 22; bottom: theme.inverted ? 2 : 22 }
         }
 
         // this item contains the whole menu (content rectangle)

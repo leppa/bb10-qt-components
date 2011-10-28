@@ -130,8 +130,9 @@ bool MDeclarativeMouseFilter::sceneEvent(QEvent *event)
             pressAndHoldTimerId = -1;
             if (abs(dist.x()) < abs(dist.y())) {
                 setKeepMouseGrab(false);
-                if (scene() && parentItem()) {
+                if (scene() && parentItem() && delayedPressEvent) {
                     scene()->sendEvent(parentItem(), delayedPressEvent);
+                    emit delayedPressSent();
                     return true;
                 }
             } else {
@@ -228,8 +229,14 @@ QGraphicsSceneMouseEvent *MDeclarativeMouseFilter::copyMouseEvent (QGraphicsScen
 
 void MDeclarativeMouseFilter::clampMousePosition(QGraphicsSceneMouseEvent *me)
 {
-    QRectF targetRect = QRect(-x(), -y(), parentItem()->width() - x(), parentItem()->height() - y());
-    me->setPos(QPointF(qBound(targetRect.x(), me->pos().x(),targetRect.width()), qBound(targetRect.y(), me->pos().y(), targetRect.height())));
-    me->setLastPos(QPointF(qBound(targetRect.x(), me->lastPos().x(),targetRect.width()), qBound(targetRect.y(), me->lastPos().y(),targetRect.height())));
-    me->setButtonDownPos(Qt::LeftButton, QPointF(qBound(targetRect.x(), me->buttonDownPos(Qt::LeftButton).x(), targetRect.width()), qBound(targetRect.y(), me->buttonDownPos(Qt::LeftButton).y(), targetRect.height())));
+    // Clamp position in MouseFilter coordinates.
+    // X position is clamped to MouseFilter area.
+    // Y position is clamped to parent item area.
+    QRectF targetRect = QRectF(0,-y(),width(),parentItem()->height());
+    me->setPos(QPointF(qBound(targetRect.x(), me->pos().x(),targetRect.x()+targetRect.width()),
+        qBound(targetRect.y(), me->pos().y(), targetRect.y()+targetRect.height()-1)));
+    me->setLastPos(QPointF(qBound(targetRect.x(), me->lastPos().x(),targetRect.x()+targetRect.width()),
+        qBound(targetRect.y(), me->lastPos().y(),targetRect.y()+targetRect.height()-1)));
+    me->setButtonDownPos(Qt::LeftButton, QPointF(qBound(targetRect.x(), me->buttonDownPos(Qt::LeftButton).x(), targetRect.x()+targetRect.width()),
+        qBound(targetRect.y(), me->buttonDownPos(Qt::LeftButton).y(), targetRect.y()+targetRect.height()-1)));
 }

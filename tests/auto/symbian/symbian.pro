@@ -17,6 +17,7 @@ SUBDIRS += \
     iconpool \
     imageprovider \
     indicatorcontainer \
+    label \
     listheading \
     listitem \
     listitemtext \
@@ -25,6 +26,7 @@ SUBDIRS += \
     networkindicator \
     page \
     pagestack \
+    pagestackwindow \
     popupmanager \
     progressbar \
     querydialog \
@@ -41,6 +43,7 @@ SUBDIRS += \
     textarea \
     textfield \
     toolbar \
+    toolbarlayout \
     toolbutton \
     tooltip \ #TODO not yet finalized
     window

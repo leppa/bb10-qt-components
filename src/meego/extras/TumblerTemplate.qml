@@ -166,7 +166,7 @@ Item {
             height: C.TUMBLER_ROW_HEIGHT
 
             Text {
-                text: !!value ? value : ""
+                id: txt
                 elide: Text.ElideRight
                 horizontalAlignment: "AlignHCenter"
                 color: C.TUMBLER_COLOR_TEXT
@@ -183,6 +183,24 @@ Item {
                     }
                 }
             }
+
+            Component.onCompleted: {
+                try {
+                    // Legacy. "value" use to be the role which was used by delegate
+                    txt.text = value
+                } catch(err) {
+                    try {
+                        // "modelData" available for JS array and for models with one role
+                        txt.text = modelData
+                    } catch (err) {
+                        try {
+                            // C++ models have "display" role available always
+                            txt.text = display
+                        } catch(err) {
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -193,7 +211,8 @@ Item {
             id: highlight
             objectName: "highlight"
             width: tumblerColumn ? tumblerColumn.width : 0
-            source: "image://theme/meegotouch-button-objectmenu-background-background-selected-horizontal-right"
+            height: C.TUMBLER_ROW_HEIGHT
+            source: "image://theme/" + theme.colorString + "meegotouch-list-fullwidth-background-selected-horizontal-center"
             fillMode: Image.TileHorizontally
         }
     }

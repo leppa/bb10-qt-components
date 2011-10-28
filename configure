@@ -5,7 +5,7 @@
 ## All rights reserved.
 ## Contact: Nokia Corporation (qt-info@nokia.com)
 ##
-## This file is part of the FOO module of the Qt Toolkit.
+## This file is part of the Qt Components project.
 ##
 ## $QT_BEGIN_LICENSE:BSD$
 ## You may use this file under the terms of the BSD license as follows:
@@ -51,11 +51,11 @@ BUILD_EXAMPLES=yes
 BUILD_EXTRAS=yes
 BUILD_TESTS=yes
 HAVE_MEEGOTOUCH=no
+HAVE_MALIIT=no
 HAVE_XDAMAGE=no
 HAVE_XRANDR=no
 HAVE_CONTEXTSUBSCRIBER=no
 HAVE_MEEGOGRAPHICSSYSTEM=no
-HAVE_SHADER=no
 HAVE_THEMEDAEMON_PROTOCOL_V1=yes
 FORCE_LOCAL_THEME=no
 HAVE_MOBILITY=auto
@@ -86,6 +86,7 @@ CONFIG_PRF="$BUILD_TREE/features/qt-components-config.prf"
 which pkg-config > /dev/null
 if [ $? -eq 0 ]; then
     pkg-config --exists meegotouch && HAVE_MEEGOTOUCH=yes
+    pkg-config --exists maliit-1.0 && HAVE_MALIIT=yes
     pkg-config --atleast-version=0.5.25 contextsubscriber-1.0 && HAVE_CONTEXTSUBSCRIBER=yes
     pkg-config --exists xdamage && HAVE_XDAMAGE=yes
     pkg-config --exists xrandr && HAVE_XRANDR=yes
@@ -106,7 +107,7 @@ while [ "$#" -gt 0 ]; do
         VAL=no
         ;;
     #Qt style yes options
-    -meego|-symbian|-meegotouch|-contextsubscriber|-xdamage|-xrandr|-meegographicssystem|-shader|-force-local-theme|-mobility)
+    -meego|-symbian|-meegotouch|-maliit|-contextsubscriber|-xdamage|-xrandr|-meegographicssystem|-force-local-theme|-mobility)
         VAR=`echo $1 | sed 's,^-\(.*\),\1,'`
         VAL=yes
         ;;
@@ -209,6 +210,13 @@ while [ "$#" -gt 0 ]; do
             UNKNOWN_OPT=yes
         fi
         ;;
+    maliit)
+        if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
+            HAVE_MALIIT=$VAL
+        else
+            UNKNOWN_OPT=yes
+        fi
+        ;;
     contextsubscriber)
         if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
             HAVE_CONTEXTSUBSCRIBER=$VAL
@@ -233,13 +241,6 @@ while [ "$#" -gt 0 ]; do
     xrandr)
         if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
             HAVE_XRANDR=$VAL
-        else
-            UNKNOWN_OPT=yes
-        fi
-        ;;
-    shader)
-        if [ "$VAL" = "yes" ] || [ "$VAL" = "no" ]; then
-            HAVE_SHADER=$VAL
         else
             UNKNOWN_OPT=yes
         fi
@@ -285,6 +286,9 @@ Additional options:
     -no-meegotouch ........... Do not compile MeeGo Touch framework support
  +  -meegotouch .............. Compile MeeGo Touch framework support
 
+    -no-maliit ............... Do not complile Maliit framework support
+ +  -maliit .................. Compile Maliit framework support
+
     -no-contextsubscriber .... Do not compile Context Subscriber support
  +  -contextsubscriber ....... Compile Context Subscriber support
 
@@ -310,10 +314,10 @@ fi
 [ "$BUILD_TESTS" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG tests"
 
 [ "$HAVE_MEEGOTOUCH" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG meegotouch"
+[ "$HAVE_MALIIT" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG maliit"
 [ "$HAVE_CONTEXTSUBSCRIBER" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG contextsubscriber"
 [ "$HAVE_MEEGOGRAPHICSSYSTEM" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG meegographicssystem"
 [ "$HAVE_THEMEDAEMON_PROTOCOL_V1" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG themedaemonprotocolv1"
-[ "$HAVE_SHADER" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG shader"
 [ "$HAVE_XDAMAGE" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG xdamage"
 [ "$HAVE_XRANDR" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG xrandr"
 [ "$FORCE_LOCAL_THEME" = "yes" ] && QMAKE_CONFIG="$QMAKE_CONFIG force-local-theme"
@@ -343,11 +347,11 @@ echo "Configuration ....................$QMAKE_CONFIG"
 echo "MeeGo Style ...................... $BUILD_MEEGO_STYLE"
 if [ "$BUILD_MEEGO_STYLE" = "yes" ]; then
     echo "  MeeGo Touch support  ........... $HAVE_MEEGOTOUCH"
+    echo "  Maliit support ................. $HAVE_MALIIT"
     echo "  ContextSubscriber support  ..... $HAVE_CONTEXTSUBSCRIBER"
     echo "  XDamage support  ............... $HAVE_XDAMAGE"
     echo "  XRandr support  ................ $HAVE_XRANDR"
     echo "  MeeGo Graphics System support .. $HAVE_MEEGOGRAPHICSSYSTEM"
-    echo "  Shader support ................. $HAVE_SHADER"
     echo "  Force local theme .............. $FORCE_LOCAL_THEME"
 fi
 echo "Symbian Style .................... $BUILD_SYMBIAN_STYLE"

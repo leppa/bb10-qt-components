@@ -46,7 +46,7 @@ import "MultiSelectionDialog.js" as MultiSelectionDialog
 CommonDialog {
     id: root
 
-    property ListModel model: ListModel{}
+    property alias model: selectionListView.model
     // Common API: property list<int> selectedIndexes (currently not possible due to QTBUG-10822)
     property variant selectedIndexes: []   // read & write, variant is supposed to be list<int>
     property alias acceptButtonText: acceptButton.text      //Convenience wrapper on top of the buttons
@@ -94,8 +94,24 @@ CommonDialog {
                     anchors.right: parent.right
                     anchors.leftMargin: root.platformStyle.itemLeftMargin
                     anchors.rightMargin: root.platformStyle.itemRightMargin
-                    text: name;
                     font: root.platformStyle.itemFont
+                }
+                Component.onCompleted: {
+                    try {
+                        // Legacy. "name" used to be the role which was used by delegate
+                        itemText.text = name
+                    } catch(err) {
+                        try {
+                            // "modelData" available for JS array and for models with one role
+                            itemText.text = modelData
+                        } catch (err) {
+                            try {
+                                 // C++ models have "display" role available always
+                                itemText.text = display
+                            } catch(err) {
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -136,7 +152,7 @@ CommonDialog {
     content: Item {
 
         id: selectionContent
-        property int listViewHeight : root.model.count * root.platformStyle.itemHeight
+        property int listViewHeight
         property int maxListViewHeight : visualParent
                                          ? visualParent.height * 0.87
                                                  - buttonRow.childrenRect.height - root.platformStyle.contentSpacing - root.platformStyle.buttonsTopMargin
@@ -152,10 +168,10 @@ CommonDialog {
 
         ListView {
             id: selectionListView
+            model: ListModel {}
 
             currentIndex : -1
             anchors.fill: parent
-            model: root.model
             delegate: root.delegate
             focus: true
             clip: true
@@ -166,6 +182,8 @@ CommonDialog {
                 flickableItem: selectionListView
                 platformStyle.inverted: true
             }
+            onCountChanged: selectionContent.listViewHeight = model.count * platformStyle.itemHeight
+            onModelChanged: selectionContent.listViewHeight = model.count * platformStyle.itemHeight
         }
 
     }
@@ -177,7 +195,8 @@ CommonDialog {
         y: root.platformStyle.buttonsTopMargin
 
         onWidthChanged: {
-            if (acceptButton.width + rejectButton.width > width) {
+            if ( (acceptButton.width + rejectButton.width > width) ||
+                 (acceptButton.implicitWidth + rejectButton.implicitWidth > width) ) {
                 acceptButton.width = width / 2
                 rejectButton.width = width / 2
             } else {
@@ -213,5 +232,4 @@ CommonDialog {
         }
     }
 }
-
 
