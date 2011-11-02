@@ -129,6 +129,7 @@ Dialog {
     title: Text {
         id: title
         objectName: "title"
+        text: "Pick Time"
         visible: text.length > 0
         color: theme.selectionColor
         font { pixelSize: 32; family: C.FONT_FAMILY_BOLD }
@@ -259,7 +260,7 @@ Dialog {
     }
     onSecondChanged: {
         internal.validateTime()
-	secondColumn.selectedIndex = root.second
+        secondColumn.selectedIndex = root.second
     }
 
     QtObject {
@@ -283,7 +284,7 @@ Dialog {
             tumbler.privateInitialize();
             internal.initialised = true;
         }
-        
+
         function validateTime() {
             root.hour = Math.max(0, Math.min(23, root.hour))
             root.minute = Math.max(0, Math.min(59, root.minute))
