@@ -65,7 +65,7 @@ void CSDeclarativeIndicatorDataHandler::ConstructL()
     // subsciber reads the status pane data
     iSubscriber = CSDeclarativeStatusPaneSubscriber::NewL( *this );
 
-    iIncallIndicator = CSDeclarativeIncallIndicator::NewL();
+    //iIncallIndicator = CSDeclarativeIncallIndicator::NewL();
 
     TCallBack callback( InitializeCallBack, this );
     iInitializer = new (ELeave) CAsyncCallBack( callback, CActive::EPriorityLow );
@@ -83,7 +83,7 @@ CSDeclarativeIndicatorDataHandler::~CSDeclarativeIndicatorDataHandler()
     while (iIndicatorsData.count())
         delete iIndicatorsData.take( iIndicatorsData.keys().at(0) );
 
-    delete iIncallIndicator;
+    //delete iIncallIndicator;
     }
 
 CSDeclarativeIndicatorDataHandler::CSDeclarativeIndicatorDataHandler(
@@ -118,7 +118,7 @@ TInt CSDeclarativeIndicatorDataHandler::InitializeCallBack( TAny* aAny )
             }
 
         // update incall indicator
-        thisPtr->iIncallIndicator->SetFlags( indicatorState.iIncallBubbleFlags );
+        //thisPtr->iIncallIndicator->SetFlags( indicatorState.iIncallBubbleFlags );
         }
 
     delete thisPtr->iInitializer;
@@ -133,8 +133,8 @@ void CSDeclarativeIndicatorDataHandler::StatusPaneStateChanged( TStatusPaneChang
         UpdateIndicators();
 
         // update incall indicator
-        const TAknIndicatorState& indicatorState = iSubscriber->IndicatorState();
-        iIncallIndicator->SetFlags( indicatorState.iIncallBubbleFlags );
+        //const TAknIndicatorState& indicatorState = iSubscriber->IndicatorState();
+        //iIncallIndicator->SetFlags( indicatorState.iIncallBubbleFlags );
         }
     }
 
