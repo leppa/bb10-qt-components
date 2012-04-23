@@ -25,3 +25,27 @@ build/qt-components-examples::
 build/qt-components-tests::
 	mkdir -p debian/tmp/usr/share/qt-components-tests
 	cp tests/auto/meego/tests-meego.xml debian/tmp/usr/share/qt-components-tests/tests.xml
+
+PACKAGE_TARGETS := $(foreach pkg,$(DEB_ALL_PACKAGES),binary/$(pkg))
+
+$(PACKAGE_TARGETS)::
+	aegis-deb-util --verbose \
+	--add-digsigsums=/usr/lib/qt4/imports/com/meego/*.qml \
+	--add-digsigsums=/usr/lib/qt4/imports/com/meego/*.js \
+	--add-digsigsums=/usr/lib/qt4/imports/com/meego/qmldir \
+	--add-digsigsums=/usr/lib/qt4/imports/com/meego/extras/*.qml \
+	--add-digsigsums=/usr/lib/qt4/imports/com/meego/extras/*.js \
+	--add-digsigsums=/usr/lib/qt4/imports/com/meego/extras/qmldir \
+	--add-digsigsums=/usr/lib/qt4/imports/com/nokia/meego/*.qml \
+	--add-digsigsums=/usr/lib/qt4/imports/com/nokia/meego/*.js \
+	--add-digsigsums=/usr/lib/qt4/imports/com/nokia/meego/qmldir \
+	--add-digsigsums=/usr/lib/qt4/imports/com/nokia/extras/*.qml \
+	--add-digsigsums=/usr/lib/qt4/imports/com/nokia/extras/*.js \
+	--add-digsigsums=/usr/lib/qt4/imports/com/nokia/extras/qmldir \
+	--add-digsigsums=/usr/lib/qt4/imports/Qt/labs/components/*.qml \
+	--add-digsigsums=/usr/lib/qt4/imports/Qt/labs/components/*.js \
+	--add-digsigsums=/usr/lib/qt4/imports/Qt/labs/components/qmldir \
+	--add-digsigsums=/usr/lib/qt4/imports/Qt/labs/components/native/*.qml \
+	--add-digsigsums=/usr/lib/qt4/imports/Qt/labs/components/native/*.js \
+	--add-digsigsums=/usr/lib/qt4/imports/Qt/labs/components/native/qmldir \
+	qt-components
