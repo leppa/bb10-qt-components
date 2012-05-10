@@ -19,12 +19,6 @@ contains(OUTPUT, "-creator") {
         QHELPFILE = doc/html/qtcomponentssymbian.qhp
         QCHFILE = doc/qch/qtcomponentssymbian.qch
     }
-    meego:{
-        QDOCCONF = $${Q_COMPONENTS_SOURCE_TREE}/doc/config/qt-components-meego.qdocconf
-        QDOCCONF_QCH = $$QDOCCONF
-        QHELPFILE = doc/html/qtcomponentsmeego.qhp
-        QCHFILE = doc/qch/qtcomponentsmeego.qch
-    }
 
 } else {
     QDOC_ONLINE = " "
@@ -34,12 +28,6 @@ contains(OUTPUT, "-creator") {
         QDOCCONF_QCH = $${Q_COMPONENTS_SOURCE_TREE}/doc/config/qt474/qt-components-symbian.qdocconf
         QHELPFILE = doc/html/qtcomponentssymbian.qhp
         QCHFILE = doc/qch/qtcomponentssymbian.qch
-    }
-    meego: {
-        QDOCCONF = $${Q_COMPONENTS_SOURCE_TREE}/doc/config/qt474/qt-components-meego-online.qdocconf
-        QDOCCONF_QCH = $${Q_COMPONENTS_SOURCE_TREE}/doc/config/qt474/qt-components-meego.qdocconf
-        QHELPFILE = doc/html/qtcomponentsmeego.qhp
-        QCHFILE = doc/qch/qtcomponentsmeego.qch
     }
 }
 
