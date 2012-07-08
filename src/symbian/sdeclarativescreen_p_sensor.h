@@ -49,6 +49,10 @@
 #include <QCoreApplication>
 #endif
 
+#ifdef Q_OS_BLACKBERRY
+#include <QTimer>
+#endif
+
 QT_FORWARD_DECLARE_CLASS(QDeclarativeEngine)
 
 
@@ -77,6 +81,33 @@ private:
 };
 #endif
 
+#ifdef Q_OS_BLACKBERRY
+class OrientationListener : public QObject
+{
+    Q_OBJECT
+
+public:
+    static OrientationListener *getCountedInstance();
+    static void deleteCountedInstance();
+
+private:
+    OrientationListener();
+    ~OrientationListener();
+
+Q_SIGNALS:
+    void orientationChanged();
+
+private:
+    // Data
+    static int userCount;
+    static OrientationListener *instance;
+    QTimer timer;
+
+private slots:
+    void handleNativeEvents();
+};
+#endif
+
 class SDeclarativeScreenPrivateSensor : public SDeclarativeScreenPrivate
 {
 
@@ -96,7 +127,7 @@ public Q_SLOTS:
     void switchGeometry();
     void viewStatusChanged(QDeclarativeView::Status status);
 
-#ifdef Q_OS_SYMBIAN
+#if defined(Q_OS_SYMBIAN) || defined(Q_OS_BLACKBERRY)
     void orientationChanged();
 #endif
 
@@ -107,7 +138,7 @@ private:
     int m_animate : 1;
     int m_hasWindow : 1;
 
-#ifdef Q_OS_SYMBIAN
+#if defined Q_OS_SYMBIAN || defined(Q_OS_BLACKBERRY)
     SDeclarativeScreen::Orientation systemOrientation();
 #endif
 };

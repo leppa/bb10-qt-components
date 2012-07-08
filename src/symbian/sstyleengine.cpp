@@ -47,6 +47,7 @@
 
 #include <QObject>
 #include <QFile>
+#include <QDebug>
 #include <qmath.h>
 
 // Parameters for magic unit value (RnD feature)
@@ -98,13 +99,19 @@ bool SStyleEnginePrivate::updateLayoutParameters()
     QString ppi = QString::number(qRound(screen->dpi() / 5.0) * 5); // round to closest 5
     QString newDisplayConfig = longEdge + QLatin1Char('_') + shortEdge + QLatin1Char('_') + ppi;
     
+    qDebug() << "DISPLAY CONFIG:" << longEdge << "x" << shortEdge << "@" << ppi;
+    
     if (displayConfig != newDisplayConfig) {
         layoutParameters.clear();
         QString layoutFile = QLatin1String(":/params/layouts/") + newDisplayConfig + QLatin1String(".params");
-        if (QFile::exists(layoutFile))
+        qDebug() << "DISPLAY: Trying to load:" << layoutFile;
+        if (QFile::exists(layoutFile)) {
+            qDebug() << "DISPLAY: Loading" << layoutFile;
             loadParameters(layoutFile, ParameterType_Integer);
-        else
+        } else {
+            qDebug() << "DISPLAY: Loading fallback.params";
             loadParameters(QLatin1String(":/params/layouts/fallback.params"), ParameterType_Unit);
+        }
         displayConfig = newDisplayConfig;
         return true;
     }
