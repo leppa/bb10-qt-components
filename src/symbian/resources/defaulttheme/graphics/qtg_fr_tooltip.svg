@@ -4,12 +4,12 @@
 <path d="M84,20C84,5.047,78.953,0,64,0H20C5.047,0,0,5.047,0,20v2c0,14.953,5.047,20,20,20h44  c14.953,0,20-5.047,20-20V20z" fill="url(#SVGID_1_)"/>
 <path d="M64,0H20C5.047,0,0,5.047,0,20v2c0,14.953,5.047,20,20,20h44c14.953,0,20-5.047,20-20v-2  C84,5.047,78.953,0,64,0z M83,22c0,14.383-4.617,19-19,19H20C5.617,41,1,36.383,1,22v-2C1,5.617,5.617,1,20,1h44  c14.383,0,19,4.617,19,19V22z" fill="#FFFFFF" fill-opacity="0.1"/>
 <defs>
-<linearGradient gradientTransform="matrix(1 0 0 -1 -101.02 -14.4805)" gradientUnits="userSpaceOnUse" id="SVGID_1_" x1="143.0195" x2="143.0195" y1="-14.5625" y2="-55.9612">
-<stop offset="0" style="stop-color:#464646"/>
-<stop offset="0.0171" style="stop-color:#454545"/>
-<stop offset="0.3689" style="stop-color:#2E2E2E"/>
-<stop offset="0.7034" style="stop-color:#212121"/>
-<stop offset="1" style="stop-color:#1C1C1C"/>
+<linearGradient gradientTransform="matrix(1 0 0 1 -177.02 -500.4805)" gradientUnits="userSpaceOnUse" id="SVGID_1_" x1="219.0205" x2="219.0205" y1="500.5625" y2="541.9612">
+<stop offset="0" style="stop-color:#64645F"/>
+<stop offset="0.0171" style="stop-color:#63635E"/>
+<stop offset="0.3689" style="stop-color:#4C4C47"/>
+<stop offset="0.7034" style="stop-color:#3F3F3A"/>
+<stop offset="1" style="stop-color:#3A3A35"/>
 </linearGradient>
 </defs>
 </svg>
