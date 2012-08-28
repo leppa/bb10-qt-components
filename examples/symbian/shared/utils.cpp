@@ -39,7 +39,7 @@
 ****************************************************************************/
 
 #include "utils.h"
-#include <QApplication>
+#include <QtGui/QGuiApplication>
 #include <QObject>
 
 LayoutDirectionSetter::LayoutDirectionSetter(QObject *parent) : QObject(parent)
@@ -49,5 +49,5 @@ LayoutDirectionSetter::LayoutDirectionSetter(QObject *parent) : QObject(parent)
 void LayoutDirectionSetter::setLayoutDirection(int direction)
 {
     if (direction == Qt::LeftToRight || direction == Qt::RightToLeft || direction == Qt::LayoutDirectionAuto)
-        static_cast<QApplication *>(QApplication::instance())->setLayoutDirection((Qt::LayoutDirection)direction);
+        static_cast<QGuiApplication *>(QGuiApplication::instance())->setLayoutDirection((Qt::LayoutDirection)direction);
 }

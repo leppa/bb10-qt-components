@@ -39,18 +39,29 @@
 ****************************************************************************/
 
 #include "../shared/utils.h"
+/*
 #include <QApplication>
 #include <QDeclarativeView>
 #include <QDeclarativeEngine>
 #include <QDeclarativeItem>
-#include <QDir>
+*/
+#include <QtGui/QGuiApplication>
+#include <QtQuick/QQuickView>
+#include <QtQml/QQmlEngine>
+#include <QtQuick/QQuickItem>
+//#include <QDir>
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     qmlRegisterType<LayoutDirectionSetter>("LayoutDirectionSetter", 1, 0, "LayoutDirectionSetter");
 
-    QDeclarativeView view;
+    QQuickView view;
+    /*
+    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.setWidth(400);
+    view.setHeight(800);
+    */
     view.setSource(QUrl("qrc:/gallery.qml"));
     view.show();
     return app.exec();
