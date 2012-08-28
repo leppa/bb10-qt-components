@@ -7,7 +7,7 @@ INCLUDEPATH += $$PWD $$PWD/indicators
 
 win32|mac:!wince*:!win32-msvc:!macx-xcode:CONFIG += debug_and_release build_all
 CONFIG += qt plugin copy_native install_native
-QT += declarative svg
+QT += svg qml quick
 mobility {
     MOBILITY += feedback systeminfo
     QT += network

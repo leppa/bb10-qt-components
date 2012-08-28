@@ -41,11 +41,12 @@
 #ifndef MSNAPSHOT_H
 #define MSNAPSHOT_H
 
-#include <qdeclarativeitem.h>
+//#include <qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 #include <qglobal.h>
 #include <qpixmap.h>
 
-class Snapshot : public QDeclarativeItem
+class Snapshot : public QQuickPaintedItem
 {
     Q_OBJECT
 
@@ -53,10 +54,10 @@ class Snapshot : public QDeclarativeItem
     Q_PROPERTY(int snapshotHeight READ snapshotHeight WRITE setSnapshotHeight NOTIFY snapshotHeightChanged)
 
 public:
-    Snapshot(QDeclarativeItem *parent = 0);
+    Snapshot(QQuickItem *parent = 0);
     virtual ~Snapshot();
 
-    virtual void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual void paint(QPainter *);
 
     int snapshotWidth() const;
     int snapshotHeight() const;

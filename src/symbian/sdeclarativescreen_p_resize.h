@@ -46,8 +46,8 @@
 #include <QtCore/qpointer.h>
 #include <QtGui/qgraphicsview.h>
 
-QT_FORWARD_DECLARE_CLASS(QDeclarativeEngine)
-QT_FORWARD_DECLARE_CLASS(QDeclarativeView)
+QT_FORWARD_DECLARE_CLASS(QQmlEngine)
+QT_FORWARD_DECLARE_CLASS(QQuickView)
 
 class SDeclarativeScreenPrivateResize : public SDeclarativeScreenPrivate
 {
@@ -55,7 +55,7 @@ class SDeclarativeScreenPrivateResize : public SDeclarativeScreenPrivate
     Q_DECLARE_PUBLIC(SDeclarativeScreen)
 
 public:
-    SDeclarativeScreenPrivateResize(SDeclarativeScreen *qq, QDeclarativeEngine *engine, QDeclarativeView *view);
+    SDeclarativeScreenPrivateResize(SDeclarativeScreen *qq, QQmlEngine *engine, QQuickView *view);
     ~SDeclarativeScreenPrivateResize();
 
     void setAllowedOrientations(SDeclarativeScreen::Orientations orientations);

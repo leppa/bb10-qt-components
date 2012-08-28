@@ -74,8 +74,8 @@ SDeclarativeIndicatorContainerPrivate::~SDeclarativeIndicatorContainerPrivate()
 }
 
 
-SDeclarativeIndicatorContainer::SDeclarativeIndicatorContainer(QDeclarativeItem *parent)
-    : QDeclarativeItem(parent), d_ptr(new SDeclarativeIndicatorContainerPrivate)
+SDeclarativeIndicatorContainer::SDeclarativeIndicatorContainer(QQuickItem *parent)
+    : QQuickItem(parent), d_ptr(new SDeclarativeIndicatorContainerPrivate)
 {
 #if defined(Q_OS_SYMBIAN) && defined(HAVE_SYMBIAN_INTERNAL)
     QT_TRAP_THROWING(d_ptr->dataHandler = CSDeclarativeIndicatorDataHandler::NewL(this));
@@ -183,7 +183,7 @@ void SDeclarativeIndicatorContainer::doLayoutChildren()
     const QSize itemSize(d->indicatorSize);
 
     for (int i = 0; i < childItems().count(); i++) {
-        QDeclarativeItem *child = qobject_cast<QDeclarativeItem *>(childItems().at(i)->toGraphicsObject());
+        QQuickItem *child = qobject_cast<QQuickItem *>(childItems().at(i));
         if (child && child->isVisible()) {
             if (itemsShown >= d->maxIndicatorCount && d->maxIndicatorCount >= 0) {
                 child->setSize(QSize(0, 0));
@@ -193,7 +193,7 @@ void SDeclarativeIndicatorContainer::doLayoutChildren()
             if (itemsShown++)
                 xPosition += d->indicatorPadding;
 
-            child->setPos(xPosition, 0);
+            child->setPos(QPointF(xPosition, 0));
             child->setSize(itemSize);
 
             xPosition += child->width();

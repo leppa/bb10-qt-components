@@ -38,23 +38,26 @@
 **
 ****************************************************************************/
 
-#include <QtDeclarative>
+//#include <QtDeclarative>
+#include <QtQml/QQmlExtensionPlugin>
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
 #include "sdatetime.h"
 
-class SymbianExtrasPlugin : public QDeclarativeExtensionPlugin
+class SymbianExtrasPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
 public:
-    void initializeEngine(QDeclarativeEngine *engine, const char *uri) {
-        QDeclarativeExtensionPlugin::initializeEngine(engine, uri);
+    void initializeEngine(QQmlEngine *engine, const char *uri) {
+        QQmlExtensionPlugin::initializeEngine(engine, uri);
         engine->rootContext()->setContextProperty("dateTime", new SDateTime(engine->rootContext()));
     }
 
     void registerTypes(const char *uri) {
         qmlRegisterUncreatableType<SDateTime>(uri, 1, 1, "DateTime", "");
     }
+
+    Q_PLUGIN_METADATA(IID "com.nokia.symbian.extras")
 };
 
 #include "plugin.moc"
-
-Q_EXPORT_PLUGIN2(sybmianextrasplugin, SymbianExtrasPlugin);

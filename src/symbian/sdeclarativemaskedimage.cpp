@@ -42,6 +42,7 @@
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qmargins.h>
+#include <QtWidgets/QTileRules>
 
 #include "sdeclarativemaskedimage.h"
 #include "sdeclarativemaskedimage_p.h"
@@ -128,10 +129,10 @@ void SDeclarativeMaskedImagePrivate::releasePixmaps()
     pixmapsCreated = false;
 }
 
-SDeclarativeMaskedImage::SDeclarativeMaskedImage(QDeclarativeItem *parent) :
-    QDeclarativeItem(parent), d_ptr(new SDeclarativeMaskedImagePrivate(this))
+SDeclarativeMaskedImage::SDeclarativeMaskedImage(QQuickItem *parent) :
+    QQuickPaintedItem(parent), d_ptr(new SDeclarativeMaskedImagePrivate(this))
 {
-    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 SDeclarativeMaskedImage::~SDeclarativeMaskedImage()
@@ -262,7 +263,7 @@ void SDeclarativeMaskedImage::setRightMargin(int margin)
     }
 }
 
-void SDeclarativeMaskedImage::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void SDeclarativeMaskedImage::paint(QPainter *painter)
 {
     Q_D(SDeclarativeMaskedImage);
     QSize rectSize(width(), height());

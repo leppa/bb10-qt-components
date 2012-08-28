@@ -43,7 +43,8 @@
 
 #include "sdeclarativescreen.h"
 #include "sdeclarativescreen_p.h"
-#include <QDeclarativeView>
+//#include <QDeclarativeView>
+#include <QtQuick/QQuickView>
 
 #ifdef Q_OS_SYMBIAN
 #include <QCoreApplication>
@@ -85,7 +86,7 @@ class SDeclarativeScreenPrivateSensor : public SDeclarativeScreenPrivate
 
 public:
 
-    SDeclarativeScreenPrivateSensor(SDeclarativeScreen *qq, QDeclarativeEngine *engine, QDeclarativeView *view);
+    SDeclarativeScreenPrivateSensor(SDeclarativeScreen *qq, QQmlEngine *engine, QQuickView *view);
     ~SDeclarativeScreenPrivateSensor();
 
     void setAllowedOrientations(SDeclarativeScreen::Orientations orientations);
@@ -94,7 +95,7 @@ public:
 
 public Q_SLOTS:
     void switchGeometry();
-    void viewStatusChanged(QDeclarativeView::Status status);
+    void viewStatusChanged(QQuickView::Status status);
 
 #ifdef Q_OS_SYMBIAN
     void syncOrientationWithSystem();

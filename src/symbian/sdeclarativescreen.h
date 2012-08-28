@@ -41,7 +41,8 @@
 #ifndef SDECLARATIVESCREEN_H
 #define SDECLARATIVESCREEN_H
 
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SDeclarativeScreenPrivate;
 QT_FORWARD_DECLARE_CLASS(QDeclarativeEngine)
@@ -64,7 +65,7 @@ class SDeclarativeScreen : public QObject
     Q_FLAGS(Orientations)
 
 public:
-    explicit SDeclarativeScreen(QDeclarativeEngine *engine, QObject *parent = 0);
+    explicit SDeclarativeScreen(QQmlEngine *engine, QObject *parent = 0);
     virtual ~SDeclarativeScreen();
 
     enum Orientation {

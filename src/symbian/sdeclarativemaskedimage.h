@@ -41,11 +41,12 @@
 #ifndef SDECLARATIVEMASKEDIMAGE_H
 #define SDECLARATIVEMASKEDIMAGE_H
 
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SDeclarativeMaskedImagePrivate;
 
-class SDeclarativeMaskedImage : public QDeclarativeItem
+class SDeclarativeMaskedImage : public QQuickPaintedItem
 {
     Q_OBJECT
 
@@ -60,7 +61,7 @@ public:
     Q_PROPERTY(QPoint offset READ offset WRITE setOffset)
 
 public:
-    explicit SDeclarativeMaskedImage(QDeclarativeItem *parent = 0);
+    explicit SDeclarativeMaskedImage(QQuickItem *parent = 0);
     virtual ~SDeclarativeMaskedImage();
 
     QString imageName() const;
@@ -87,7 +88,7 @@ public:
     int rightMargin() const;
     void setRightMargin(int margin);
 
-    virtual void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual void paint(QPainter *);
 
 protected:
     QScopedPointer<SDeclarativeMaskedImagePrivate> d_ptr;

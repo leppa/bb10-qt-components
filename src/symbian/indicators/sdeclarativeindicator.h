@@ -47,12 +47,12 @@
 class SDeclarativeIndicatorPrivate;
 class CSDeclarativeIndicatorData;
 
-class SDeclarativeIndicator : public QDeclarativeItem
+class SDeclarativeIndicator : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
 public:
-    SDeclarativeIndicator(CSDeclarativeIndicatorData *data, QDeclarativeItem *parent = 0);
+    SDeclarativeIndicator(CSDeclarativeIndicatorData *data, QQuickItem *parent = 0);
     ~SDeclarativeIndicator();
 
     int uid() const;
@@ -69,7 +69,7 @@ signals:
     void colorChanged();
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    virtual void paint(QPainter *painter);
     virtual void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
     QScopedPointer<SDeclarativeIndicatorPrivate> d_ptr;
 

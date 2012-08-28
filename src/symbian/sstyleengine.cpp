@@ -47,7 +47,9 @@
 
 #include <QObject>
 #include <QFile>
+#include <QTextStream>
 #include <qmath.h>
+#include <QDebug>
 
 // Parameters for magic unit value (RnD feature)
 // -> See loadParameters documentation for details
@@ -97,14 +99,14 @@ bool SStyleEnginePrivate::updateLayoutParameters()
     QString shortEdge = QString::number(qMin(screen->displayWidth(), screen->displayHeight()));
     QString ppi = QString::number(qRound(screen->dpi() / 5.0) * 5); // round to closest 5
     QString newDisplayConfig = longEdge + QLatin1Char('_') + shortEdge + QLatin1Char('_') + ppi;
-    
     if (displayConfig != newDisplayConfig) {
         layoutParameters.clear();
         QString layoutFile = QLatin1String(":/params/layouts/") + newDisplayConfig + QLatin1String(".params");
-        if (QFile::exists(layoutFile))
+        if (QFile::exists(layoutFile)) {
             loadParameters(layoutFile, ParameterType_Integer);
-        else
+        } else {
             loadParameters(QLatin1String(":/params/layouts/fallback.params"), ParameterType_Unit);
+        }
         displayConfig = newDisplayConfig;
         return true;
     }

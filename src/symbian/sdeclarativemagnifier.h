@@ -40,13 +40,14 @@
 #ifndef SDECLARATIVEMAGNIFIER_H
 #define SDECLARATIVEMAGNIFIER_H
 
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 #include <QtCore/qrect.h>
 #include <QtGui/qpixmap.h>
 
 class SDeclarativeMagnifierPrivate;
 
-class SDeclarativeMagnifier : public QDeclarativeItem
+class SDeclarativeMagnifier : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QRectF sourceRect READ sourceRect WRITE setSourceRect NOTIFY sourceRectChanged)
@@ -55,10 +56,10 @@ class SDeclarativeMagnifier : public QDeclarativeItem
     Q_PROPERTY(QString maskFileName READ maskFileName WRITE setMaskFileName NOTIFY maskFileNameChanged)
 
 public:
-    explicit SDeclarativeMagnifier(QDeclarativeItem *parent = 0);
+    explicit SDeclarativeMagnifier(QQuickItem *parent = 0);
     virtual ~SDeclarativeMagnifier();
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *styleOption, QWidget *widget);
+    virtual void paint(QPainter *painter);
 
     void setSourceRect(const QRectF &rect);
     QRectF sourceRect() const;

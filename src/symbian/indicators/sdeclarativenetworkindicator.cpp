@@ -43,10 +43,10 @@
 
 #include <QPainter>
 
-SDeclarativeNetworkIndicator::SDeclarativeNetworkIndicator(QDeclarativeItem *parent)
-    : QDeclarativeItem(parent), d_ptr(new SDeclarativeNetworkIndicatorPrivate(this))
+SDeclarativeNetworkIndicator::SDeclarativeNetworkIndicator(QQuickItem *parent)
+    : QQuickPaintedItem(parent), d_ptr(new SDeclarativeNetworkIndicatorPrivate(this))
 {
-    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 SDeclarativeNetworkIndicator::~SDeclarativeNetworkIndicator()
@@ -76,10 +76,8 @@ bool SDeclarativeNetworkIndicator::offline() const
     return d->offline;
 }
 
-void SDeclarativeNetworkIndicator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void SDeclarativeNetworkIndicator::paint(QPainter *painter)
 {
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
     Q_D(SDeclarativeNetworkIndicator);
 
     painter->drawPixmap(QPoint(), d->pixmap());

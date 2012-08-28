@@ -38,7 +38,7 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.1
+import QtQuick 2.0
 import "." 1.1
 import "AppManager.js" as Utils
 
@@ -130,4 +130,7 @@ Item {
             popupRect: Qt.rect(root.x, root.y, root.width, root.height)
         }
     }
+
+    onXChanged: console.log("Popup: x " + x);
+    onYChanged: console.log("Popup: y " + y);
 }

@@ -41,23 +41,24 @@
 #ifndef SDECLARATIVESHAREDSTATUSBAR_H
 #define SDECLARATIVESHAREDSTATUSBAR_H
 
-#include <QDeclarativeItem>
+//#include <QDeclarativeItem>
+#include <QtQuick/qquickpainteditem.h>
 #include <QScopedPointer>
 
 class SDeclarativeSharedStatusBarPrivate;
 
-class SDeclarativeSharedStatusBar : public QDeclarativeItem
+class SDeclarativeSharedStatusBar : public QQuickPaintedItem
 {
     Q_OBJECT
 
 public:
-    SDeclarativeSharedStatusBar(QDeclarativeItem *parent = 0);
+    SDeclarativeSharedStatusBar(QQuickItem *parent = 0);
     ~SDeclarativeSharedStatusBar();
 
     Q_INVOKABLE void setOrientation(int orientation);
     Q_INVOKABLE void setForeground(bool foreground);
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void paint(QPainter *painter);
 
 protected:
     void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);

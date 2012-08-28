@@ -43,11 +43,14 @@
 #include <QCoreApplication>
 #include <QTime>
 #include <QTimer>
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
+//#include <QDeclarativeContext>
+#include <QtQml/QQmlContext>
+//#include <QDeclarativeEngine>
+#include <QtQml/QQmlEngine>
 #include <QPixmapCache>
 #include <QSysInfo>
-#include <QDeclarativeItem>
+//#include <QDeclarativeItem>
+#include <QtQuick/QQuickItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 
@@ -222,7 +225,7 @@ void SDeclarative::privateClearIconCaches()
 
 void SDeclarative::privateClearComponentCache()
 {
-    QDeclarativeContext *context = qobject_cast<QDeclarativeContext*>(this->parent());
+    QQmlContext *context = qobject_cast<QQmlContext*>(this->parent());
     if (context)
         context->engine()->clearComponentCache();
 }
@@ -265,14 +268,15 @@ bool SDeclarative::privateGraphicsSharing() const
     return d->graphicsSharing;
 }
 
-void SDeclarative::privateSendMouseRelease(QDeclarativeItem *item) const
+void SDeclarative::privateSendMouseRelease(QQuickItem *item) const
 {
     // this is for situations where a press event opens another window (QWidget)
     // that eats the mouse released event. This method can be used for generating
     // the released event and 'correcting' the state of MouseArea/Flickable
     if (item) {
         QGraphicsSceneMouseEvent releaseEvent(QEvent::GraphicsSceneMouseRelease);
-        item->scene()->sendEvent(item, &releaseEvent);
+        //XXX
+        //item->scene()->sendEvent(item, &releaseEvent);
     }
 }
 

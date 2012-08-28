@@ -42,7 +42,8 @@
 #define SNETWORKINFO_H
 
 #include <QtCore/qscopedpointer.h>
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SNetworkInfoPrivate;
 

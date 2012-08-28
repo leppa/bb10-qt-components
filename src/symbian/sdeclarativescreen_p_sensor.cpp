@@ -42,7 +42,8 @@
 #include "sdeclarativescreen_p.h"
 #include "sdeclarativescreen_p_sensor.h"
 #include <QResizeEvent>
-#include <QDeclarativeEngine>
+//#include <QDeclarativeEngine>
+#include <QtQml/QQmlEngine>
 
 #ifdef Q_OS_SYMBIAN
 #include <QApplication>
@@ -125,7 +126,7 @@ bool OrientationListener::symbianEventFilter(void *message, long *result)
 }
 #endif
 
-SDeclarativeScreenPrivateSensor::SDeclarativeScreenPrivateSensor(SDeclarativeScreen *qq, QDeclarativeEngine *engine, QDeclarativeView *view)
+SDeclarativeScreenPrivateSensor::SDeclarativeScreenPrivateSensor(SDeclarativeScreen *qq, QQmlEngine *engine, QQuickView *view)
     : SDeclarativeScreenPrivate(qq, engine, view)
     , m_animate(0)
     , m_hasWindow(0)
@@ -138,7 +139,8 @@ SDeclarativeScreenPrivateSensor::SDeclarativeScreenPrivateSensor(SDeclarativeScr
 #ifdef Q_OS_SYMBIAN
         landscapeLock = deviceSupportsOnlyLandscape();
 #endif
-
+        //XXX
+        /*
         //In case the orientation lock was set in the cpp side
         if (m_view->testAttribute(Qt::WA_LockLandscapeOrientation) || landscapeLock) {
 #ifdef Q_DEBUG_SCREEN
@@ -151,6 +153,7 @@ SDeclarativeScreenPrivateSensor::SDeclarativeScreenPrivateSensor(SDeclarativeScr
 #endif
             setAllowedOrientations(SDeclarativeScreen::Portrait);
         }
+        */
     }
 
 #ifdef Q_OS_SYMBIAN
@@ -183,8 +186,10 @@ void SDeclarativeScreenPrivateSensor::setAllowedOrientations(SDeclarativeScreen:
         return;
 
     if (portraitAllowed() && landscapeAllowed()) {
-        if (m_view)
-            m_view->setAttribute(Qt::WA_AutoOrientation, true);
+        if (m_view) {
+            //XXX
+            //m_view->setAttribute(Qt::WA_AutoOrientation, true);
+        }
 #ifdef Q_OS_SYMBIAN
         privateSetOrientation(systemOrientation());
 #else
@@ -192,11 +197,14 @@ void SDeclarativeScreenPrivateSensor::setAllowedOrientations(SDeclarativeScreen:
 #endif
     } else if (portraitAllowed() && !landscapeAllowed()) {
         if (m_view)
-            m_view->setAttribute(Qt::WA_LockPortraitOrientation, true);
+            //XXX
+            ///m_view->setAttribute(Qt::WA_LockPortraitOrientation, true);
             privateSetOrientation(SDeclarativeScreen::Portrait);
     } else if (!portraitAllowed() && landscapeAllowed()) {
-        if (m_view)
-            m_view->setAttribute(Qt::WA_LockLandscapeOrientation, true);    
+        if (m_view) {
+            //XXX
+            //m_view->setAttribute(Qt::WA_LockLandscapeOrientation, true);
+        }
         privateSetOrientation(SDeclarativeScreen::Landscape);
     }
 }
@@ -307,15 +315,15 @@ void SDeclarativeScreenPrivateSensor::switchGeometry()
     setScreenSize(newScreenSize);
 }
 
-void SDeclarativeScreenPrivateSensor::viewStatusChanged(QDeclarativeView::Status status)
+void SDeclarativeScreenPrivateSensor::viewStatusChanged(QQuickView::Status status)
 {
     Q_Q(SDeclarativeScreen);
 
     if (m_view.isNull())
         return;
 
-    if (status == QDeclarativeView::Ready) {
-        QGraphicsObject* window = m_view->rootObject();
+    if (status == QQuickView::Ready) {
+        QQuickItem* window = m_view->rootObject();
 
         // if window and needed signals found
         if (window

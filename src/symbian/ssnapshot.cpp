@@ -42,13 +42,14 @@
 #include <qpainter.h>
 #include <qgraphicsscene.h>
 
-Snapshot::Snapshot(QDeclarativeItem *parent)
-    : QDeclarativeItem(parent)
+Snapshot::Snapshot(QQuickItem *parent)
+    : QQuickPaintedItem(parent)
     , m_width(0)
     , m_height(0)
 {
-    setFlag(ItemHasNoContents, false);
-    setFlag(ItemIgnoresParentOpacity, true);
+    setFlag(ItemHasContents, true);
+    //XXX
+    //setFlag(ItemIgnoresParentOpacity, true);
     setOpacity(0);
 }
 
@@ -56,7 +57,7 @@ Snapshot::~Snapshot()
 {
 }
 
-void Snapshot::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Snapshot::paint(QPainter *painter)
 {
     painter->save();
 
@@ -74,6 +75,8 @@ void Snapshot::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
 
 void Snapshot::take()
 {
+    //XXX
+    /*
     QGraphicsScene *s = scene();
     if (!s)
         return;
@@ -82,6 +85,7 @@ void Snapshot::take()
     QPainter painter(&m_snapshot);
     QRectF r(0, 0, snapshotWidth(), snapshotHeight());
     s->render(&painter, r, r);
+    */
 }
 
 void Snapshot::free()

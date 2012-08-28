@@ -42,7 +42,8 @@
 #define SDATETIME_H
 
 #include <QtCore/QObject>
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SDateTime : public QObject
 {

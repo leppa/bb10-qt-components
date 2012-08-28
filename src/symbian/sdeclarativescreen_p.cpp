@@ -43,8 +43,10 @@
 #include <QApplication>
 #include <QResizeEvent>
 #include <QDesktopWidget>
-#include <QDeclarativeEngine>
-#include <QDeclarativeView>
+//#include <QDeclarativeEngine>
+//#include <QDeclarativeView>
+#include <QtQml/QQmlEngine>
+#include <QtQuick/QQuickView>
 #include <qmath.h>
 #include <qnamespace.h>
 
@@ -78,7 +80,7 @@ enum OrientationReading {
     FaceDown = 	6	// The Face of the device is pointing down.
 };
 
-SDeclarativeScreenPrivate::SDeclarativeScreenPrivate( SDeclarativeScreen *qq, QDeclarativeEngine *engine, QDeclarativeView *view)
+SDeclarativeScreenPrivate::SDeclarativeScreenPrivate(SDeclarativeScreen *qq, QQmlEngine *engine, QQuickView *view)
     : m_currentOrientation(SDeclarativeScreen::Default)
     , m_allowedOrientations(SDeclarativeScreen::Default)
     , m_displaySize(QSize(DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -228,7 +230,9 @@ void SDeclarativeScreenPrivate::privateSetOrientation(int orientation)
 
 bool SDeclarativeScreenPrivate::privateSensorOrientationMethod() const
 {
-    return m_view && m_view->testAttribute(Qt::WA_SymbianNoSystemRotation);
+    //XXX
+    //return m_view && m_view->testAttribute(Qt::WA_SymbianNoSystemRotation);
+    return false;
 }
 
 #ifdef Q_WS_SIMULATOR

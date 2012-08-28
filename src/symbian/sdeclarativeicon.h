@@ -42,18 +42,19 @@
 #define SDECLARATIVEICON_H
 
 #include <QtCore/qscopedpointer.h>
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SDeclarativeIconPrivate;
 
-class SDeclarativeIcon : public QDeclarativeItem
+class SDeclarativeIcon : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QString iconName READ iconName WRITE setIconName NOTIFY iconNameChanged)
     Q_PROPERTY(QColor iconColor READ iconColor WRITE setIconColor NOTIFY iconColorChanged)
 
 public:
-    explicit SDeclarativeIcon(QDeclarativeItem *parent = 0);
+    explicit SDeclarativeIcon(QQuickItem *parent = 0);
     virtual ~SDeclarativeIcon();
 
     QString iconName() const;
@@ -62,7 +63,7 @@ public:
     QColor iconColor() const;
     void setIconColor(const QColor &color);
 
-    virtual void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual void paint(QPainter *);
 
 Q_SIGNALS:
     void iconNameChanged(const QString &name);

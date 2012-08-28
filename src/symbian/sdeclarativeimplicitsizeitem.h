@@ -41,11 +41,12 @@
 #ifndef SDECLARATIVEIMPLICITSIZEITEM_H
 #define SDECLARATIVEIMPLICITSIZEITEM_H
 
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickitem.h>
 
 // DEPRECATED on w25 - Use QDeclarativeItem instead
 
-class SDeclarativeImplicitSizeItem : public QDeclarativeItem
+class SDeclarativeImplicitSizeItem : public QQuickItem
 {
     Q_OBJECT
 
@@ -53,7 +54,7 @@ class SDeclarativeImplicitSizeItem : public QDeclarativeItem
     Q_PROPERTY(qreal implicitHeight READ implicitHeight WRITE setImplicitHeightNotify NOTIFY implicitHeightChanged)
 
 public:
-    explicit SDeclarativeImplicitSizeItem(QDeclarativeItem *parent = 0);
+    explicit SDeclarativeImplicitSizeItem(QQuickItem *parent = 0);
     virtual ~SDeclarativeImplicitSizeItem();
 
 Q_SIGNALS:

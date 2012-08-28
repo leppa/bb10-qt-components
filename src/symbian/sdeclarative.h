@@ -42,10 +42,11 @@
 #define SDECLARATIVE_H
 
 #include <QtCore/qobject.h>
-#include <QtDeclarative/qdeclarative.h>
+//#include <QtDeclarative/qdeclarative.h>
+#include <QtQml/qqml.h>
 
 class SDeclarativePrivate;
-QT_FORWARD_DECLARE_CLASS(QDeclarativeItem)
+QT_FORWARD_DECLARE_CLASS(QQuickItem)
 
 class SDeclarative : public QObject
 {
@@ -153,7 +154,7 @@ public:
     Q_INVOKABLE void privateClearIconCaches();
     Q_INVOKABLE void privateClearComponentCache();
     Q_INVOKABLE bool privateGraphicsSharing() const;
-    Q_INVOKABLE void privateSendMouseRelease(QDeclarativeItem *item) const;
+    Q_INVOKABLE void privateSendMouseRelease(QQuickItem *item) const;
     Q_INVOKABLE bool privateSharedStatusBar() const;
 
 Q_SIGNALS:

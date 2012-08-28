@@ -41,11 +41,12 @@
 #ifndef SDECLARATIVEINDICATORCONTAINER_H
 #define SDECLARATIVEINDICATORCONTAINER_H
 
-#include <QDeclarativeItem>
+//#include <QDeclarativeItem>
+#include <QtQuick/qquickitem.h>
 
 class SDeclarativeIndicatorContainerPrivate;
 
-class SDeclarativeIndicatorContainer : public QDeclarativeItem
+class SDeclarativeIndicatorContainer : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(QColor indicatorColor READ indicatorColor WRITE setIndicatorColor NOTIFY indicatorColorChanged)
@@ -56,7 +57,7 @@ class SDeclarativeIndicatorContainer : public QDeclarativeItem
 
 
 public:
-    SDeclarativeIndicatorContainer(QDeclarativeItem *parent = 0);
+    SDeclarativeIndicatorContainer(QQuickItem *parent = 0);
     ~SDeclarativeIndicatorContainer();
 
     QColor indicatorColor() const;

@@ -41,8 +41,8 @@
 #include "sdeclarativeimplicitsizeitem.h"
 #include <QDebug>
 
-SDeclarativeImplicitSizeItem::SDeclarativeImplicitSizeItem(QDeclarativeItem *parent) :
-    QDeclarativeItem(parent)
+SDeclarativeImplicitSizeItem::SDeclarativeImplicitSizeItem(QQuickItem *parent) :
+    QQuickItem(parent)
 {
     qDebug() << "SDeclarativeImplicitSizeItem is DEPRECATED. Use QDeclarativeItem instead";
 }

@@ -41,7 +41,8 @@
 #ifndef SDECLARATIVEINPUTCONTEXT_H
 #define SDECLARATIVEINPUTCONTEXT_H
 
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SDeclarativeInputContextPrivate;
 class SDeclarativeScreen;

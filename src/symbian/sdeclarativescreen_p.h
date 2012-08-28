@@ -44,6 +44,8 @@
 #include "sdeclarativescreen.h"
 #include <QtCore/qpointer.h>
 #include <QtGui/qgraphicsview.h>
+#include <QtQuick/QQuickView>
+#include <QtQml/QQmlEngine>
 
 QT_FORWARD_DECLARE_CLASS(QDeclarativeEngine)
 QT_FORWARD_DECLARE_CLASS(QDeclarativeView)
@@ -59,7 +61,7 @@ class SDeclarativeScreenPrivate : public QObject
     Q_DECLARE_PUBLIC(SDeclarativeScreen)
 
 public:
-    SDeclarativeScreenPrivate(SDeclarativeScreen *qq, QDeclarativeEngine *engine, QDeclarativeView *view);
+    SDeclarativeScreenPrivate(SDeclarativeScreen *qq, QQmlEngine *engine, QQuickView *view);
     virtual ~SDeclarativeScreenPrivate();
 
     SDeclarativeScreen::Orientation currentOrientation() const;
@@ -104,8 +106,8 @@ protected:
     qreal m_dpi;
     int m_initialized : 1;
 
-    QPointer<QDeclarativeView> m_view;
-    QPointer<QDeclarativeEngine> m_engine;
+    QPointer<QQuickView> m_view;
+    QPointer<QQmlEngine> m_engine;
     SDeclarativeScreen *q_ptr;
 
     static SDeclarativeScreenPrivate *d_ptr(SDeclarativeScreen *screen) {

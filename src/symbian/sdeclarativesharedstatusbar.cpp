@@ -46,11 +46,11 @@
 #include "sdeclarativesharedstatusbar_p.h"
 #endif // defined(Q_OS_SYMBIAN)
 
-SDeclarativeSharedStatusBar::SDeclarativeSharedStatusBar(QDeclarativeItem *parent)
-: QDeclarativeItem(parent)
+SDeclarativeSharedStatusBar::SDeclarativeSharedStatusBar(QQuickItem *parent)
+: QQuickPaintedItem(parent)
 ,d_ptr(new SDeclarativeSharedStatusBarPrivate(this))
 {
-    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 SDeclarativeSharedStatusBar::~SDeclarativeSharedStatusBar()
@@ -75,11 +75,8 @@ void SDeclarativeSharedStatusBar::geometryChanged(const QRectF &newGeometry, con
     d->geometryChanged(newGeometry, oldGeometry);
 }
 
-void SDeclarativeSharedStatusBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget )
+void SDeclarativeSharedStatusBar::paint(QPainter *painter)
 {
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
     Q_D(SDeclarativeSharedStatusBar);
     d->paint(painter);
 }

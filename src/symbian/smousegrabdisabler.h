@@ -42,6 +42,7 @@
 #define SMOUSEGRABDISABLER_H
 
 #include <QtCore/qobject.h>
+#include <QtQuick/QQuickItem>
 
 class QDeclarativeItem;
 
@@ -51,7 +52,7 @@ class SMouseGrabDisabler : public QObject
 public:
     explicit SMouseGrabDisabler(QObject *parent = 0);
 
-    Q_INVOKABLE void setKeepMouseGrab(QDeclarativeItem *target, bool keep);
+    Q_INVOKABLE void setKeepMouseGrab(QQuickItem *target, bool keep);
 };
 
 #endif // SMOUSEGRABDISABLER_H

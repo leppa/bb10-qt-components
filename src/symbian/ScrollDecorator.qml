@@ -38,7 +38,7 @@
 **
 ****************************************************************************/
 
-import QtQuick 1.1
+import QtQuick 2.0
 import "." 1.1
 
 Item {
@@ -64,13 +64,13 @@ Item {
             id: horizontal
             ScrollBar {
                 parent: flickableItem
-                flickableItem: root.flickableItem
+                flickableItem: flickableItem
                 orientation: Qt.Horizontal
                 interactive: false
                 platformInverted: root.platformInverted
                 anchors {
-                    left: flickableItem.left
-                    bottom: flickableItem.bottom
+                    left: flickableItem != null ? flickableItem.left : undefined
+                    bottom: flickableItem != null ? flickableItem.bottom : undefined
                     rightMargin: height
                 }
             }
@@ -79,11 +79,14 @@ Item {
             id: vertical
             ScrollBar {
                 parent: flickableItem
-                flickableItem: root.flickableItem
+                flickableItem: flickableItem
                 orientation: Qt.Vertical
                 interactive: false
                 platformInverted: root.platformInverted
-                anchors { top: flickableItem.top; right: flickableItem.right }
+                anchors {
+                    top: flickableItem != null ? flickableItem.top : undefined
+                    right: flickableItem != null ? flickableItem.right : undefined
+                }
             }
         }
         Component.onDestruction: {

@@ -41,7 +41,7 @@
 // ToolBarLayout is a container for items on a toolbar that automatically
 // implements an appropriate layout for its children.
 
-import QtQuick 1.1
+import QtQuick 2.0
 import "." 1.1
 
 Item {

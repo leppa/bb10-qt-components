@@ -38,12 +38,13 @@
 **
 ****************************************************************************/
 
-#include <QtDeclarative>
+//#include <QtDeclarative>
+#include <QtQml/QQmlExtensionPlugin>
 
 #include "models/qrangemodel.h"
 #include "qglobalenums.h"
 
-class QtComponentsPlugin : public QDeclarativeExtensionPlugin
+class QtComponentsPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
 
@@ -53,8 +54,8 @@ public:
         qmlRegisterType<QGlobals>(uri, SINCE_VERSION(1, 1), "Globals");
         qmlRegisterType<QRangeModel>(uri, SINCE_VERSION(1, 1), "RangeModel");
     }
+
+    Q_PLUGIN_METADATA(IID "qt.labs.components")
 };
 
 #include "plugin.moc"
-
-Q_EXPORT_PLUGIN2(qtcomponentsplugin, QtComponentsPlugin);

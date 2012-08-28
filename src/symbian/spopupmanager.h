@@ -42,7 +42,8 @@
 #define SPOPUPMANAGER_H
 
 #include <QtCore/qobject.h>
-#include <QtDeclarative/qdeclarative.h>
+//#include <QtDeclarative/qdeclarative.h>
+#include <QtQml/qqml.h>
 
 class SPopupManagerPrivate;
 

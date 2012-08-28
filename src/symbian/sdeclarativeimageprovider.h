@@ -41,7 +41,7 @@
 #ifndef SDECLARATIVEIMAGEPROVIDER_H
 #define SDECLARATIVEIMAGEPROVIDER_H
 
-#include <QtDeclarative/qdeclarativeimageprovider.h>
+#include <QtQml/qqmlimageprovider.h>
 
 class SDeclarativeImageProviderPrivate;
 

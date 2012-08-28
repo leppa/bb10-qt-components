@@ -38,7 +38,8 @@
 **
 ****************************************************************************/
 
-#include <QDeclarativeItem>
+//#include <QDeclarativeItem>
+#include <QtQuick/QQuickItem>
 
 #include "smousegrabdisabler.h"
 
@@ -47,7 +48,7 @@ SMouseGrabDisabler::SMouseGrabDisabler(QObject *parent) :
 {
 }
 
-void SMouseGrabDisabler::setKeepMouseGrab(QDeclarativeItem *target, bool keep)
+void SMouseGrabDisabler::setKeepMouseGrab(QQuickItem *target, bool keep)
 {
     target->setKeepMouseGrab(keep);
 }

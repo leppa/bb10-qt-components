@@ -81,7 +81,7 @@ const QString SDeclarativeMagnifierPrivate::mOverlayKey = "sdmagnifierprivate_mo
 void SDeclarativeMagnifierPrivate::init()
 {
     Q_Q(SDeclarativeMagnifier);
-    q->setFlag(QGraphicsItem::ItemHasNoContents, false);
+    q->setFlag(QQuickItem::ItemHasContents, true);
 }
 
 void SDeclarativeMagnifierPrivate::preparePixmaps()
@@ -118,8 +118,8 @@ void SDeclarativeMagnifierPrivate::preparePixmaps()
     }
 }
 
-SDeclarativeMagnifier::SDeclarativeMagnifier(QDeclarativeItem *parent) :
-    QDeclarativeItem(parent),
+SDeclarativeMagnifier::SDeclarativeMagnifier(QQuickItem *parent) :
+    QQuickPaintedItem(parent),
     d_ptr(new SDeclarativeMagnifierPrivate(this))
 {
     Q_D(SDeclarativeMagnifier);
@@ -208,11 +208,8 @@ QString SDeclarativeMagnifier::maskFileName() const
     return d->mMaskFileName;
 }
 
-void SDeclarativeMagnifier::paint(QPainter *painter, const QStyleOptionGraphicsItem *styleOption, QWidget *widget)
+void SDeclarativeMagnifier::paint(QPainter *painter)
 {
-    Q_UNUSED(styleOption)
-    Q_UNUSED(widget)
-
     Q_D(SDeclarativeMagnifier);
 
     // Cancel painting if source rectangle has not been set
@@ -227,6 +224,8 @@ void SDeclarativeMagnifier::paint(QPainter *painter, const QStyleOptionGraphicsI
         QPainter sourcePainter(d->mSource);
         QRectF targetRect = QRectF(QPointF(0, 0), d->mSourceRect.size());
 
+        //XXX
+        /*
         scene()->render(&sourcePainter, targetRect, d->mSourceRect);
         sourcePainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
         sourcePainter.drawPixmap(0, 0, d->mMask);
@@ -237,6 +236,7 @@ void SDeclarativeMagnifier::paint(QPainter *painter, const QStyleOptionGraphicsI
         painter->setRenderHint(QPainter::SmoothPixmapTransform);
         painter->drawPixmap(0, 0, boundingRect().width(), boundingRect().height(), *d->mSource);
         inPaint = false;
+        */
     }
 }
 

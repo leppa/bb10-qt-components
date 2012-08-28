@@ -45,9 +45,13 @@
 #include <QApplication>
 #include <QResizeEvent>
 #include <QDesktopWidget>
-#include <QDeclarativeEngine>
-#include <QDeclarativeView>
-#include <QDeclarativeContext>
+#include <QDebug>
+//#include <QDeclarativeEngine>
+//#include <QDeclarativeView>
+//#include <QDeclarativeContext>
+#include <QtQml/QQmlEngine>
+#include <QtQuick/QQuickView>
+//#include <QtQml/QQmlContext>
 #include <qmath.h>
 #include <qnamespace.h>
 
@@ -58,20 +62,25 @@ static const qreal DENSITY_SMALL_LIMIT = 140.0;
 static const qreal DENSITY_MEDIUM_LIMIT = 180.0;
 static const qreal DENSITY_LARGE_LIMIT = 270.0;
 
-SDeclarativeScreen::SDeclarativeScreen(QDeclarativeEngine *engine, QObject *parent)
+SDeclarativeScreen::SDeclarativeScreen(QQmlEngine *engine, QObject *parent)
     : QObject(parent)
 {
     // retrieve view pointer set in SymbianPlugin
-    QDeclarativeView *declarativeView = NULL;
+    QQuickView *declarativeView = NULL;
     QVariant declarativeViewPtr = parent->property("declarativeViewPtr");
 
     if (declarativeViewPtr.isValid())
-        declarativeView  = qobject_cast<QDeclarativeView *>(declarativeViewPtr.value<QObject *>());
+        declarativeView  = qobject_cast<QQuickView *>(declarativeViewPtr.value<QObject *>());
 
+    //XXX
+    /*
     if (declarativeView && declarativeView->testAttribute(Qt::WA_SymbianNoSystemRotation))
        d_ptr.reset(new SDeclarativeScreenPrivateSensor(this, engine, declarativeView));
     else
        d_ptr.reset(new SDeclarativeScreenPrivateResize(this, engine, declarativeView));
+    */
+    // Conny: Using this, because I don't know about WA_SymbianNoSystemRotation
+    d_ptr.reset(new SDeclarativeScreenPrivateResize(this, engine, declarativeView));
 }
 
 SDeclarativeScreen::~SDeclarativeScreen()
@@ -138,6 +147,7 @@ int SDeclarativeScreen::height() const
 int SDeclarativeScreen::displayWidth() const
 {
     Q_D(const SDeclarativeScreen);
+    qDebug() << "INFO Display width:" << d->displaySize().width();
     return d->displaySize().width();
 }
 

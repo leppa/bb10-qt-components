@@ -80,11 +80,11 @@ void SDeclarativeIconPrivate::releaseFromIconPool()
     iconLoadAttempted = false;
 }
 
-SDeclarativeIcon::SDeclarativeIcon(QDeclarativeItem *parent) :
-    QDeclarativeItem(parent),
+SDeclarativeIcon::SDeclarativeIcon(QQuickItem *parent) :
+    QQuickPaintedItem(parent),
     d_ptr(new SDeclarativeIconPrivate)
 {
-    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 SDeclarativeIcon::~SDeclarativeIcon()
@@ -156,7 +156,7 @@ void SDeclarativeIcon::setIconColor(const QColor &color)
     }
 }
 
-void SDeclarativeIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void SDeclarativeIcon::paint(QPainter *painter)
 {
     Q_D(SDeclarativeIcon);
     QSize rectSize(width(), height());

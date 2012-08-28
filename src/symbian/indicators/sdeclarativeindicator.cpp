@@ -44,6 +44,7 @@
 #include <aknconsts.h> // KAvkonBitmapFile
 #include <AknsUtils.h> // AknsUtils
 #include <QPainter>
+#include <QtQuick/QQuickItem>
 
 // #define Q_DEBUG_INDICATOR
 
@@ -194,9 +195,9 @@ QPixmap SDeclarativeIndicatorPrivate::currentFramePixmap()
 
 
 SDeclarativeIndicator::SDeclarativeIndicator(CSDeclarativeIndicatorData *data, QDeclarativeItem *parent)
-    : QDeclarativeItem(parent), d_ptr(new SDeclarativeIndicatorPrivate(data, this))
+    : QQuickPaintedItem(parent), d_ptr(new SDeclarativeIndicatorPrivate(data, this))
 {
-    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    setFlag(QQuickItem::ItemHasContents, true);
 #ifdef Q_DEBUG_INDICATOR
     qDebug() << "SDeclarativeIndicator created. Uid: " << data->Uid() << " priority: " << data->Priority();
 #endif // Q_DEBUG_INDICATOR
@@ -275,7 +276,7 @@ void SDeclarativeIndicator::setColor(const QColor &color)
     }
 }
 
-void SDeclarativeIndicator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void SDeclarativeIndicator::paint(QPainter *painter)
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -314,7 +315,7 @@ void SDeclarativeIndicator::paint(QPainter *painter, const QStyleOptionGraphicsI
 void SDeclarativeIndicator::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
 {
     Q_D(SDeclarativeIndicator);
-    QDeclarativeItem::geometryChanged(newGeometry, oldGeometry);
+    QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
 
     if (oldGeometry.size() != newGeometry.size())
         d->deleteBitmaps();

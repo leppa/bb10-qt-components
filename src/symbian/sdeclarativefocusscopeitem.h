@@ -41,14 +41,15 @@
 #ifndef SDECLARATIVEFOCUSSCOPEITEM_H
 #define SDECLARATIVEFOCUSSCOPEITEM_H
 
-#include <QDeclarativeItem>
+//#include <QDeclarativeItem>
+#include <QtQuick/qquickitem.h>
 
-class SDeclarativeFocusScopeItem : public QDeclarativeItem
+class SDeclarativeFocusScopeItem : public QQuickItem
 {
     Q_OBJECT
 
 public:
-    explicit SDeclarativeFocusScopeItem(QDeclarativeItem *parent = 0);
+    explicit SDeclarativeFocusScopeItem(QQuickItem *parent = 0);
     virtual ~SDeclarativeFocusScopeItem();
 
     Q_INVOKABLE bool widthExplicit() const;

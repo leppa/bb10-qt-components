@@ -49,6 +49,7 @@
 #include "sdeclarativescreen.h"
 
 #include <QObject>
+#include <QDebug>
 
 class SStyleFactoryPrivate
 {

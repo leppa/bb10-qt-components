@@ -40,8 +40,8 @@
 
 #include "sdeclarativefocusscopeitem.h"
 
-SDeclarativeFocusScopeItem::SDeclarativeFocusScopeItem(QDeclarativeItem *parent)
-    : QDeclarativeItem(parent)
+SDeclarativeFocusScopeItem::SDeclarativeFocusScopeItem(QQuickItem *parent)
+    : QQuickItem(parent)
 {
     setFlag(ItemIsFocusScope);
 }

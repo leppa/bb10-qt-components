@@ -44,8 +44,10 @@
 #include <QApplication>
 #include <QResizeEvent>
 #include <QDesktopWidget>
-#include <QDeclarativeEngine>
-#include <QDeclarativeView>
+//#include <QDeclarativeEngine>
+//#include <QDeclarativeView>
+#include <QtQml/QQmlEngine>
+#include <QtQuick/QQuickView>
 #include <qmath.h>
 #include <qnamespace.h>
 
@@ -53,7 +55,7 @@
 #include <QDebug>
 #endif // Q_DEBUG_SCREEN
 
-SDeclarativeScreenPrivateResize::SDeclarativeScreenPrivateResize( SDeclarativeScreen *qq, QDeclarativeEngine *engine, QDeclarativeView *view)
+SDeclarativeScreenPrivateResize::SDeclarativeScreenPrivateResize( SDeclarativeScreen *qq, QQmlEngine *engine, QQuickView *view)
     : SDeclarativeScreenPrivate(qq, engine, view)
 {
     if (m_view) {
@@ -65,6 +67,8 @@ SDeclarativeScreenPrivateResize::SDeclarativeScreenPrivateResize( SDeclarativeSc
 #endif
 
         //In case the orientation lock was set in the cpp side
+        //XXX
+        /*
         if (m_view->testAttribute(Qt::WA_LockLandscapeOrientation) || landscapeLock) {
 #ifdef Q_DEBUG_SCREEN
             qDebug() << "SDeclarativeScreenPrivateResize - LockingLandscapeOrientation";
@@ -76,6 +80,7 @@ SDeclarativeScreenPrivateResize::SDeclarativeScreenPrivateResize( SDeclarativeSc
 #endif
             setAllowedOrientations(SDeclarativeScreen::Portrait);
         }
+        */
     }
 }
 

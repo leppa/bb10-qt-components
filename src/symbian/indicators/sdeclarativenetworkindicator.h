@@ -41,18 +41,19 @@
 #ifndef SDECLARATIVENETWORKINDICATOR_H
 #define SDECLARATIVENETWORKINDICATOR_H
 
-#include <QDeclarativeItem>
+//#include <QDeclarativeItem>
+#include <QtQuick/qquickpainteditem.h>
 #include <QScopedPointer>
 
 class SDeclarativeNetworkIndicatorPrivate;
 
-class SDeclarativeNetworkIndicator : public QDeclarativeItem
+class SDeclarativeNetworkIndicator : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(bool offline READ offline NOTIFY offlineChanged)
 public:
-    SDeclarativeNetworkIndicator(QDeclarativeItem *parent = 0);
+    SDeclarativeNetworkIndicator(QQuickItem *parent = 0);
     ~SDeclarativeNetworkIndicator();
 
     QColor color() const;
@@ -64,7 +65,7 @@ Q_SIGNALS:
     void offlineChanged();
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    virtual void paint(QPainter *painter);
     QScopedPointer<SDeclarativeNetworkIndicatorPrivate> d_ptr;
 
 private:

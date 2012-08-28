@@ -58,9 +58,16 @@
 #include "sdeclarativesharedstatusbar.h"
 #include "ssnapshot.h"
 
-#include <QCoreApplication>
-#include <QtDeclarative>
-#include <QDeclarativeView>
+#include <QtGui/QApplication>
+//#include <QtDeclarative>
+//#include <QDeclarativeView>
+#include <QtQuick/QQuickView>
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
+#include <QtGui/QGuiApplication>
+#include <QtQml/QQmlExtensionPlugin>
+#include <QDebug>
+
 
 #if defined(Q_OS_SYMBIAN)
 #include <e32cmn.h>
@@ -73,12 +80,12 @@ static const TSecureId KLegacyRotationUids [] = {0x20043643, 0x200412F0, 0x20043
 static const int VERSION_MAJOR = 1;
 static const int VERSION_MINOR = 0;
 
-static void tryToDisableSystemRotation(const QDeclarativeEngine *engine)
+static void tryToDisableSystemRotation(const QQmlEngine *engine)
 {
-    QDeclarativeView *declarativeView = 0;
+    QQuickView *declarativeView = 0;
     const QWidgetList &widgets = QApplication::allWidgets();
     for (int i = 0; i < widgets.count() && !declarativeView; i++) {
-         QDeclarativeView *tempView = qobject_cast<QDeclarativeView *>(widgets.at(i));
+         QQuickView *tempView = qobject_cast<QQuickView *>(widgets.at(i));
          if (tempView && tempView->engine() == engine)
              declarativeView = tempView;
     }
@@ -104,21 +111,22 @@ static void tryToDisableSystemRotation(const QDeclarativeEngine *engine)
 // Do not use sensor orientation method with simulator
 #ifndef Q_WS_SIMULATOR
     // Qt::WA_SymbianNoSystemRotation cannot be set if view is already open
-    if(!declarativeView->isVisible())
-        declarativeView->setAttribute(Qt::WA_SymbianNoSystemRotation);
+    if(!declarativeView->isVisible()) {
+        //XXX
+        //declarativeView->setAttribute(Qt::WA_SymbianNoSystemRotation);
+    }
 #endif
 }
 
 
-class SymbianPlugin : public QDeclarativeExtensionPlugin
+class SymbianPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
 
 public:
 
-    void initializeEngine(QDeclarativeEngine *engine, const char *uri) {
-
-        QDeclarativeExtensionPlugin::initializeEngine(engine, uri);
+    void initializeEngine(QQmlEngine *engine, const char *uri) {
+        QQmlExtensionPlugin::initializeEngine(engine, uri);
         context = engine->rootContext();
         tryToDisableSystemRotation(engine);
 
@@ -187,7 +195,8 @@ public:
     void registerTypes(const char *uri) {
 
         // enables the use of QtQuick 1.1 version (revision 1) of QDeclarativeItem
-        qmlRegisterRevision<QDeclarativeItem, 1>(uri, 1, 1);
+        //XXX Adapted next line to QQuickItem 2.0, but not sure what it means...
+        qmlRegisterRevision<QQuickItem, 2>(uri, 2, 0);
 
         qmlRegisterType<SDeclarativeIcon>(uri, 1, 1, "Icon");
         qmlRegisterType<SDeclarativeMaskedImage>(uri, 1, 1, "MaskedImage");
@@ -224,12 +233,12 @@ public slots:
     }
 
 private:
-    QDeclarativeContext *context;
+    QQmlContext *context;
     SDeclarativeInputContext *inputContext;
     SDeclarativeScreen *screen;
     SStyleFactory *style;
+
+    Q_PLUGIN_METADATA(IID "com.nokia.symbian")
 };
 
 #include "plugin.moc"
-
-Q_EXPORT_PLUGIN2(symbianplugin, SymbianPlugin)

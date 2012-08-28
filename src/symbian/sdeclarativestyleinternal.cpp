@@ -49,6 +49,7 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QApplication>
+#include <QtGui/QFontMetrics>
 
 #ifdef HAVE_MOBILITY
 #include <QFeedbackEffect>

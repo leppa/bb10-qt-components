@@ -41,7 +41,8 @@
 #ifndef SDECLARATIVEMASKEDIMAGE_P_H
 #define SDECLARATIVEMASKEDIMAGE_P_H
 
-#include <QtDeclarative/qdeclarativeitem.h>
+//#include <QtDeclarative/qdeclarativeitem.h>
+#include <QtQuick/qquickpainteditem.h>
 
 class SDeclarativeMaskedImagePrivate
 {
