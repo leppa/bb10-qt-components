@@ -45,7 +45,7 @@
 #include <QCoreApplication>
 #include <QPainter>
 #include <QtWidgets/QGraphicsScene>
-//#include <QtWidgets/QSvgRenderer>
+#include <QtSvg/QSvgRenderer>
 #include <QPixmap>
 #include <QSizeF>
 #include <QFileInfo>

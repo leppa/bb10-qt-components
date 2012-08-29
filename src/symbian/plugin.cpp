@@ -82,6 +82,8 @@ static const int VERSION_MINOR = 0;
 
 static void tryToDisableSystemRotation(const QQmlEngine *engine)
 {
+    //XXX Disabled because of QApplicatoin::allWidgets
+    return;
     QQuickView *declarativeView = 0;
     const QWidgetList &widgets = QApplication::allWidgets();
     for (int i = 0; i < widgets.count() && !declarativeView; i++) {
@@ -126,6 +128,7 @@ class SymbianPlugin : public QQmlExtensionPlugin
 public:
 
     void initializeEngine(QQmlEngine *engine, const char *uri) {
+        qDebug() << "HELLO FROM COMPONENTS";
         QQmlExtensionPlugin::initializeEngine(engine, uri);
         context = engine->rootContext();
         tryToDisableSystemRotation(engine);
