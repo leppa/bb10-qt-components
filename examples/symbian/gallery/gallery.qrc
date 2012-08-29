@@ -5,5 +5,6 @@
         <file>gallery.qml</file>
         <file>galleryContent.qml</file>
         <file>SampleColumn.qml</file>
+        <file>simple_gallery.qml</file>
     </qresource>
 </RCC>

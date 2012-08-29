@@ -44,4 +44,5 @@ OTHER_FILES += \
     gallery.qml \
     galleryContent.qml \
     SampleColumn.qml \
-    bar-descriptor.xml
+    bar-descriptor.xml \
+    simple_gallery.qml
