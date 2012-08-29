@@ -61,7 +61,8 @@ Item {
 
     // Symbian specific
     property bool platformInverted: false
-    signal valueChanged(real value)
+    //XXX Not liked by QtQuick 2.0
+    //signal valueChanged(real value)
     implicitWidth: orientation == Qt.Horizontal ? 150 : privateStyle.menuItemHeight
     implicitHeight: orientation == Qt.Horizontal ? privateStyle.menuItemHeight : 150
 
