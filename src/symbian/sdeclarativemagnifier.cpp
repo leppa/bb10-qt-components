@@ -38,8 +38,8 @@
 **
 ****************************************************************************/
 #include "sdeclarativemagnifier.h"
-#include <QGraphicsScene>
-#include <QGraphicsItem>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsItem>
 #include <QPainter>
 #include <QDebug>
 #include <QImageReader>

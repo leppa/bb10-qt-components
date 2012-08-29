@@ -43,7 +43,7 @@
 
 #include "sdeclarativescreen.h"
 #include <QtCore/qpointer.h>
-#include <QtGui/qgraphicsview.h>
+#include <QtWidgets/qgraphicsview.h>
 #include <QtQuick/QQuickView>
 #include <QtQml/QQmlEngine>
 

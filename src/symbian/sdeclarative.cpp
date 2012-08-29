@@ -51,8 +51,8 @@
 #include <QSysInfo>
 //#include <QDeclarativeItem>
 #include <QtQuick/QQuickItem>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsScene>
 
 #ifdef Q_OS_SYMBIAN
 #include <AknUtils.h>

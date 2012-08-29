@@ -39,7 +39,7 @@
 ****************************************************************************/
 
 #include <qpainter.h>
-#include <qapplication.h>
+#include <QtWidgets/qapplication.h>
 #include <qbitmap.h>
 #include <qmargins.h>
 #include <QtWidgets/QTileRules>

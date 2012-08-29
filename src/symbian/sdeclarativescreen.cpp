@@ -42,9 +42,9 @@
 #include "sdeclarativescreen_p.h"
 #include "sdeclarativescreen_p_resize.h"
 #include "sdeclarativescreen_p_sensor.h"
-#include <QApplication>
+#include <QtWidgets/QApplication>
 #include <QResizeEvent>
-#include <QDesktopWidget>
+#include <QtWidgets/QDesktopWidget>
 #include <QDebug>
 //#include <QDeclarativeEngine>
 //#include <QDeclarativeView>

@@ -41,7 +41,7 @@
 #include "siconpool.h"
 
 #include <QPainter>
-#include <QSvgRenderer>
+#include <QtSvg/QSvgRenderer>
 #include <QPixmap>
 #include <QSizeF>
 #include <QHash>

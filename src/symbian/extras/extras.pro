@@ -7,7 +7,7 @@ INCLUDEPATH += $$PWD
 
 win32|mac:!wince*:!win32-msvc:!macx-xcode:CONFIG += debug_and_release build_all
 CONFIG += qt plugin
-QT += declarative
+QT += qml quick
 
 HEADERS += \
     sdatetime.h

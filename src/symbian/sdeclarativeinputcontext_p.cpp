@@ -42,7 +42,7 @@
 #include "sdeclarativeinputcontext_p.h"
 #include "sdeclarativescreen.h"
 #include <QEvent>
-#include <QApplication>
+#include <QtWidgets/QApplication>
 
 SDeclarativeInputContextPrivate::SDeclarativeInputContextPrivate(SDeclarativeInputContext *qq, SDeclarativeScreen *screen)
     : q_ptr(qq)

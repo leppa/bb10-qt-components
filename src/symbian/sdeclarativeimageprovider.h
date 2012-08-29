@@ -41,11 +41,12 @@
 #ifndef SDECLARATIVEIMAGEPROVIDER_H
 #define SDECLARATIVEIMAGEPROVIDER_H
 
-#include <QtQml/qqmlimageprovider.h>
+//#include <QtQml/qqmlimageprovider.h>
+#include <QtQuick/qquickimageprovider.h>
 
 class SDeclarativeImageProviderPrivate;
 
-class SDeclarativeImageProvider : public QDeclarativeImageProvider
+class SDeclarativeImageProvider : public QQuickImageProvider
 {
 public:
     SDeclarativeImageProvider();

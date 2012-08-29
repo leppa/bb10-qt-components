@@ -44,7 +44,7 @@
 #include "sdeclarativescreen.h"
 #include "sdeclarativescreen_p.h"
 #include <QtCore/qpointer.h>
-#include <QtGui/qgraphicsview.h>
+#include <QtWidgets/qgraphicsview.h>
 
 QT_FORWARD_DECLARE_CLASS(QQmlEngine)
 QT_FORWARD_DECLARE_CLASS(QQuickView)

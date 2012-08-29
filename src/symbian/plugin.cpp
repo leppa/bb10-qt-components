@@ -58,7 +58,7 @@
 #include "sdeclarativesharedstatusbar.h"
 #include "ssnapshot.h"
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 //#include <QtDeclarative>
 //#include <QDeclarativeView>
 #include <QtQuick/QQuickView>

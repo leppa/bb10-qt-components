@@ -50,7 +50,7 @@ class SDeclarativeImageProviderPrivate
 public:
     SDeclarativeImageProviderPrivate(SDeclarativeImageProvider *qq);
     SDeclarativeImageProvider *q_ptr;
-    QDeclarativeImageProvider *sharedImageProvider;
+    QQuickImageProvider *sharedImageProvider;
 };
 
 SDeclarativeImageProviderPrivate::SDeclarativeImageProviderPrivate(SDeclarativeImageProvider *qq)
@@ -58,7 +58,7 @@ SDeclarativeImageProviderPrivate::SDeclarativeImageProviderPrivate(SDeclarativeI
       sharedImageProvider(0)
 {
     // try to load shared image provider
-    typedef QDeclarativeImageProvider* (*CreateImageProviderFuncPtr)();
+    typedef QQuickImageProvider* (*CreateImageProviderFuncPtr)();
     CreateImageProviderFuncPtr createSharedImageProvider =
             (CreateImageProviderFuncPtr) QLibrary::resolve("qtuisharedimageprovider", "1");
 
@@ -67,7 +67,7 @@ SDeclarativeImageProviderPrivate::SDeclarativeImageProviderPrivate(SDeclarativeI
 }
 
 SDeclarativeImageProvider::SDeclarativeImageProvider() :
-    QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap),
+    QQuickImageProvider(QQuickImageProvider::Pixmap),
     d_ptr(new SDeclarativeImageProviderPrivate(this))
 {
 }

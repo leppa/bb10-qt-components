@@ -40,7 +40,7 @@
 
 #include "ssnapshot.h"
 #include <qpainter.h>
-#include <qgraphicsscene.h>
+#include <QtWidgets/qgraphicsscene.h>
 
 Snapshot::Snapshot(QQuickItem *parent)
     : QQuickPaintedItem(parent)

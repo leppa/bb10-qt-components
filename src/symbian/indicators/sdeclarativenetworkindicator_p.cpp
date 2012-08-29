@@ -43,9 +43,9 @@
 
 #include <QPainter>
 #include <QPixmap>
-#include <QDeclarativeEngine>
-#include <QDeclarativeContext>
-#include <QDeclarativeImageProvider>
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
+#include <QtQuick/QQuickImageProvider>
 
 // This is the fallback (desktop) implementation of
 // SDeclarativeNetworkIndicatorPrivate that's always showing the default
@@ -81,10 +81,11 @@ void SDeclarativeNetworkIndicatorPrivate::reset()
 QPixmap SDeclarativeNetworkIndicatorPrivate::pixmap()
 {
     if (impl->pixmap.isNull()) {
-        QDeclarativeContext *context = QDeclarativeEngine::contextForObject(q_ptr);
-
+        QQmlContext *context = QQmlEngine::contextForObject(q_ptr);
+        
+        //XXX Add proper Qt-Style cast
         if (context) {
-            QDeclarativeImageProvider * imageProvider = context->engine()->imageProvider("theme");
+            QQuickImageProvider * imageProvider = (QQuickImageProvider*) context->engine()->imageProvider("theme");
 
             if (imageProvider)
                 impl->pixmap = imageProvider->requestPixmap("qtg_graf_signal_icon", 0,
