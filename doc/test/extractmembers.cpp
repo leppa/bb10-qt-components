@@ -137,7 +137,6 @@ int main(int argc, char *argv[])
     qmlBasicType.insert("SStyleWrapper",                "style");
     qmlBasicType.insert("QObject",                      "QtObject");
     qmlBasicType.insert("QValidator",                   "validator");
-    qmlBasicType.insert("SDeclarativeImplicitSizeItem", "Item");
     qmlBasicType.insert("ListProperty<QObject>",        "list<QtObject>");
     qmlBasicType.insert("ListProperty<QGraphicsObject>","list<Item>");
 

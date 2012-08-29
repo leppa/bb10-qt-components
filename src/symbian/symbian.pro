@@ -19,7 +19,6 @@ SOURCES += \
     sdeclarativefocusscopeitem.cpp \
     sdeclarativeicon.cpp \
     sdeclarativeimageprovider.cpp \
-    sdeclarativeimplicitsizeitem.cpp \
     sdeclarativeinputcontext.cpp \
     sdeclarativemagnifier.cpp \
     sdeclarativemaskedimage.cpp \
@@ -74,7 +73,6 @@ HEADERS += \
     sdeclarativefocusscopeitem.h \
     sdeclarativeicon.h \
     sdeclarativeimageprovider.h \
-    sdeclarativeimplicitsizeitem.h \
     sdeclarativeinputcontext.h \
     sdeclarativemagnifier.h \
     sdeclarativemaskedimage.h \

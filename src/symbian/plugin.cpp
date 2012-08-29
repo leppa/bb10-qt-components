@@ -42,7 +42,6 @@
 #include "sstylefactory.h"
 #include "sdeclarativeicon.h"
 #include "sdeclarativefocusscopeitem.h"
-#include "sdeclarativeimplicitsizeitem.h"
 #include "sdeclarativeinputcontext.h"
 #include "sdeclarativeimageprovider.h"
 #include "sdeclarativemaskedimage.h"
@@ -201,7 +200,6 @@ public:
 
         qmlRegisterType<SDeclarativeIcon>(uri, 1, 1, "Icon");
         qmlRegisterType<SDeclarativeMaskedImage>(uri, 1, 1, "MaskedImage");
-        qmlRegisterType<SDeclarativeImplicitSizeItem>(uri, 1, 1, "ImplicitSizeItem");
         qmlRegisterType<SDeclarativeFocusScopeItem>(uri, 1, 1, "FocusScopeItem");
         qmlRegisterType<SDeclarativeIndicatorContainer>(uri, 1, 1, "UniversalIndicators");
         qmlRegisterType<SDeclarativeNetworkIndicator>(uri, 1, 1, "NetworkIndicator");

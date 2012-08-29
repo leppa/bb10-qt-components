@@ -45,6 +45,7 @@
 #include <QPixmap>
 #include <QSizeF>
 #include <QHash>
+#include <QDebug>
 
 //#define Q_DEBUG_ICON
 #ifdef Q_DEBUG_ICON
@@ -162,6 +163,8 @@ QPixmap SIconPool::loadIcon(
             pm = QPixmap(renderSize);
             pm.fill(QColor(0, 0, 0, 0));
             QPainter painter(&pm);
+            
+            qDebug() << "Render svg:" << fileName;
             renderer->render(&painter, QRectF(QPointF(), renderSize));
         }
     } else {

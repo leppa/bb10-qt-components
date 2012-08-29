@@ -8,7 +8,6 @@ SUBDIRS += \
     commondialog \
     contextmenu \
     declarativeicon \
-    declarativeimplicitsizeitem \
     declarativeinputcontext \
     declarativescreen \
     declarativestyle \
