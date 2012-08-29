@@ -86,7 +86,8 @@ function buildItems() {
 
 function releaseItemConnections() {
     for (var i = 0; i < self.children.length; i++) {
-        self.children[i].clicked.disconnect(clickHandlers[i])
+        //XXX Disabled because of warnings
+        //self.children[i].clicked.disconnect(clickHandlers[i])
         self.children[i].visibleChanged.disconnect(buildItems)
     }
     clickHandlers = []

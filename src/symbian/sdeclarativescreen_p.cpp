@@ -66,8 +66,10 @@
 
 static const qreal DEFAULT_TWIPS_PER_INCH = 1440.0;
 static const qreal DEFAULT_DPI = 211.7;
-static const int DEFAULT_WIDTH = 360;
-static const int DEFAULT_HEIGHT = 640;
+//static const int DEFAULT_WIDTH = 360;
+//static const int DEFAULT_HEIGHT = 640;
+static const int DEFAULT_WIDTH = 768;
+static const int DEFAULT_HEIGHT = 1280;
 
 // Matches QOrientationReading
 enum OrientationReading {

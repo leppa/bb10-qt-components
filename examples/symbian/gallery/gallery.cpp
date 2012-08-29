@@ -49,6 +49,7 @@
 #include <QtQuick/QQuickView>
 #include <QtQml/QQmlEngine>
 #include <QtQuick/QQuickItem>
+#include <QDebug>
 //#include <QDir>
 
 int main(int argc, char **argv)
@@ -64,5 +65,7 @@ int main(int argc, char **argv)
     */
     view.setSource(QUrl("qrc:/gallery.qml"));
     view.show();
+    qDebug() << "Window format:" << view.format();
+    qDebug() << "Window type:  " << view.format().renderableType();
     return app.exec();
 }

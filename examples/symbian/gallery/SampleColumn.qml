@@ -205,7 +205,7 @@ Column {
         platformInverted: column.childrenInverted
 
         Timer {
-            running: true
+            running: false
             repeat: true
             interval: 25
             onTriggered: parent.value = (parent.value + 1) % 1.1
@@ -214,7 +214,7 @@ Column {
 
     ProgressBar {
         anchors.horizontalCenter: parent.horizontalCenter
-        indeterminate: true
+        indeterminate: false
         platformInverted: column.childrenInverted
     }
 
@@ -530,14 +530,14 @@ Column {
             id: busyInd1
             width: 20
             height: 20
-            running: true
+            running: false
             platformInverted: column.childrenInverted
         }
 
         BusyIndicator {
             // default width/height is 40
             id: busyInd2
-            running: true
+            running: false
             platformInverted: column.childrenInverted
         }
 
@@ -545,7 +545,7 @@ Column {
             id: busyInd3
             width: 60
             height: 60
-            running: true
+            running: false
             platformInverted: column.childrenInverted
         }
 
@@ -663,9 +663,9 @@ Column {
        exclusive: true
        checkedButton: b2
 
-       Button { text: "b1"; platformInverted: column.childrenInverted }
-       Button { text: "b2"; platformInverted: column.childrenInverted }
-       Button { text: "b3"; platformInverted: column.childrenInverted }
+       Button { id: b1; text: "b1"; platformInverted: column.childrenInverted }
+       Button { id: b2; text: "b2"; platformInverted: column.childrenInverted }
+       Button { id: b3; text: "b3"; platformInverted: column.childrenInverted }
    }
 
    ButtonRow {

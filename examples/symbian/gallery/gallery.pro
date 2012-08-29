@@ -43,4 +43,5 @@ symbian {
 OTHER_FILES += \
     gallery.qml \
     galleryContent.qml \
-    SampleColumn.qml
+    SampleColumn.qml \
+    bar-descriptor.xml
