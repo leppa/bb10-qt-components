@@ -15,7 +15,7 @@
     <env var="QML_IMPORT_PATH" value="app/native/imports"/>
     <env var="QT_PLUGIN_PATH" value="app/native/plugins"/>
     <env var="LD_LIBRARY_PATH" value="app/native/lib"/>
-
+    <env var="QT_QPA_FONTDIR" value="app/native/lib/fonts" />
     <env var="QT_DEBUG_PLUGINS" value="0" />
     <env var="LD_DEBUG" value="0"/>
     <env var="M_THEME_DIR" value="app/native/themes"/>

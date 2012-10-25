@@ -177,9 +177,12 @@ QPixmap SIconPool::loadIcon(
 
     if (!pm.isNull() && color.isValid()) {
         // Colorize the icon
-        QPixmap mask = pm.alphaChannel();
-        pm.fill(color);
-        pm.setAlphaChannel(mask);
+        QPainter painter(&pm);
+        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+        painter.fillRect(pm.rect(), QBrush(color));
+        //QPixmap mask = pm.alphaChannel();
+        //pm.fill(color);
+        //pm.setAlphaChannel(mask);
     }
 #ifdef Q_DEBUG_ICON
     if (pm.isNull()) {
