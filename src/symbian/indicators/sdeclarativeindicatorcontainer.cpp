@@ -193,7 +193,7 @@ void SDeclarativeIndicatorContainer::doLayoutChildren()
             if (itemsShown++)
                 xPosition += d->indicatorPadding;
 
-            child->setPos(QPointF(xPosition, 0));
+            child->setPosition(QPointF(xPosition, 0));
             child->setSize(itemSize);
 
             xPosition += child->width();
