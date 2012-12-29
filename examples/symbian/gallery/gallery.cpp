@@ -44,13 +44,34 @@
 #include <QDeclarativeEngine>
 #include <QDeclarativeItem>
 #include <QDir>
+#include <QGLWidget>
 
 int main(int argc, char **argv)
 {
+    QApplication::setGraphicsSystem("raster"); // You can also try "opengl" here
+    QApplication::setStartDragDistance(20);
+
     QApplication app(argc, argv);
     qmlRegisterType<LayoutDirectionSetter>("LayoutDirectionSetter", 1, 0, "LayoutDirectionSetter");
 
     QDeclarativeView view;
+
+    QGLFormat format = QGLFormat::defaultFormat();
+    format.setSampleBuffers(false); // Should be default, but hey...
+    QGLWidget *glWidget = new QGLWidget(format);
+    glWidget->setAutoFillBackground(false); // Might help a bit with performance
+
+    view.setViewport(glWidget);
+    
+    // Needed, otherwise only flickering on BB10
+    view.setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    
+    // Might help a bit with performance
+    view.setAttribute(Qt::WA_OpaquePaintEvent);
+    view.setAttribute(Qt::WA_NoSystemBackground);
+    view.viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
+    view.viewport()->setAttribute(Qt::WA_NoSystemBackground);
+
     view.setSource(QUrl("qrc:/gallery.qml"));
     view.show();
     return app.exec();

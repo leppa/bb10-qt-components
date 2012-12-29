@@ -1,6 +1,6 @@
 TARGET = qmlgallery
 TEMPLATE = app
-QT += declarative
+QT += declarative opengl
 CONFIG += qt-components
 CONFIG -= app_bundle
 include (../shared/utils.pri)
