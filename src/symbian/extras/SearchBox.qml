@@ -104,8 +104,8 @@ Item {
 
         Image {
             id: searchIndicator
-            width: platformStyle.graphicSizeSmall
-            height: platformStyle.graphicSizeSmall
+            sourceSize.width: platformStyle.graphicSizeSmall
+            sourceSize.height: platformStyle.graphicSizeSmall
             anchors {
                 left: textPanel.left
                 leftMargin: platformStyle.paddingLarge / 2
@@ -116,8 +116,8 @@ Item {
 
         Image {
             id: clearButton; objectName: "clearButton"
-            height: platformStyle.graphicSizeSmall
-            width: platformStyle.graphicSizeSmall
+            sourceSize.height: platformStyle.graphicSizeSmall
+            sourceSize.width: platformStyle.graphicSizeSmall
             anchors { right: parent.right; margins: platformStyle.paddingMedium; verticalCenter: parent.verticalCenter }
             source: privateStyle.imagePath(
                         clearMouseArea.pressed ? "qtg_graf_textfield_clear_pressed"
