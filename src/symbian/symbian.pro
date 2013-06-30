@@ -232,9 +232,6 @@ symbian {
 }
 
 win32: LIBS += -lpsapi # for allocated memory info
+blackberry: LIBS += -lbb -lbbdevice
 
 include(../../qml.pri)
-
-
-
-

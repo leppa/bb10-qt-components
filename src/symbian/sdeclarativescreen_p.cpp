@@ -58,16 +58,18 @@
 #include <cmath>
 #endif
 
+#ifdef Q_OS_BLACKBERRY
+#include <bb/device/DisplayInfo>
+#endif
+
 #ifdef Q_DEBUG_SCREEN
 #include <QDebug>
 #endif // Q_DEBUG_SCREEN
 
 static const qreal DEFAULT_TWIPS_PER_INCH = 1440.0;
 static const qreal DEFAULT_DPI = 211.7;
-//static const int DEFAULT_WIDTH = 360;
-//static const int DEFAULT_HEIGHT = 640;
-static const int DEFAULT_WIDTH = 768;
-static const int DEFAULT_HEIGHT = 1280;
+static const int DEFAULT_WIDTH = 360;
+static const int DEFAULT_HEIGHT = 640;
 
 // Matches QOrientationReading
 enum OrientationReading {
@@ -104,6 +106,10 @@ SDeclarativeScreenPrivate::SDeclarativeScreenPrivate( SDeclarativeScreen *qq, QD
     if (m_view)
         m_view->setWindowState(view->windowState() | Qt::WindowFullScreen);
     connect(QApplication::desktop(), SIGNAL(resized(int)), SLOT(desktopResized(int)));
+#elif defined(Q_OS_BLACKBERRY)
+    initDisplaySize();
+    if (m_view)
+        m_view->setWindowState(view->windowState() | Qt::WindowFullScreen);
 #endif
 
     initScreenSize();
@@ -256,6 +262,10 @@ void SDeclarativeScreenPrivate::initScreenSize()
 
     m_screenSize = QApplication::desktop()->screenGeometry().size();
 
+#elif defined(Q_OS_BLACKBERRY)
+
+    m_screenSize = m_displaySize;
+
 #endif
 }
 
@@ -353,4 +363,17 @@ void SDeclarativeScreenPrivate::initDisplaySize()
 
     setDisplay(width, height, dpi);
 }
+
+#elif defined(Q_OS_BLACKBERRY)
+
+#define INCHES_IN_METER 39.37
+
+void SDeclarativeScreenPrivate::initDisplaySize()
+{
+    bb::device::DisplayInfo di(bb::device::DisplayInfo::primaryDisplayId());
+    m_displaySize = di.pixelSize();
+    // Resolution is in points per meter, but we need points per inch
+    m_dpi = ((di.resolution().width() + di.resolution().height()) / 2) / INCHES_IN_METER;
+}
+
 #endif
