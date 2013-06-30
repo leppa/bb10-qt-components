@@ -56,9 +56,9 @@
 #include <bps/orientation.h>
 #endif
 
-//#ifdef Q_DEBUG_SCREEN
+#ifdef Q_DEBUG_SCREEN
 #include <QDebug>
-//#endif // Q_DEBUG_SCREEN
+#endif // Q_DEBUG_SCREEN
 
 #ifdef Q_OS_SYMBIAN
 const TInt KEikDynamicLayoutVariantSwitch = 0x101F8121;
@@ -120,13 +120,9 @@ int OrientationListener::userCount = 0;
 
 OrientationListener::OrientationListener()
 {
+    subscribe(orientation_get_domain());
     bps_initialize();
     orientation_request_events(0);
-    
-    connect(&timer, SIGNAL(timeout()), this, SLOT(handleNativeEvents()));
-    timer.setInterval(200);
-    timer.setSingleShot(false);
-    timer.start();
 }
 
 OrientationListener::~OrientationListener()
@@ -151,30 +147,20 @@ void OrientationListener::deleteCountedInstance()
     }
 }
 
-void OrientationListener::handleNativeEvents()
+void OrientationListener::event(bps_event_t *event)
 {
-    if (instance) {
-        for(;;) {
-            bps_event_t *event = NULL;
-            // Return imediately, don't wait for event
-            int rc = bps_get_event(&event, 0);
+    if (bps_event_get_domain(event) == orientation_get_domain()) {
+        // Handle orientation event
+        orientation_direction_t orientation = orientation_event_get_direction(event);
+#ifdef Q_DEBUG_SCREEN
+        qDebug() << "INFO: Got BBS orientation event. Orientation is:" << orientation;
+#endif
+        // Don't emit orientationChanged() signal for face up and face down orientations.
+        // I.e., stay in the current orientation.
+        if ((orientation == ORIENTATION_FACE_UP) || (orientation == ORIENTATION_FACE_DOWN))
+            return;
 
-            //assert(rc == BPS_SUCCESS);
-
-            if (event) {
-                //qDebug() << "INFO: Got BBS event";
-                int domain = bps_event_get_domain(event);
-
-                if (domain == orientation_get_domain()) {
-                    // Handle orientation event
-                    orientation_direction_t orientation = orientation_event_get_direction(event);
-                    qDebug() << "INFO: Got BBS orientation even. Orientation is:" << orientation;
-                    instance->emit orientationChanged();
-                }
-            } else {
-                break;
-            }
-        }
+        emit orientationChanged();
     }
 }
 #endif
@@ -317,7 +303,9 @@ bool SDeclarativeScreenPrivateSensor::eventFilter(QObject *obj, QEvent *event)
 #if defined(Q_OS_SYMBIAN) || defined(Q_OS_BLACKBERRY)
 void SDeclarativeScreenPrivateSensor::orientationChanged()
 {
+#ifdef Q_DEBUG_SCREEN
     qDebug() << "INFO: In orientationChanged()";
+#endif
     Q_Q(SDeclarativeScreen);
 
     SDeclarativeScreen::Orientation orientation = systemOrientation();
@@ -350,33 +338,43 @@ SDeclarativeScreen::Orientation SDeclarativeScreenPrivateSensor::systemOrientati
 SDeclarativeScreen::Orientation SDeclarativeScreenPrivateSensor::systemOrientation()
 {
     orientation_direction_t orientation;
-    
+
     if (orientation_get(&orientation, 0) != BPS_SUCCESS) {
         qDebug() << "ERROR: Cannot get orientation";
         return SDeclarativeScreen::Portrait;
     }
     /*
-      ORIENTATION_TOP_UP = 1   
-      ORIENTATION_BOTTOM_UP = 2   
-      ORIENTATION_LEFT_UP = 3   
-      ORIENTATION_RIGHT_UP = 4   
+      ORIENTATION_TOP_UP = 1
+      ORIENTATION_BOTTOM_UP = 2
+      ORIENTATION_LEFT_UP = 3
+      ORIENTATION_RIGHT_UP = 4
     */
-    
-    if (orientation == ORIENTATION_TOP_UP) {
+
+    switch (orientation) {
+    case ORIENTATION_TOP_UP:
+    case ORIENTATION_FACE_UP:
+    case ORIENTATION_FACE_DOWN:
+#ifdef Q_DEBUG_SCREEN
         qDebug() << "INFO: Portrait";
+#endif
         return SDeclarativeScreen::Portrait;
-    } else if (orientation == ORIENTATION_BOTTOM_UP) {
+    case ORIENTATION_BOTTOM_UP:
+#ifdef Q_DEBUG_SCREEN
         qDebug() << "INFO: PortraitInverted";
+#endif
         return SDeclarativeScreen::PortraitInverted;
-    } else if (orientation == ORIENTATION_LEFT_UP) {
+    case ORIENTATION_LEFT_UP:
+#ifdef Q_DEBUG_SCREEN
         qDebug() << "INFO: LandscapeInverted";
+#endif
         return SDeclarativeScreen::LandscapeInverted;
-    } else if (orientation == ORIENTATION_RIGHT_UP) {
+    case ORIENTATION_RIGHT_UP:
+#ifdef Q_DEBUG_SCREEN
         qDebug() << "INFO: Landscape";
+#endif
         return SDeclarativeScreen::Landscape;
     }
-    
-    // Fall back
+
     return SDeclarativeScreen::Portrait;
 }
 #endif

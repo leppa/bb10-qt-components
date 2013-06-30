@@ -51,6 +51,7 @@
 
 #ifdef Q_OS_BLACKBERRY
 #include <QTimer>
+#include <bb/AbstractBpsEventHandler>
 #endif
 
 QT_FORWARD_DECLARE_CLASS(QDeclarativeEngine)
@@ -82,7 +83,7 @@ private:
 #endif
 
 #ifdef Q_OS_BLACKBERRY
-class OrientationListener : public QObject
+class OrientationListener: public QObject, private bb::AbstractBpsEventHandler
 {
     Q_OBJECT
 
@@ -94,6 +95,8 @@ private:
     OrientationListener();
     ~OrientationListener();
 
+    void event(bps_event_t *event);
+
 Q_SIGNALS:
     void orientationChanged();
 
@@ -101,10 +104,6 @@ private:
     // Data
     static int userCount;
     static OrientationListener *instance;
-    QTimer timer;
-
-private slots:
-    void handleNativeEvents();
 };
 #endif
 
