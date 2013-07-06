@@ -47,8 +47,11 @@
 
 #include <QObject>
 #include <QFile>
-#include <QDebug>
 #include <qmath.h>
+
+#ifdef Q_DEBUG_STYLE
+#include <QDebug>
+#endif
 
 // Parameters for magic unit value (RnD feature)
 // -> See loadParameters documentation for details

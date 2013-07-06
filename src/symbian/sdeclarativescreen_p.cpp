@@ -97,7 +97,7 @@ SDeclarativeScreenPrivate::SDeclarativeScreenPrivate( SDeclarativeScreen *qq, QD
 #endif
 
 {
-#ifdef Q_OS_SYMBIAN
+#if defined(Q_OS_SYMBIAN) || defined(Q_OS_BLACKBERRY)
     initDisplaySize();
     if (m_view)
         m_view->setWindowState(view->windowState() | Qt::WindowFullScreen);
@@ -106,10 +106,6 @@ SDeclarativeScreenPrivate::SDeclarativeScreenPrivate( SDeclarativeScreen *qq, QD
     if (m_view)
         m_view->setWindowState(view->windowState() | Qt::WindowFullScreen);
     connect(QApplication::desktop(), SIGNAL(resized(int)), SLOT(desktopResized(int)));
-#elif defined(Q_OS_BLACKBERRY)
-    initDisplaySize();
-    if (m_view)
-        m_view->setWindowState(view->windowState() | Qt::WindowFullScreen);
 #endif
 
     initScreenSize();

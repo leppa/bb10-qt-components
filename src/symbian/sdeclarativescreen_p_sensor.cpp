@@ -127,6 +127,7 @@ OrientationListener::OrientationListener()
 
 OrientationListener::~OrientationListener()
 {
+    orientation_stop_events(0);
     bps_shutdown();
 }
 
@@ -149,15 +150,18 @@ void OrientationListener::deleteCountedInstance()
 
 void OrientationListener::event(bps_event_t *event)
 {
-    if (bps_event_get_domain(event) == orientation_get_domain()) {
+    int domain = bps_event_get_domain(event);
+    if (domain == orientation_get_domain()) {
         // Handle orientation event
         orientation_direction_t orientation = orientation_event_get_direction(event);
 #ifdef Q_DEBUG_SCREEN
         qDebug() << "INFO: Got BBS orientation event. Orientation is:" << orientation;
 #endif
-        // Don't emit orientationChanged() signal for face up and face down orientations.
-        // I.e., stay in the current orientation.
-        if ((orientation == ORIENTATION_FACE_UP) || (orientation == ORIENTATION_FACE_DOWN))
+        // Don't emit orientationChanged() signal for face up and face down and bottom up
+        // orientations. I.e., stay in the current orientation.
+        if ((orientation == ORIENTATION_BOTTOM_UP)
+                || (orientation == ORIENTATION_FACE_UP)
+                || (orientation == ORIENTATION_FACE_DOWN))
             return;
 
         emit orientationChanged();
@@ -170,6 +174,19 @@ SDeclarativeScreenPrivateSensor::SDeclarativeScreenPrivateSensor(SDeclarativeScr
     , m_animate(0)
     , m_hasWindow(0)
 {
+    m_currentOrientation = systemOrientation();
+
+    if (((m_currentOrientation == SDeclarativeScreen::Portrait
+          || m_currentOrientation == SDeclarativeScreen::PortraitInverted)
+         && !portraitDisplay())
+        || ((m_currentOrientation == SDeclarativeScreen::Landscape
+             || m_currentOrientation == SDeclarativeScreen::LandscapeInverted)
+            && portraitDisplay())) {
+        // Orientation not default - transpose the initial screen size.
+        m_screenSize.transpose();
+        m_displaySize.transpose();
+    }
+
     if (m_view) {
         m_view->installEventFilter(this);
         connect(m_view, SIGNAL(statusChanged(QDeclarativeView::Status)), this, SLOT(viewStatusChanged(QDeclarativeView::Status)));
@@ -223,7 +240,7 @@ void SDeclarativeScreenPrivateSensor::setAllowedOrientations(SDeclarativeScreen:
         return;
 
     if (portraitAllowed() && landscapeAllowed()) {
-#ifdef Q_OS_SYMBIAN
+#if defined(Q_OS_SYMBIAN) || defined(Q_OS_BLACKBERRY)
         privateSetOrientation(systemOrientation());
 #else
         privateSetOrientation(portraitDisplay() ? SDeclarativeScreen::Portrait : SDeclarativeScreen::Landscape);
@@ -259,6 +276,7 @@ void SDeclarativeScreenPrivateSensor::privateSetOrientation(int orientation)
     if(orientation == SDeclarativeScreen::Default)
         orientation = portraitDisplay() ? SDeclarativeScreen::Portrait : SDeclarativeScreen::Landscape;
 
+#ifndef Q_OS_BLACKBERRY
     if (orientation == SDeclarativeScreen::Portrait)
         rotation = portraitDisplay() ? 0 : 90;
     else if (orientation == SDeclarativeScreen::Landscape)
@@ -267,6 +285,7 @@ void SDeclarativeScreenPrivateSensor::privateSetOrientation(int orientation)
         rotation = portraitDisplay() ? -90 : -180;
     else if (orientation == SDeclarativeScreen::PortraitInverted)
         rotation = portraitDisplay() ? -180: -90;
+#endif
 
     setCurrentOrientation(static_cast<SDeclarativeScreen::Orientation>(orientation), !m_hasWindow);
 
