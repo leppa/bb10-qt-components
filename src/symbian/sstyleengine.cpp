@@ -190,6 +190,8 @@ void SStyleEnginePrivate::resolveFont()
 {
 #ifdef Q_OS_SYMBIAN
     QString fontFamily = QFont().defaultFamily();
+#elif defined(Q_OS_BLACKBERRY)
+    QString fontFamily = QLatin1String("Slate Pro");
 #else
     QString fontFamily = QLatin1String("Nokia Sans");
 #endif
