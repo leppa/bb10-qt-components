@@ -102,17 +102,25 @@ bool SStyleEnginePrivate::updateLayoutParameters()
     QString ppi = QString::number(qRound(screen->dpi() / 5.0) * 5); // round to closest 5
     QString newDisplayConfig = longEdge + QLatin1Char('_') + shortEdge + QLatin1Char('_') + ppi;
 
+#ifdef Q_DEBUG_STYLE
     qDebug() << "DISPLAY CONFIG:" << longEdge << "x" << shortEdge << "@" << ppi;
+#endif
 
     if (displayConfig != newDisplayConfig) {
         layoutParameters.clear();
         QString layoutFile = QLatin1String(":/params/layouts/") + newDisplayConfig + QLatin1String(".params");
+#ifdef Q_DEBUG_STYLE
         qDebug() << "DISPLAY: Trying to load:" << layoutFile;
+#endif
         if (QFile::exists(layoutFile)) {
+#ifdef Q_DEBUG_STYLE
             qDebug() << "DISPLAY: Loading" << layoutFile;
+#endif
             loadParameters(layoutFile, ParameterType_Integer);
         } else {
+#ifdef Q_DEBUG_STYLE
             qDebug() << "DISPLAY: Loading fallback.params";
+#endif
             loadParameters(QLatin1String(":/params/layouts/fallback.params"), ParameterType_Unit);
         }
         displayConfig = newDisplayConfig;
