@@ -133,7 +133,7 @@ void SDeclarativeScreenPrivate::setCurrentOrientation(SDeclarativeScreen::Orient
         return;
 
     m_currentOrientation = orientation;
-    if (emitSignal) q->emit currentOrientationChanged();
+    if (emitSignal) emit q->currentOrientationChanged();
 }
 
 SDeclarativeScreen::Orientations SDeclarativeScreenPrivate::allowedOrientations() const
@@ -148,7 +148,7 @@ void SDeclarativeScreenPrivate::setAllowedOrientations(SDeclarativeScreen::Orien
         return;
 
     m_allowedOrientations = orientations;
-    q->emit allowedOrientationsChanged();
+    emit q->allowedOrientationsChanged();
 }
 
 QSize SDeclarativeScreenPrivate::screenSize() const
@@ -166,10 +166,10 @@ void SDeclarativeScreenPrivate::setScreenSize(QSize size)
     m_screenSize = size;
 
     if (oldSize.width() != m_screenSize.width())
-        q->emit widthChanged();
+        emit q->widthChanged();
 
     if (oldSize.height() != m_screenSize.height())
-        q->emit heightChanged();
+        emit q->heightChanged();
 }
 
 QSize SDeclarativeScreenPrivate::displaySize() const
@@ -209,7 +209,7 @@ void SDeclarativeScreenPrivate::setDisplay(int width, int height, qreal dpi)
 #else
         privateSetOrientation(m_currentOrientation);
 #endif
-        q->emit displayChanged();
+        emit q->displayChanged();
     }
 #endif
 }

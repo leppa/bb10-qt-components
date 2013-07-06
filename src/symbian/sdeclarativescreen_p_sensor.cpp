@@ -250,11 +250,11 @@ void SDeclarativeScreenPrivateSensor::setAllowedOrientations(SDeclarativeScreen:
     } else if (portraitAllowed() && !landscapeAllowed()) {
         if (m_view)
             privateSetOrientation(SDeclarativeScreen::Portrait);
-            m_view->setAttribute(Qt::WA_LockPortraitOrientation, true);    
+            m_view->setAttribute(Qt::WA_LockPortraitOrientation, true);
     } else if (!portraitAllowed() && landscapeAllowed()) {
         privateSetOrientation(SDeclarativeScreen::Landscape);
         if (m_view)
-            m_view->setAttribute(Qt::WA_LockLandscapeOrientation, true);    
+            m_view->setAttribute(Qt::WA_LockLandscapeOrientation, true);
     }
 }
 
@@ -291,7 +291,7 @@ void SDeclarativeScreenPrivateSensor::privateSetOrientation(int orientation)
 
     // starts orientation change in Window.qml
     if (m_hasWindow) {
-        q->emit privateAboutToChangeOrientation(rotation, m_animate);
+        emit q->privateAboutToChangeOrientation(rotation, m_animate);
         if(m_view)
             m_animate = !m_view->property("sensorRotationAnimationDisabled").toBool();
         else

@@ -75,7 +75,7 @@ public:
     void init();
     bool updateLayoutParameters();
     void loadParameters(const QString &filePath, ParameterType type);
-    void resolveFont();    
+    void resolveFont();
     void _q_displayChanged();
 
 public:
@@ -101,9 +101,9 @@ bool SStyleEnginePrivate::updateLayoutParameters()
     QString shortEdge = QString::number(qMin(screen->displayWidth(), screen->displayHeight()));
     QString ppi = QString::number(qRound(screen->dpi() / 5.0) * 5); // round to closest 5
     QString newDisplayConfig = longEdge + QLatin1Char('_') + shortEdge + QLatin1Char('_') + ppi;
-    
+
     qDebug() << "DISPLAY CONFIG:" << longEdge << "x" << shortEdge << "@" << ppi;
-    
+
     if (displayConfig != newDisplayConfig) {
         layoutParameters.clear();
         QString layoutFile = QLatin1String(":/params/layouts/") + newDisplayConfig + QLatin1String(".params");
@@ -198,7 +198,7 @@ void SStyleEnginePrivate::resolveFont()
     fontFamilyParameters.insert(QLatin1String("font-family-regular"), fontFamily);
 }
 
-void SStyleEnginePrivate::_q_displayChanged() 
+void SStyleEnginePrivate::_q_displayChanged()
 {
     Q_Q(SStyleEngine);
     if (updateLayoutParameters())

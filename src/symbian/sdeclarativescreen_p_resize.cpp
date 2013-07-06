@@ -174,7 +174,7 @@ QSize SDeclarativeScreenPrivateResize::systemScreenSize()
 
 QSize SDeclarativeScreenPrivateResize::enforceFixedOrientation(QSize size)
 {
-    if ((size.width() <= size.height() && !portraitAllowed()) 
+    if ((size.width() <= size.height() && !portraitAllowed())
         || (size.width() > size.height() && !landscapeAllowed())) {
         size.transpose();
     }
