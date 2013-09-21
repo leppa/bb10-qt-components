@@ -77,9 +77,7 @@ CommonDialog {
         function preferredHeight() {
             // Need to create artifical binding to listView.delegate because of QTBUG-19037
             var dummy = listView.delegate
-            var multiplier = screen.height > screen.width ? 0.45 : 0.6
-            var maxHeight = Math.floor(multiplier * screen.height / privateStyle.menuItemHeight)
-                * privateStyle.menuItemHeight
+            var maxHeight = Math.floor((screen.height - (platformStyle.graphicSizeSmall + 2 * platformStyle.paddingLarge) - 2 * (privateStyle.menuItemHeight + platformStyle.paddingLarge)) / privateStyle.menuItemHeight) * privateStyle.menuItemHeight
             return Math.min(maxHeight, listView.count * privateStyle.menuItemHeight)
         }
 

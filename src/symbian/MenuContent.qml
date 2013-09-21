@@ -60,7 +60,7 @@ Item {
         // Add padding to align content area top and bottom with rounded background graphics.
         // Optionsmenu uses mask, thus no padding needed
         property int clipMargin: containingPopup.objectName == "OptionsMenu" ? 0 : platformStyle.paddingSmall
-        property int preferredHeight: privateStyle.menuItemHeight * ((screenWidth < screenHeight) ? 5 : 3)
+        property int preferredHeight: screenHeight - 2 * (privateStyle.menuItemHeight + platformStyle.paddingLarge)
     }
 
     BorderImage {
