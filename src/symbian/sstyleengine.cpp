@@ -49,10 +49,6 @@
 #include <QFile>
 #include <qmath.h>
 
-#ifdef Q_OS_BLACKBERRY
-#include <bb/device/HardwareInfo>
-#endif
-
 #ifdef Q_DEBUG_STYLE
 #include <QDebug>
 #endif
@@ -104,21 +100,6 @@ bool SStyleEnginePrivate::updateLayoutParameters()
     QString longEdge = QString::number(qMax(screen->displayWidth(), screen->displayHeight()));
     QString shortEdge = QString::number(qMin(screen->displayWidth(), screen->displayHeight()));
     QString ppi = QString::number(qRound(screen->dpi() / 5.0) * 5); // round to closest 5
-#ifdef Q_OS_BLACKBERRY
-    // For some reason, BlackBerry devices report DPI values which, even when
-    // rounded to the nearest 5, don't correspond to the ones declared in the
-    // specification. We override these values with correct ones, based on the
-    // reported model name. If device is unknown, we use reported DPI. There
-    // is no layout in this case, anyway.
-    bb::device::HardwareInfo hw;
-    const QString model = hw.modelName();
-    if (model == QLatin1String("Z10"))
-        ppi = QLatin1String("355");
-    else if (model == QLatin1String("Q5") || model == QLatin1String("Q10"))
-        ppi = QLatin1String("330");
-    else if (model == QLatin1String("Z30"))
-        ppi = QLatin1String("295");
-#endif
     QString newDisplayConfig = longEdge + QLatin1Char('_') + shortEdge + QLatin1Char('_') + ppi;
 
 #ifdef Q_DEBUG_STYLE

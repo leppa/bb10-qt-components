@@ -374,8 +374,5 @@
         <file alias="layouts/640_360_210.params">resources/layouts/640_360_210.params</file>
         <file alias="layouts/640_360_230.params">resources/layouts/640_360_230.params</file>
         <file alias="layouts/640_480_325.params">resources/layouts/640_480_325.params</file>
-        <file alias="layouts/720_720_330.params">resources/layouts/720_720_330.params</file>
-        <file alias="layouts/1280_720_295.params">resources/layouts/1280_720_295.params</file>
-        <file alias="layouts/1280_768_355.params">resources/layouts/1280_768_355.params</file>
     </qresource>
 </RCC>
